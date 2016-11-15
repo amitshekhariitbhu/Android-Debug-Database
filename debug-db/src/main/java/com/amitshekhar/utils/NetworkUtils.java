@@ -17,7 +17,7 @@ public final class NetworkUtils {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
         final String formatedIpAddress = String.format("%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
-        return "http://" + formatedIpAddress + ":" + port + "/index.html";
+        return "Open http://" + formatedIpAddress + ":" + port + "/index.html in your browser";
     }
 
 }

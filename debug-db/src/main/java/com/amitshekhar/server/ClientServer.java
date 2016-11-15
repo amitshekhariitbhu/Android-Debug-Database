@@ -273,22 +273,6 @@ public class ClientServer implements Runnable {
         mDatabase = mContext.openOrCreateDatabase(database, 0, null);
     }
 
-    public Response onOpenRequest(Map<String, String> params) {
-        String name = params.get("name");
-        try {
-            mDatabase = mContext.openOrCreateDatabase(name, 0, null);
-            Response response = new Response();
-            response.isSuccessful = true;
-            return response;
-        } catch (SQLiteException e) {
-            e.printStackTrace();
-            Response response = new Response();
-            response.isSuccessful = false;
-            response.error = e.getMessage();
-            return response;
-        }
-    }
-
     private Response exec(String sql) {
         Response response = new Response();
         try {

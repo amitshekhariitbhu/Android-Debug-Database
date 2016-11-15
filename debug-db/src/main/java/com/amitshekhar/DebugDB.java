@@ -13,6 +13,7 @@ import com.amitshekhar.utils.NetworkUtils;
 public class DebugDB {
 
     private static final String TAG = DebugDB.class.getSimpleName();
+    private static final int DEFAULT_PORT = 8080;
     private static ClientServer clientServer;
 
     private DebugDB() {
@@ -20,9 +21,9 @@ public class DebugDB {
     }
 
     public static void initialize(Context context) {
-        clientServer = new ClientServer(context, 8080);
+        clientServer = new ClientServer(context, DEFAULT_PORT);
         clientServer.start();
-        Log.d(TAG, NetworkUtils.getIpAccess(context, 8080));
+        Log.d(TAG, NetworkUtils.getIpAccess(context, DEFAULT_PORT));
     }
 
     public static void initialize(Context context, int port) {
