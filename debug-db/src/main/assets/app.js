@@ -86,6 +86,10 @@ function inflateData(result){
         if ($.fn.DataTable.isDataTable(tableId) ) {
           $(tableId).DataTable().destroy();
         }
+
+       $("#db-data-div").remove();
+       $("#parent-data-div").append('<div id="db-data-div"><table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered display" id="db-data"></table></div>');
+
        $(tableId).dataTable({
            "data": columnData,
            "columns": columnHeader,
