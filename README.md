@@ -1,18 +1,28 @@
 # Android Debug Database
 
-## Android Debug Database is a powerful library for debugging databases in Android applications
+## Android Debug Database is a powerful library for debugging databases and shared preferences in Android applications.
 
-## Very simple tool for debug database by viewing it in browser
+## Android Debug Database is a very simple tool for viewing databases and shared preferences directly in your browser.
 
-When it comes to debugging database of an android application, it is very difficult to see what's happening inside database.
+### How Android Debug Database helps?
+* When it comes to debugging database of an android application, it is very difficult to see what's happening inside database, it's make it too simple.
+* You can see all the data of shared preferences used in your application.
+* You can check the current value of any of the shared preferences.
+* You can do search in your data.
+* So this is a very simple tool to see your complete data in your browser.
+* Debugging Android Database was never easier than this.
 
-So this is a very simple tool to see your complete database in a browser like chrome, mozilla, etc.
 
-Debugging Android Database was never easier than this.
+When your android application starts, you will be able to see the logs like below :
 
-Let's debug android database.
+* D/DebugDB: Open http://192.168.1.130:8080 in your browser
 
-After opening the application, you will be able to see this in log -> D/DebugDB: Open http://192.168.1.130:8080 in your browser
+Just open the provided link in your browser, you are set to see all data of databases and shared preferences.
+
+Important : Your Android phone and laptop should be connected to the same Wifi.
+
+<img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdb.png >
+
 
 ### Found this project useful :heart:
 * Support by clicking the :star: button on the upper right of this page. :v:
