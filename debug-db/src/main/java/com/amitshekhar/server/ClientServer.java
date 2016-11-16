@@ -162,11 +162,11 @@ public class ClientServer implements Runnable {
                 writeServerError(output);
                 return;
             }
-            byte[] bytes = null;
+            byte[] bytes;
 
-            if (route.startsWith("getAllDataFromTable")) {
+            if (route.startsWith("getAllDataFromTheTable")) {
                 String query = null;
-                if (route.contains("?query=")) {
+                if (route.contains("?tableName=")) {
                     query = route.substring(route.indexOf("=") + 1, route.length());
                 }
                 String sql = "SELECT * FROM " + query;
@@ -183,13 +183,13 @@ public class ClientServer implements Runnable {
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
 
-            } else if (route.startsWith("dblist")) {
+            } else if (route.startsWith("getDbList")) {
                 Response response = getDBList();
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
-            } else if (route.startsWith("tablelist")) {
+            } else if (route.startsWith("getTableList")) {
                 String database = null;
-                if (route.contains("?query=")) {
+                if (route.contains("?database=")) {
                     database = route.substring(route.indexOf("=") + 1, route.length());
                 }
                 openDatabase(database);

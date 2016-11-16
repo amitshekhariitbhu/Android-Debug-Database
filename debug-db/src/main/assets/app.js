@@ -4,9 +4,7 @@ $( document ).ready(function() {
 
 function getData(tableName) {
 
-   console.log(tableName);
-
-   $.ajax({url: "getAllDataFromTable?query="+tableName, success: function(result){
+   $.ajax({url: "getAllDataFromTheTable?tableName="+tableName, success: function(result){
 
            result = JSON.parse(result);
            var columnHeader = result.columns.map(function(columnName) {
@@ -37,8 +35,6 @@ function getData(tableName) {
 function queryFunction() {
 
    var query = $('#query').val();
-
-   console.log(query);
 
    $.ajax({url: "query?query="+query, success: function(result){
 
@@ -71,13 +67,15 @@ function queryFunction() {
 
 function getDBList() {
 
-   $.ajax({url: "dblist", success: function(result){
+   $.ajax({url: "getDbList", success: function(result){
 
            result = JSON.parse(result);
            var dbList = result.rows;
-           $('#dblist').empty()
+           $('#db-list').empty()
            for(var count = 0; count < dbList.length; count++){
-             $("#dblist").append("<a href='#' class='list-group-item' onClick='openDatabaseAndGetTableList(\""+ dbList[count] + "\");'>" +dbList[count] + "</a>");
+             if(dbList[count].indexOf("journal") == -1){
+                $("#db-list").append("<a href='#' class='list-group-item' onClick='openDatabaseAndGetTableList(\""+ dbList[count] + "\");'>" +dbList[count] + "</a>");
+             }
            }
 
    }});
@@ -85,13 +83,14 @@ function getDBList() {
 }
 
 function openDatabaseAndGetTableList(db) {
-   $.ajax({url: "tablelist?query="+db, success: function(result){
+
+   $.ajax({url: "getTableList?database="+db, success: function(result){
 
            result = JSON.parse(result);
            var tableList = result.rows;
-           $('#tablelist').empty()
+           $('#table-list').empty()
            for(var count = 0; count < tableList.length; count++){
-             $("#tablelist").append("<a href='#' class='list-group-item' onClick='getData(\""+ tableList[count] + "\");'>" +tableList[count] + "</a>");
+             $("#table-list").append("<a href='#' class='list-group-item' onClick='getData(\""+ tableList[count] + "\");'>" +tableList[count] + "</a>");
            }
 
    }});

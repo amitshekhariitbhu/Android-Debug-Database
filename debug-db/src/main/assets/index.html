@@ -30,15 +30,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 
-    <style>
-        #main-content {
-          padding-top: 50px;
-        }
-        #padding-20 {
-          padding-top: 20px;
-        }
+    <link href="custom.css" rel="stylesheet">
 
-    </style>
 </head>
 <body>
 
@@ -88,9 +81,9 @@
 </nav>
 
 
-<div id="main-content" class="container">
+<div class="container padding-fifty">
 
-    <div class="row" id="padding-20">
+    <div class="row padding-twenty">
         <div class="col-sm-12">
             <div class="form-group">
                 <label for="query">Query</label>
@@ -103,13 +96,13 @@
     </div>
 
 
-    <div class="row" id="padding-20">
+    <div class="row padding-twenty">
 
         <div class="col-sm-2">
             <div class="panel panel-info">
                 <div class="panel-heading">Databases</div>
             </div>
-            <div id="dblist" class="list-group">
+            <div id="db-list" class="list-group">
             </div>
         </div>
 
@@ -117,7 +110,7 @@
             <div class="panel panel-info">
                 <div class="panel-heading">Tables</div>
             </div>
-            <div id="tablelist" class="list-group">
+            <div id="table-list" class="list-group">
             </div>
         </div>
 
