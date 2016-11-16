@@ -71,10 +71,15 @@ function getDBList() {
 
            result = JSON.parse(result);
            var dbList = result.rows;
-           $('#db-list').empty()
+           $('#db-list').empty();
+           var isSelectionDone = false;
            for(var count = 0; count < dbList.length; count++){
              if(dbList[count].indexOf("journal") == -1){
-                $("#db-list").append("<a href='#' class='list-group-item' onClick='openDatabaseAndGetTableList(\""+ dbList[count] + "\");'>" +dbList[count] + "</a>");
+                $("#db-list").append("<a href='#' id=" +dbList[count] + " class='list-group-item' onClick='openDatabaseAndGetTableList(\""+ dbList[count] + "\");'>" +dbList[count] + "</a>");
+                if(!isSelectionDone){
+                    isSelectionDone = true;
+                      $('#db-list').find('a').trigger('click');
+                }
              }
            }
 
@@ -83,6 +88,8 @@ function getDBList() {
 }
 
 function openDatabaseAndGetTableList(db) {
+
+   $("#selected-db-info").text("Selected Database : "+db);
 
    $.ajax({url: "getTableList?database="+db, success: function(result){
 
