@@ -95,6 +95,7 @@ function inflateData(result){
            'bFilter': false,
            'bInfo': false,
            "bSort" : false,
+           "scrollX": true,
            "iDisplayLength": 10
        });
    }else{

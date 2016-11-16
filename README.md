@@ -12,6 +12,8 @@ Debugging Android Database was never easier than this.
 
 Let's debug android database.
 
+After opening the application, you will be able to see this in log -> D/DebugDB: Open http://192.168.1.130:8080 in your browser
+
 ### Found this project useful :heart:
 * Support by clicking the :star: button on the upper right of this page. :v:
 
