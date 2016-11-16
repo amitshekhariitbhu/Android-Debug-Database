@@ -40,7 +40,7 @@ You will be able to see like below.
 * Support by clicking the :star: button on the upper right of this page. :v:
 
 ### TODO
-* Edit data directly from your browser
+* Edit shared preferences directly from your browser, at present, it is supported for database through query.
 * And of course many many features and bug fixes
 
 ### Contact - Let's become friend
