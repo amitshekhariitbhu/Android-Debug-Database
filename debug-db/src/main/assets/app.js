@@ -84,8 +84,7 @@ function inflateData(result){
       var columnData = result.rows;
        var tableId = "#db-data";
         if ($.fn.DataTable.isDataTable(tableId) ) {
-          var individualInstallDistributionTable = $(tableId).DataTable();
-          individualInstallDistributionTable.destroy();
+          $(tableId).DataTable().destroy();
         }
        $(tableId).dataTable({
            "data": columnData,
