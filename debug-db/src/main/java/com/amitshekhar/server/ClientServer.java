@@ -48,7 +48,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ClientServer implements Runnable {
 
@@ -157,11 +156,10 @@ public class ClientServer implements Runnable {
             // Output stream that we send the response to
             output = new PrintStream(socket.getOutputStream());
 
-            // Prepare the content to send.
-            if (null == route) {
-                writeServerError(output);
-                return;
+            if (route == null || route.isEmpty()) {
+                route = "index.html";
             }
+
             byte[] bytes;
 
             if (route.startsWith("getAllDataFromTheTable")) {
