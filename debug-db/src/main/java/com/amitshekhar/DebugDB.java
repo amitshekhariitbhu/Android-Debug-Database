@@ -45,12 +45,6 @@ public class DebugDB {
         Log.d(TAG, NetworkUtils.getIpAccess(context, DEFAULT_PORT));
     }
 
-    public static void initialize(Context context, int port) {
-        clientServer = new ClientServer(context, port);
-        clientServer.start();
-        Log.d(TAG, NetworkUtils.getIpAccess(context, port));
-    }
-
     public static void shutDown() {
         if (clientServer != null) {
             clientServer.stop();
