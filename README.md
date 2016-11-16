@@ -35,6 +35,10 @@ Important : Your Android phone and laptop should be connected to the same Wifi.
 ### Found this project useful :heart:
 * Support by clicking the :star: button on the upper right of this page. :v:
 
+### TODO
+* Edit data directly from your browser
+* And of course many many features and bug fixes
+
 ### Contact - Let's become friend
 - [Twitter](https://twitter.com/amitiitbhu)
 - [Github](https://github.com/amitshekhariitbhu)
