@@ -13,6 +13,14 @@
 * Debugging Android Database was never easier than this.
 
 
+### Using Android Debug Database Library in your application
+Add this in your build.gradle
+```groovy
+debugCompile 'com.amitshekhar.android:debug-db:0.1.0'
+```
+
+Use `debugCompile` so that it will only compile in your debug build not in release apk.
+
 When your android application starts, you will be able to see the logs like below :
 
 * D/DebugDB: Open http://192.168.1.130:8080 in your browser
