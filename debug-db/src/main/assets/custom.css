@@ -6,7 +6,10 @@
     padding-top: 20px;
 }
 
-
 .display-none {
     display: none;
+}
+
+.list-group-item {
+    word-break: break-all
 }
