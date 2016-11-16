@@ -7,26 +7,7 @@ function getData(tableName) {
    $.ajax({url: "getAllDataFromTheTable?tableName="+tableName, success: function(result){
 
            result = JSON.parse(result);
-           var columnHeader = result.columns.map(function(columnName) {
-            return {"title": columnName};
-           });
-
-           var columnData = result.rows;
-           var tableId = "#db-data";
-            if ($.fn.DataTable.isDataTable(tableId) ) {
-              var individualInstallDistributionTable = $(tableId).DataTable();
-              individualInstallDistributionTable.destroy();
-            }
-           $(tableId).dataTable({
-               "data": columnData,
-               "columns": columnHeader,
-               'bPaginate': true,
-               'searching': true,
-               'bFilter': false,
-               'bInfo': false,
-               "bSort" : false,
-               "iDisplayLength": 10
-           });
+           inflateData(result);
 
    }});
 
@@ -39,26 +20,7 @@ function queryFunction() {
    $.ajax({url: "query?query="+query, success: function(result){
 
            result = JSON.parse(result);
-           var columnHeader = result.columns.map(function(columnName) {
-            return {"title": columnName};
-           });
-
-           var columnData = result.rows;
-           var tableId = "#db-data";
-            if ($.fn.DataTable.isDataTable(tableId) ) {
-              var individualInstallDistributionTable = $(tableId).DataTable();
-              individualInstallDistributionTable.destroy();
-            }
-           $(tableId).dataTable({
-               "data": columnData,
-               "columns": columnHeader,
-               'bPaginate': true,
-               'searching': true,
-               'bFilter': false,
-               'bInfo': false,
-               "bSort" : false,
-               "iDisplayLength": 10
-           });
+           inflateData(result);
 
    }});
 
@@ -102,4 +64,48 @@ function openDatabaseAndGetTableList(db) {
 
    }});
 
+}
+
+function inflateData(result){
+
+   if(result.isSuccessful){
+      showSuccessInfo();
+      var columnHeader = result.columns.map(function(columnName) {
+           return {"title": columnName};
+       });
+      var columnData = result.rows;
+       var tableId = "#db-data";
+        if ($.fn.DataTable.isDataTable(tableId) ) {
+          var individualInstallDistributionTable = $(tableId).DataTable();
+          individualInstallDistributionTable.destroy();
+        }
+       $(tableId).dataTable({
+           "data": columnData,
+           "columns": columnHeader,
+           'bPaginate': true,
+           'searching': true,
+           'bFilter': false,
+           'bInfo': false,
+           "bSort" : false,
+           "iDisplayLength": 10
+       });
+   }else{
+      showErrorInfo();
+   }
+
+}
+
+function showSuccessInfo(){
+    $("#success-info").show();
+    $("#error-info").hide();
+}
+
+function showErrorInfo(){
+    $("#success-info").hide();
+    $("#error-info").show();
+}
+
+function hideBothInfo(){
+    $("#success-info").hide();
+    $("#error-info").hide();
 }

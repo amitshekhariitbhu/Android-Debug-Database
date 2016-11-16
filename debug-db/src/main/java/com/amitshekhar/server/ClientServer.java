@@ -177,7 +177,19 @@ public class ClientServer implements Runnable {
                 if (route.contains("?query=")) {
                     query = route.substring(route.indexOf("=") + 1, route.length());
                 }
-                Response response = query(java.net.URLDecoder.decode(query, "UTF-8"));
+
+                Response response;
+
+                query = java.net.URLDecoder.decode(query, "UTF-8");
+
+                String first = query.split(" ")[0].toLowerCase();
+
+                if (first.equals("select")) {
+                    response = query(query);
+                } else {
+                    response = exec(query);
+                }
+
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
 
