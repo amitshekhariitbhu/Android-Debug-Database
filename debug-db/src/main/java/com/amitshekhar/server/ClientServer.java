@@ -334,7 +334,7 @@ public class ClientServer implements Runnable {
         Response response = new Response();
         try {
             mDatabase.execSQL(sql);
-        } catch (SQLiteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             response.isSuccessful = false;
             response.error = e.getMessage();

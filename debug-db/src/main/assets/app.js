@@ -51,6 +51,14 @@ function getDBList() {
 
 function openDatabaseAndGetTableList(db) {
 
+    if("APP_SHARED_PREFERENCES" == db) {
+        $('#run-query').removeClass('active');
+        $('#run-query').addClass('disabled');
+    } else {
+        $('#run-query').removeClass('disabled');
+        $('#run-query').addClass('active');
+    }
+
    $("#selected-db-info").text("Selected Database : "+db);
 
    $.ajax({url: "getTableList?database="+db, success: function(result){
