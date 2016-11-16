@@ -31,7 +31,7 @@ Now open the provided link in your browser.
 
 Important : Your Android phone and laptop should be connected to the same Wifi.
 
-You will be able see like below image.
+You will be able to see like below.
 
 <img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdb.png >
 
