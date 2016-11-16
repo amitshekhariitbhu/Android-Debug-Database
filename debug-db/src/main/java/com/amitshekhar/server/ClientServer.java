@@ -25,6 +25,7 @@ package com.amitshekhar.server;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -33,6 +34,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.amitshekhar.model.Response;
+import com.amitshekhar.utils.Constants;
+import com.amitshekhar.utils.PrefUtils;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -48,6 +51,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ClientServer implements Runnable {
 
@@ -78,6 +82,7 @@ public class ClientServer implements Runnable {
     private SQLiteDatabase mDatabase;
     private File mDatabaseDir;
     private Gson mGson;
+    private boolean isDbOpenned;
 
     /**
      * WebServer constructor.
@@ -164,11 +169,20 @@ public class ClientServer implements Runnable {
 
             if (route.startsWith("getAllDataFromTheTable")) {
                 String query = null;
+
                 if (route.contains("?tableName=")) {
                     query = route.substring(route.indexOf("=") + 1, route.length());
                 }
-                String sql = "SELECT * FROM " + query;
-                Response response = query(sql);
+
+                Response response;
+
+                if (isDbOpenned) {
+                    String sql = "SELECT * FROM " + query;
+                    response = query(sql);
+                } else {
+                    response = getAllPrefData(query);
+                }
+
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
 
@@ -202,13 +216,21 @@ public class ClientServer implements Runnable {
                 if (route.contains("?database=")) {
                     database = route.substring(route.indexOf("=") + 1, route.length());
                 }
-                openDatabase(database);
-                Response response = getAllTableName();
+
+                Response response;
+
+                if (Constants.APP_SHARED_PREFERENCES.equals(database)) {
+                    response = getAllPrefTableName();
+                    closeDatabase();
+                } else {
+                    openDatabase(database);
+                    response = getAllTableName();
+                }
+
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
             } else {
                 bytes = loadContent(route);
-
             }
 
 
@@ -300,6 +322,12 @@ public class ClientServer implements Runnable {
 
     private void openDatabase(String database) {
         mDatabase = mContext.openOrCreateDatabase(database, 0, null);
+        isDbOpenned = true;
+    }
+
+    private void closeDatabase() {
+        mDatabase = null;
+        isDbOpenned = false;
     }
 
     private Response exec(String sql) {
@@ -379,6 +407,7 @@ public class ClientServer implements Runnable {
         for (String name : mDatabaseDir.list()) {
             response.rows.add(name);
         }
+        response.rows.add(Constants.APP_SHARED_PREFERENCES);
         response.isSuccessful = true;
         return response;
     }
@@ -397,5 +426,31 @@ public class ClientServer implements Runnable {
         return response;
     }
 
+    public Response getAllPrefTableName() {
+        Response response = new Response();
+        List<String> prefTags = PrefUtils.getSharedPreferenceTags(mContext);
+
+        for (String tag : prefTags) {
+            response.rows.add(tag);
+        }
+        response.isSuccessful = true;
+        return response;
+    }
+
+    public Response getAllPrefData(String tag) {
+        Response response = new Response();
+        response.isSuccessful = true;
+        response.columns.add("Key");
+        response.columns.add("Value");
+        SharedPreferences preferences = mContext.getSharedPreferences(tag, Context.MODE_PRIVATE);
+        Map<String, ?> allEntries = preferences.getAll();
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            List row = new ArrayList();
+            row.add(entry.getKey());
+            row.add(entry.getValue().toString());
+            response.rows.add(row);
+        }
+        return response;
+    }
 
 }

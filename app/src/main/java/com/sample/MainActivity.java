@@ -19,19 +19,36 @@
 
 package com.sample;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.sample.database.ContactDBHelper;
 
 public class MainActivity extends AppCompatActivity {
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        SharedPreferences prefsOne = getSharedPreferences("countPrefOne", Context.MODE_PRIVATE);
+        SharedPreferences prefsTwo = getSharedPreferences("countPrefTwo", Context.MODE_PRIVATE);
+
+        sharedPreferences.edit().putString("testOne", "one").commit();
+        sharedPreferences.edit().putString("testTwo", "two").commit();
+
+        prefsOne.edit().putString("testOneNew", "one").commit();
+
+        prefsTwo.edit().putString("testTwoNew", "two").commit();
 
         ContactDBHelper contactDBHelper = new ContactDBHelper(getApplicationContext());
         if (contactDBHelper.count() == 0) {
