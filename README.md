@@ -23,7 +23,7 @@ Use `debugCompile` so that it will only compile in your debug build not in relea
 
 When your android application starts, you will be able to see the logs like below :
 
-* D/DebugDB: Open http://192.168.1.130:8080 in your browser
+* D/DebugDB: Open http://XXX.XXX.X.XXX:8080 in your browser
 
 Just open the provided link in your browser, you are set to see all data of databases and shared preferences.
 
