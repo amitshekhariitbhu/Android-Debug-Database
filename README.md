@@ -45,6 +45,8 @@ Important : Your Android phone and laptop should be connected to the same Wifi.
 - [Medium](https://medium.com/@amitshekhar)
 - [Facebook](https://www.facebook.com/amit.shekhar.iitbhu)
 
+### Check out [Fast Android Networking Library](https://github.com/amitshekhariitbhu/Fast-Android-Networking) for simple and easy networking in Android.
+
 ### License
 ```
    Copyright (C) 2016 Amit Shekhar
