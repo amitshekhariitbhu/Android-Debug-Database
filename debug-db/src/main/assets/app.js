@@ -98,6 +98,9 @@ function inflateData(result){
            "scrollX": true,
            "iDisplayLength": 10
        });
+       // hack to fix alignment issue when scrollX is enabled
+       $(".dataTables_scrollHeadInner").css({"width":"100%"});
+       $(".table ").css({"width":"100%"});
    }else{
       showErrorInfo();
    }
