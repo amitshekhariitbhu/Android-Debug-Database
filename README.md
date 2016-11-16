@@ -2,7 +2,7 @@
 
 ## Android Debug Database is a powerful library for debugging databases and shared preferences in Android applications.
 
-## Android Debug Database is a very simple tool for viewing databases and shared preferences directly in your browser.
+### Android Debug Database allows you to view databases and shared preferences directly in your browser in a very simple way.
 
 ### How Android Debug Database helps?
 * When it comes to debugging database of an android application, it is very difficult to see what's happening inside database, it's make it too simple.
