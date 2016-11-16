@@ -91,9 +91,9 @@ function inflateData(result){
            "columns": columnHeader,
            'bPaginate': true,
            'searching': true,
-           'bFilter': false,
-           'bInfo': false,
-           "bSort" : false,
+           'bFilter': true,
+           'bInfo': true,
+           "bSort" : true,
            "scrollX": true,
            "iDisplayLength": 10
        });
