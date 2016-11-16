@@ -9,6 +9,7 @@
 * You can see all the data of shared preferences used in your application.
 * You can check the current value of any of the shared preferences.
 * You can run any sql query on the given database to update and delete your data.
+* You can directly edit the data of databases.
 * You can do search in your data.
 * You can sort data.
 * So this is a very simple tool to see your complete data in your browser.
