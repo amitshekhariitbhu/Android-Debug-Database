@@ -8,7 +8,9 @@
 * When it comes to debugging database of an android application, it is very difficult to see what's happening inside database, it's make it too simple.
 * You can see all the data of shared preferences used in your application.
 * You can check the current value of any of the shared preferences.
+* You can run any sql query on the given database to update and delete your data.
 * You can do search in your data.
+* You can sort data.
 * So this is a very simple tool to see your complete data in your browser.
 * Debugging Android Database was never easier than this.
 
@@ -21,13 +23,15 @@ debugCompile 'com.amitshekhar.android:debug-db:0.1.0'
 
 Use `debugCompile` so that it will only compile in your debug build not in release apk.
 
-When your android application starts, you will be able to see the logs like below :
+That’s all, just start the application, you will be able to see logs in the logcat like below :
 
 * D/DebugDB: Open http://XXX.XXX.X.XXX:8080 in your browser
 
-Just open the provided link in your browser, you are set to see all data of databases and shared preferences.
+Now open the provided link in your browser.
 
 Important : Your Android phone and laptop should be connected to the same Wifi.
+
+You will be able see like below image.
 
 <img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdb.png >
 
