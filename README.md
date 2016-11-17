@@ -28,7 +28,7 @@ That’s all, just start the application, you will be able to see logs in the lo
 
 * D/DebugDB: Open http://XXX.XXX.X.XXX:8080 in your browser
 
-* You can always get the address log from your code by calling the method `DebugDB.getAddressLog();` ;
+* You can always get the address log from your code by calling the method `DebugDB.getAddressLog();`
 
 Now open the provided link in your browser.
 
