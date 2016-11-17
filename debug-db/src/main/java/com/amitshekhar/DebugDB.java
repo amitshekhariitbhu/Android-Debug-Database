@@ -34,6 +34,7 @@ public class DebugDB {
     private static final String TAG = DebugDB.class.getSimpleName();
     private static final int DEFAULT_PORT = 8080;
     private static ClientServer clientServer;
+    private static String addressLog = "not available";
 
     private DebugDB() {
         // This class in not publicly instantiable
@@ -42,7 +43,13 @@ public class DebugDB {
     public static void initialize(Context context) {
         clientServer = new ClientServer(context, DEFAULT_PORT);
         clientServer.start();
-        Log.d(TAG, NetworkUtils.getIpAccess(context, DEFAULT_PORT));
+        addressLog = NetworkUtils.getAddressLog(context, DEFAULT_PORT);
+        Log.d(TAG, addressLog);
+    }
+
+    public static String getAddressLog() {
+        Log.d(TAG, addressLog);
+        return addressLog;
     }
 
     public static void shutDown() {
