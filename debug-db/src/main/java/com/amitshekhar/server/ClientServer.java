@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -194,7 +195,11 @@ public class ClientServer implements Runnable {
 
                 Response response;
 
-                query = java.net.URLDecoder.decode(query, "UTF-8");
+                try {
+                    query = java.net.URLDecoder.decode(query, "UTF-8");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 String first = query.split(" ")[0].toLowerCase();
 

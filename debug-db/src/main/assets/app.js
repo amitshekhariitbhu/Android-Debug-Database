@@ -1,5 +1,10 @@
 $( document ).ready(function() {
     getDBList();
+    $("#query").keypress(function(e){
+        if(e.which == 13) {
+            queryFunction();
+        }
+    });
 });
 
 function getData(tableName) {
@@ -17,7 +22,7 @@ function queryFunction() {
 
    var query = $('#query').val();
 
-   $.ajax({url: "query?query="+query, success: function(result){
+   $.ajax({url: "query?query="+escape(query), success: function(result){
 
            result = JSON.parse(result);
            inflateData(result);
