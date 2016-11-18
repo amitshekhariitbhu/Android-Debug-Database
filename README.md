@@ -12,6 +12,8 @@
 * Search in your data.
 * Sort data.
 
+### Check out another awesome library for fast and simple networking in Android.
+* [Fast Android Networking Library](https://github.com/amitshekhariitbhu/Fast-Android-Networking)
 
 ### Using Android Debug Database Library in your application
 Add this to your app's build.gradle
@@ -41,10 +43,7 @@ You will see something like this :
 
 ### TODO
 * Edit shared preferences directly from the browser. At present, it is only possible to edit database values.
-* And of course many more features and bug fixes
-
-### Check out another awesome library for fast and simple networking in Android.
-* [Fast Android Networking Library](https://github.com/amitshekhariitbhu/Fast-Android-Networking)
+* And of course many more features and bug fixes.
 
 ### Contact - Let's become friends
 - [Twitter](https://twitter.com/amitiitbhu)
