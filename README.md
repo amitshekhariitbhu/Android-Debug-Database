@@ -46,13 +46,13 @@ You will be able to see like below.
 * Edit shared preferences directly from your browser, at present, it is supported for database through query.
 * And of course many many features and bug fixes
 
+### Check out [Fast Android Networking Library](https://github.com/amitshekhariitbhu/Fast-Android-Networking) for simple and easy networking in Android.
+
 ### Contact - Let's become friend
 - [Twitter](https://twitter.com/amitiitbhu)
 - [Github](https://github.com/amitshekhariitbhu)
 - [Medium](https://medium.com/@amitshekhar)
 - [Facebook](https://www.facebook.com/amit.shekhar.iitbhu)
-
-### Check out [Fast Android Networking Library](https://github.com/amitshekhariitbhu/Fast-Android-Networking) for simple and easy networking in Android.
 
 ### License
 ```
