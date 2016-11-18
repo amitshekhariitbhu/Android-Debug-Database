@@ -37,7 +37,7 @@ You will see something like this :
 
 
 ### Find this project useful ? :heart:
-* Support it clicking the :star: button on the upper right of this page. :v:
+* Support it by clicking the :star: button on the upper right of this page. :v:
 
 ### TODO
 * Edit shared preferences directly from the browser. At present, it is only possible to edit database values.
