@@ -31,7 +31,7 @@ That’s all, just start the application, you will see in the logcat an entry li
 
 Now open the provided link in your browser.
 
-Important : Your Android phone and laptop should be connected to the same Wifi Network.
+Important : Your Android phone and laptop should be connected to the same Network (Wifi or LAN).
 
 You will see something like this :
 
