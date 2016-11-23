@@ -29,7 +29,6 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -46,7 +45,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -409,8 +407,10 @@ public class ClientServer implements Runnable {
 
     public Response getDBList() {
         Response response = new Response();
-        for (String name : mDatabaseDir.list()) {
-            response.rows.add(name);
+        if (mDatabaseDir != null) {
+            for (String name : mDatabaseDir.list()) {
+                response.rows.add(name);
+            }
         }
         response.rows.add(Constants.APP_SHARED_PREFERENCES);
         response.isSuccessful = true;
