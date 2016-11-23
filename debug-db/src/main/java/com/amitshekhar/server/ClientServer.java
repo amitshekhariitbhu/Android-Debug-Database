@@ -407,7 +407,7 @@ public class ClientServer implements Runnable {
 
     public Response getDBList() {
         Response response = new Response();
-        if (mDatabaseDir != null) {
+        if (mDatabaseDir != null && mDatabaseDir.list() != null) {
             for (String name : mDatabaseDir.list()) {
                 response.rows.add(name);
             }
