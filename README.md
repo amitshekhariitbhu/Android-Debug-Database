@@ -33,6 +33,18 @@ Now open the provided link in your browser.
 
 Important : Your Android phone and laptop should be connected to the same Network (Wifi or LAN).
 
+Note      : If you want use different port other than 8080. 
+            In the app build.gradle file under buildTypes do the following change
+
+```groovy
+debug {
+    resValue("string", "PORT_NUMBER", "8081")
+}
+```
+
+
+
+
 You will see something like this :
 
 <img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdb.png >
