@@ -41,9 +41,19 @@ public class DebugDB {
     }
 
     public static void initialize(Context context) {
-        clientServer = new ClientServer(context, DEFAULT_PORT);
+        int portNumber;
+
+        try {
+            portNumber = Integer.valueOf(context.getString(R.string.PORT_NUMBER));
+        } catch (NumberFormatException ex) {
+            Log.e(TAG, "PORT_NUMBER should be integer", ex);
+            portNumber = DEFAULT_PORT;
+            Log.i(TAG, "Using Default port : " + DEFAULT_PORT);
+        }
+
+        clientServer = new ClientServer(context, portNumber);
         clientServer.start();
-        addressLog = NetworkUtils.getAddressLog(context, DEFAULT_PORT);
+        addressLog = NetworkUtils.getAddressLog(context, portNumber);
         Log.d(TAG, addressLog);
     }
 

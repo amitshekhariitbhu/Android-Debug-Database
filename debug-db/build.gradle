@@ -31,7 +31,9 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        resValue("string", "PORT_NUMBER", "8080")
     }
+
     buildTypes {
         release {
             minifyEnabled false
