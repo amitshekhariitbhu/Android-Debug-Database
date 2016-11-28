@@ -28,7 +28,7 @@ import java.util.List;
 
 public class Response {
 
-    public List rows = new ArrayList();
+    public List<Object> rows = new ArrayList<>();
     public List<String> columns = new ArrayList<>();
     public boolean isSuccessful;
     public String error;
