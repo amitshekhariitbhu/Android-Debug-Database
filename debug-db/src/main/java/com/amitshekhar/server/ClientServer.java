@@ -26,7 +26,6 @@ package com.amitshekhar.server;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.LabeledIntent;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -374,17 +373,17 @@ public class ClientServer implements Runnable {
 
             if (cursor.getCount() > 0) {
                 do {
-                    List row = new ArrayList();
+                    List<Object> row = new ArrayList<>();
                     for (int i = 0; i < cursor.getColumnCount(); i++) {
                         switch (cursor.getType(i)) {
                             case Cursor.FIELD_TYPE_BLOB:
                                 row.add(cursor.getBlob(i));
                                 break;
                             case Cursor.FIELD_TYPE_FLOAT:
-                                row.add(Float.valueOf(cursor.getFloat(i)));
+                                row.add(cursor.getFloat(i));
                                 break;
                             case Cursor.FIELD_TYPE_INTEGER:
-                                row.add(Integer.valueOf(cursor.getInt(i)));
+                                row.add(cursor.getInt(i));
                                 break;
                             case Cursor.FIELD_TYPE_STRING:
                                 row.add(cursor.getString(i));
@@ -409,9 +408,9 @@ public class ClientServer implements Runnable {
 
     public Response getDBList() {
         Response response = new Response();
-        if (mDatabaseDir != null) {
+        if (mDatabaseDir != null && mDatabaseDir.list() != null) {
             String[] list = mDatabaseDir.list();
-            if(list != null) {
+            if (list != null) {
                 Collections.addAll(response.rows, list);
             }
         }
