@@ -374,17 +374,17 @@ public class ClientServer implements Runnable {
 
             if (cursor.getCount() > 0) {
                 do {
-                    List<Object> row = new ArrayList<>();
+                    List row = new ArrayList();
                     for (int i = 0; i < cursor.getColumnCount(); i++) {
                         switch (cursor.getType(i)) {
                             case Cursor.FIELD_TYPE_BLOB:
                                 row.add(cursor.getBlob(i));
                                 break;
                             case Cursor.FIELD_TYPE_FLOAT:
-                                row.add(cursor.getFloat(i));
+                                row.add(Float.valueOf(cursor.getFloat(i)));
                                 break;
                             case Cursor.FIELD_TYPE_INTEGER:
-                                row.add(cursor.getInt(i));
+                                row.add(Integer.valueOf(cursor.getInt(i)));
                                 break;
                             case Cursor.FIELD_TYPE_STRING:
                                 row.add(cursor.getString(i));
