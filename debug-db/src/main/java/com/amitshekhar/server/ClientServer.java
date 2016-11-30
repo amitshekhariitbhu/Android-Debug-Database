@@ -40,10 +40,12 @@ import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -83,6 +85,11 @@ public class ClientServer implements Runnable {
     private File mDatabaseDir;
     private Gson mGson;
     private boolean isDbOpenned;
+
+    /**
+     * Hold the selected database name
+     */
+    private String mSelectedDatabase = null;
 
     /**
      * WebServer constructor.
@@ -226,13 +233,17 @@ public class ClientServer implements Runnable {
                 if (Constants.APP_SHARED_PREFERENCES.equals(database)) {
                     response = getAllPrefTableName();
                     closeDatabase();
+                    mSelectedDatabase = null;
                 } else {
                     openDatabase(database);
                     response = getAllTableName();
+                    mSelectedDatabase = database;
                 }
 
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
+            } else if (route.startsWith("downloadDb")) {
+                bytes = getDatabaseFile();
             } else {
                 bytes = loadContent(route);
             }
@@ -246,7 +257,12 @@ public class ClientServer implements Runnable {
             // Send out the content.
             output.println("HTTP/1.0 200 OK");
             output.println("Content-Type: " + detectMimeType(route));
-            output.println("Content-Length: " + bytes.length);
+
+            if (route.startsWith("downloadDb")) {
+                output.println("Content-Disposition: attachment; filename=" + mSelectedDatabase);
+            } else {
+                output.println("Content-Length: " + bytes.length);
+            }
             output.println();
             output.write(bytes);
             output.flush();
@@ -316,6 +332,32 @@ public class ClientServer implements Runnable {
         } else {
             return "application/octet-stream";
         }
+    }
+
+    private byte[] getDatabaseFile() {
+        if (TextUtils.isEmpty(mSelectedDatabase)) {
+            return null;
+        }
+
+        File file = new File(mDatabaseDir, mSelectedDatabase);
+
+        byte[] byteArray = null;
+        try {
+            InputStream inputStream = new FileInputStream(file);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] b = new byte[(int) file.length()];
+            int bytesRead = 0;
+
+            while ((bytesRead = inputStream.read(b)) != -1) {
+                bos.write(b, 0, bytesRead);
+            }
+
+            byteArray = bos.toByteArray();
+        } catch (IOException e) {
+            Log.e(TAG, "getDatabaseFile: ", e);
+        }
+
+        return byteArray;
     }
 
     private void getDatabaseDir() {
