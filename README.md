@@ -1,5 +1,6 @@
 # Android Debug Database
 
+[![Android Weekly](https://img.shields.io/badge/Android%20Weekly-%23233-blue.svg)](http://androidweekly.net/issues/issue-233)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Android%20Debug%20Database-blue.svg?style=flat)](http://android-arsenal.com/details/1/4667)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/amitshekhariitbhu/Fast-Android-Networking/blob/master/LICENSE)
 
