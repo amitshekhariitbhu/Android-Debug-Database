@@ -425,7 +425,7 @@ public class ClientServer implements Runnable {
                                 row.add(cursor.getFloat(i));
                                 break;
                             case Cursor.FIELD_TYPE_INTEGER:
-                                row.add(cursor.getInt(i));
+                                row.add(cursor.getLong(i));
                                 break;
                             case Cursor.FIELD_TYPE_STRING:
                                 row.add(cursor.getString(i));

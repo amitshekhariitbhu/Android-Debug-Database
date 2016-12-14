@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by amitshekhar on 16/11/16.
@@ -41,6 +42,7 @@ public class ContactDBHelper extends SQLiteOpenHelper {
     public static final String CONTACTS_COLUMN_STREET = "street";
     public static final String CONTACTS_COLUMN_CITY = "place";
     public static final String CONTACTS_COLUMN_PHONE = "phone";
+    public static final String CONTACTS_CREATED_AT = "createdAt";
 
     public ContactDBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -51,7 +53,7 @@ public class ContactDBHelper extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL(
                 "create table contacts " +
-                        "(id integer primary key, name text,phone text,email text, street text,place text)"
+                        "(id integer primary key, name text,phone text,email text, street text,place text, createdAt integer)"
         );
     }
 
@@ -70,6 +72,7 @@ public class ContactDBHelper extends SQLiteOpenHelper {
         contentValues.put("email", email);
         contentValues.put("street", street);
         contentValues.put("place", place);
+        contentValues.put(CONTACTS_CREATED_AT, Calendar.getInstance().getTimeInMillis());
         db.insert("contacts", null, contentValues);
         return true;
     }
