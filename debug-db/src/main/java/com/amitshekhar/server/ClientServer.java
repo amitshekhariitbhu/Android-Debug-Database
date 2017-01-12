@@ -92,7 +92,18 @@ public class ClientServer implements Runnable {
         mAssets = context.getResources().getAssets();
         mContext = context;
         mGson = new Gson();
-        getDatabaseDir();
+        getDatabaseDir(null);
+    }
+
+    /**
+     * WebServer constructor.
+     */
+    public ClientServer(Context context, int port, String databasePath) {
+        mPort = port;
+        mAssets = context.getResources().getAssets();
+        mContext = context;
+        mGson = new Gson();
+        getDatabaseDir(databasePath);
     }
 
     /**
@@ -318,10 +329,24 @@ public class ClientServer implements Runnable {
         }
     }
 
-    private void getDatabaseDir() {
+    private void getDatabaseDir(String path) {
+        if (path != null) {
+            setDatabaseDir(path);
+            return;
+        }
+
         File root = mContext.getFilesDir().getParentFile();
         File dbRoot = new File(root, "/databases");
         mDatabaseDir = dbRoot;
+    }
+
+    /**
+     * Sets the database directory to provided path, in case the database files are stored
+     * at some place else than the default place used in getDatabaseDir().
+     * @param path The absolute path to the parent directory of database files.
+     */
+    private void setDatabaseDir(String path) {
+        mDatabaseDir = new File(path);
     }
 
     private void openDatabase(String database) {
