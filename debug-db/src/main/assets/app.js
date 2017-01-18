@@ -7,6 +7,8 @@ $( document ).ready(function() {
     });
 });
 
+var isDatabaseSelected = true;
+
 function getData(tableName) {
 
    $.ajax({url: "getAllDataFromTheTable?tableName="+tableName, success: function(result){
@@ -29,6 +31,13 @@ function queryFunction() {
 
    }});
 
+}
+
+function downloadDb() {
+    if (isDatabaseSelected) {
+        var url = window.location.href;
+        window.open(url+"downloadDb", "_blank")
+    }
 }
 
 
@@ -59,9 +68,15 @@ function openDatabaseAndGetTableList(db) {
     if("APP_SHARED_PREFERENCES" == db) {
         $('#run-query').removeClass('active');
         $('#run-query').addClass('disabled');
+        $('#export-db').removeClass('active');
+        $('#export-db').addClass('disabled');
+        isDatabaseSelected = false;
     } else {
         $('#run-query').removeClass('disabled');
         $('#run-query').addClass('active');
+        $('#export-db').removeClass('disabled');
+        $('#export-db').addClass('active');
+        isDatabaseSelected = true;
     }
 
    $("#selected-db-info").text("Selected Database : "+db);
