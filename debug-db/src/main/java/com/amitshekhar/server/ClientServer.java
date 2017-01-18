@@ -497,7 +497,7 @@ public class ClientServer implements Runnable {
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             List<String> row = new ArrayList<>();
             row.add(entry.getKey());
-            row.add(entry.getValue().toString());
+            row.add(entry.getValue() != null ? entry.getValue().toString() : "");
             response.rows.add(row);
         }
         return response;
