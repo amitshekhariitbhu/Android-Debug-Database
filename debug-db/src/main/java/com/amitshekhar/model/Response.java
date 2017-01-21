@@ -32,6 +32,7 @@ public class Response {
     public List<String> columns = new ArrayList<>();
     public boolean isSuccessful;
     public String error;
+    public int dbVersion;
 
     public Response() {
 

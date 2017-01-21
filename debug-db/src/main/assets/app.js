@@ -87,6 +87,10 @@ function openDatabaseAndGetTableList(db) {
 
            result = JSON.parse(result);
            var tableList = result.rows;
+           var dbVersion = result.dbVersion;
+           if("APP_SHARED_PREFERENCES" != db) {
+              $("#selected-db-info").text("Export Selected Database : "+db +" Version : "+dbVersion);
+           }
            $('#table-list').empty()
            for(var count = 0; count < tableList.length; count++){
              $("#table-list").append("<a href='#' class='list-group-item' onClick='getData(\""+ tableList[count] + "\");'>" +tableList[count] + "</a>");

@@ -465,7 +465,6 @@ public class ClientServer implements Runnable {
     public Response getAllTableName() {
         Response response = new Response();
         Cursor c = mDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 response.rows.add(c.getString(0));
@@ -474,6 +473,11 @@ public class ClientServer implements Runnable {
         }
         c.close();
         response.isSuccessful = true;
+        try {
+            response.dbVersion = mDatabase.getVersion();
+        } catch (Exception ignore) {
+
+        }
         return response;
     }
 
