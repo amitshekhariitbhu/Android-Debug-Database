@@ -45,7 +45,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -120,7 +119,7 @@ public class ClientServer implements Runnable {
                 mServerSocket.close();
                 mServerSocket = null;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, "Error closing the server socket.", e);
         }
     }
@@ -138,6 +137,8 @@ public class ClientServer implements Runnable {
             // The server was stopped; ignore.
         } catch (IOException e) {
             Log.e(TAG, "Web server error.", e);
+        } catch (Exception ignore) {
+
         }
     }
 

@@ -69,18 +69,18 @@ function openDatabaseAndGetTableList(db) {
     if("APP_SHARED_PREFERENCES" == db) {
         $('#run-query').removeClass('active');
         $('#run-query').addClass('disabled');
-        $('#export-db').removeClass('active');
-        $('#export-db').addClass('disabled');
+        $('#selected-db-info').removeClass('active');
+        $('#selected-db-info').addClass('disabled');
         isDatabaseSelected = false;
     } else {
         $('#run-query').removeClass('disabled');
         $('#run-query').addClass('active');
-        $('#export-db').removeClass('disabled');
-        $('#export-db').addClass('active');
+        $('#selected-db-info').removeClass('disabled');
+        $('#selected-db-info').addClass('active');
         isDatabaseSelected = true;
     }
 
-   $("#selected-db-info").text("Selected Database : "+db);
+   $("#selected-db-info").text("Export Selected Database : "+db);
 
    $.ajax({url: "getTableList?database="+db, success: function(result){
 
