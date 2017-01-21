@@ -35,8 +35,9 @@ function queryFunction() {
 
 function downloadDb() {
     if (isDatabaseSelected) {
-        var url = window.location.href;
-        window.open(url+"downloadDb", "_blank")
+        $.ajax({url: "downloadDb", success: function(){
+             window.location = 'downloadDb';
+        }});
     }
 }
 
