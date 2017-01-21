@@ -72,15 +72,16 @@ function openDatabaseAndGetTableList(db) {
         $('#selected-db-info').removeClass('active');
         $('#selected-db-info').addClass('disabled');
         isDatabaseSelected = false;
+        $("#selected-db-info").text("SharedPreferences");
     } else {
         $('#run-query').removeClass('disabled');
         $('#run-query').addClass('active');
         $('#selected-db-info').removeClass('disabled');
         $('#selected-db-info').addClass('active');
         isDatabaseSelected = true;
+        $("#selected-db-info").text("Export Selected Database : "+db);
     }
 
-   $("#selected-db-info").text("Export Selected Database : "+db);
 
    $.ajax({url: "getTableList?database="+db, success: function(result){
 
