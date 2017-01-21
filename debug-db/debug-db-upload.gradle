@@ -24,7 +24,7 @@ def siteUrl = 'https://github.com/amitshekhariitbhu/Android-Debug-Database'
 def gitUrl = 'https://github.com/amitshekhariitbhu/Android-Debug-Database.git'
 
 group = "com.amitshekhar.android"
-version = '0.4.0'
+version = '0.5.0'
 
 install {
     repositories.mavenInstaller {
