@@ -28,6 +28,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sample.database.ContactDBHelper;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("CommitPrefEdits")
@@ -38,13 +41,22 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        Set<String> stringSet = new HashSet<>();
+        stringSet.add("SetOne");
+        stringSet.add("SetTwo");
+        stringSet.add("SetThree");
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         SharedPreferences prefsOne = getSharedPreferences("countPrefOne", Context.MODE_PRIVATE);
         SharedPreferences prefsTwo = getSharedPreferences("countPrefTwo", Context.MODE_PRIVATE);
 
         sharedPreferences.edit().putString("testOne", "one").commit();
-        sharedPreferences.edit().putString("testTwo", "two").commit();
+        sharedPreferences.edit().putInt("testTwo", 2).commit();
+        sharedPreferences.edit().putLong("testThree", 100000L).commit();
+        sharedPreferences.edit().putFloat("testFour", 3.01F).commit();
+        sharedPreferences.edit().putBoolean("testFive", true).commit();
+        sharedPreferences.edit().putStringSet("testSix", stringSet).commit();
 
         prefsOne.edit().putString("testOneNew", "one").commit();
 

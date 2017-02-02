@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ClientServer implements Runnable {
 
@@ -497,12 +498,31 @@ public class ClientServer implements Runnable {
         response.isSuccessful = true;
         response.columns.add("Key");
         response.columns.add("Value");
+        response.columns.add("dataType");
         SharedPreferences preferences = mContext.getSharedPreferences(tag, Context.MODE_PRIVATE);
         Map<String, ?> allEntries = preferences.getAll();
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             List<String> row = new ArrayList<>();
             row.add(entry.getKey());
-            row.add(entry.getValue() != null ? entry.getValue().toString() : "");
+            if (entry.getValue() != null) {
+                row.add(entry.getValue().toString());
+                if (entry.getValue() instanceof String) {
+                    row.add("string");
+                } else if (entry.getValue() instanceof Integer) {
+                    row.add("int");
+                } else if (entry.getValue() instanceof Long) {
+                    row.add("long");
+                } else if (entry.getValue() instanceof Float) {
+                    row.add("float");
+                } else if (entry.getValue() instanceof Boolean) {
+                    row.add("boolean");
+                } else if (entry.getValue() instanceof Set) {
+                    row.add("stringSet");
+                }
+            } else {
+                row.add("");
+                row.add("unknown");
+            }
             response.rows.add(row);
         }
         return response;
