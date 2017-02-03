@@ -23,11 +23,8 @@ package com.amitshekhar.model;
  * Created by amitshekhar on 04/02/17.
  */
 
-public class RowData {
+public class UpdateRowResponse {
 
-    public String title;
-    public boolean isPrimary;
-    public String dataType;
-    public String value;
+    public boolean isSuccessful;
 
 }

@@ -19,22 +19,15 @@
 
 package com.amitshekhar.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by amitshekhar on 04/02/17.
  */
 
-public class TableData {
+public class RowDataRequest {
 
-    public List<TableInfo> tableInfos = new ArrayList<>();
-    public boolean isSuccessful;
-    public List<Object> rows = new ArrayList<>();
+    public String title;
+    public boolean isPrimary;
+    public String dataType;
+    public String value;
 
-    public static class TableInfo {
-        public String dataType;
-        public String title;
-        public boolean isPrimary;
-    }
 }
