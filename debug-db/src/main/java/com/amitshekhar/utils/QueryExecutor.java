@@ -135,22 +135,19 @@ public class QueryExecutor {
 
                         final String columnName = cursor.getColumnName(i);
 
-                        if ("pk".equals(columnName)) {
+                        switch (columnName) {
+                            case Constants.PK:
+                                tableInfo.isPrimary = cursor.getInt(i) == 1;
+                                break;
+                            case Constants.TYPE:
+                                tableInfo.dataType = cursor.getString(i);
+                                break;
+                            case Constants.NAME:
+                                tableInfo.title = cursor.getString(i);
+                                break;
+                            default:
+                        }
 
-                        } else if ("type".equals(columnName))
-
-                            switch (columnName) {
-                                case Constants.PK:
-                                    tableInfo.isPrimary = cursor.getInt(i) == 1;
-                                    break;
-                                case Constants.TYPE:
-                                    tableInfo.dataType = cursor.getString(i);
-                                    break;
-                                case Constants.NAME:
-                                    tableInfo.title = cursor.getString(i);
-                                    break;
-                                default:
-                            }
                     }
                     tableInfoList.add(tableInfo);
 
