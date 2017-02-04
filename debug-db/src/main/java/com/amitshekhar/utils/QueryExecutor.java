@@ -56,7 +56,7 @@ public class QueryExecutor {
         }
 
         if (tableName != null) {
-            final String pragmaQuery = "PRAGMA table_info(+" + tableName + ")";
+            final String pragmaQuery = "PRAGMA table_info(" + tableName + ")";
             tableData.tableInfos = getTableInfo(db, pragmaQuery);
         }
 
@@ -75,8 +75,9 @@ public class QueryExecutor {
         if (cursor != null) {
             cursor.moveToFirst();
             tableData.isSuccessful = true;
-
+            tableData.rows = new ArrayList<>();
             if (cursor.getCount() > 0) {
+
                 do {
                     List<Object> row = new ArrayList<>();
                     for (int i = 0; i < cursor.getColumnCount(); i++) {
