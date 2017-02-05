@@ -34,8 +34,12 @@ public class TableDataResponse {
     public boolean isEditable;
 
     public static class TableInfo {
-        public String dataType;
         public String title;
         public boolean isPrimary;
     }
+    public static class ColumnData {
+        public String dataType;
+        public Object value;
+    }
+
 }

@@ -33,8 +33,12 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.amitshekhar.model.Response;
+import com.amitshekhar.model.TableDataResponse;
+import com.amitshekhar.model.TableDataResponse.ColumnData;
 import com.amitshekhar.utils.Constants;
+import com.amitshekhar.utils.DataType;
 import com.amitshekhar.utils.PrefUtils;
+import com.amitshekhar.utils.QueryExecutor;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -49,6 +53,7 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -177,19 +182,19 @@ public class ClientServer implements Runnable {
             byte[] bytes;
 
             if (route.startsWith("getAllDataFromTheTable")) {
-                String query = null;
+                String tableName = null;
 
                 if (route.contains("?tableName=")) {
-                    query = route.substring(route.indexOf("=") + 1, route.length());
+                    tableName = route.substring(route.indexOf("=") + 1, route.length());
                 }
 
-                Response response;
+                TableDataResponse response = null;
 
                 if (isDbOpenned) {
-                    String sql = "SELECT * FROM " + query;
-                    response = query(sql);
+                    String sql = "SELECT * FROM " + tableName;
+                    response = QueryExecutor.getTableData(mDatabase,sql,tableName);
                 } else {
-                    response = getAllPrefData(query);
+                    response = getAllPrefData(tableName);
                 }
 
                 String data = mGson.toJson(response);
@@ -200,9 +205,6 @@ public class ClientServer implements Runnable {
                 if (route.contains("?query=")) {
                     query = route.substring(route.indexOf("=") + 1, route.length());
                 }
-
-                Response response;
-
                 try {
                     query = java.net.URLDecoder.decode(query, "UTF-8");
                 } catch (Exception e) {
@@ -211,13 +213,15 @@ public class ClientServer implements Runnable {
 
                 String first = query.split(" ")[0].toLowerCase();
 
+                String data = "";
                 if (first.equals("select")) {
-                    response = query(query);
+                    TableDataResponse response = query(query);
+                    data = mGson.toJson(response);
                 } else {
-                    response = exec(query);
+                    Response response = exec(query);
+                    data = mGson.toJson(response);
                 }
 
-                String data = mGson.toJson(response);
                 bytes = data.getBytes();
 
             } else if (route.startsWith("getDbList")) {
@@ -392,49 +396,60 @@ public class ClientServer implements Runnable {
         return response;
     }
 
-    private Response query(String sql) {
+    private TableDataResponse query(String sql) {
         Cursor cursor;
         try {
             cursor = mDatabase.rawQuery(sql, null);
         } catch (Exception e) {
             e.printStackTrace();
-            Response msg = new Response();
-            msg.isSuccessful = false;
-            msg.error = e.getMessage();
-            return msg;
+            TableDataResponse errorResponse = new TableDataResponse();
+            errorResponse.isSuccessful = false;
+            errorResponse.errorMessage = e.getMessage();
+            return errorResponse;
         }
 
         if (cursor != null) {
             cursor.moveToFirst();
-            Response response = new Response();
+            TableDataResponse response = new TableDataResponse();
             response.isSuccessful = true;
-            List<String> columns = new ArrayList<>();
-            for (int i = 0; i < cursor.getColumnCount(); i++) {
-                String name = cursor.getColumnName(i);
-                columns.add(name);
-            }
-            response.columns = columns;
 
+            response.tableInfos = new ArrayList<>();
+            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                TableDataResponse.TableInfo tableInfo = new TableDataResponse.TableInfo();
+                tableInfo.title = cursor.getColumnName(i);
+                tableInfo.isPrimary = false;
+
+                response.tableInfos.add(tableInfo);
+            }
+
+            response.rows = new ArrayList<>();
             if (cursor.getCount() > 0) {
                 do {
-                    List<Object> row = new ArrayList<>();
+                    List<ColumnData> row = new ArrayList<>();
                     for (int i = 0; i < cursor.getColumnCount(); i++) {
+                        ColumnData columnData = new ColumnData();
                         switch (cursor.getType(i)) {
                             case Cursor.FIELD_TYPE_BLOB:
-                                row.add(cursor.getBlob(i));
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getBlob(i);
                                 break;
                             case Cursor.FIELD_TYPE_FLOAT:
-                                row.add(cursor.getFloat(i));
+                                columnData.dataType = DataType.REAL;
+                                columnData.value = cursor.getFloat(i);
                                 break;
                             case Cursor.FIELD_TYPE_INTEGER:
-                                row.add(cursor.getLong(i));
+                                columnData.dataType = DataType.INTEGER;
+                                columnData.value = cursor.getLong(i);
                                 break;
                             case Cursor.FIELD_TYPE_STRING:
-                                row.add(cursor.getString(i));
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getString(i);
                                 break;
                             default:
-                                row.add("");
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getString(i);
                         }
+                        row.add(columnData);
                     }
                     response.rows.add(row);
 
@@ -443,10 +458,10 @@ public class ClientServer implements Runnable {
             cursor.close();
             return response;
         } else {
-            Response response = new Response();
-            response.isSuccessful = false;
-            response.error = "Cursor is null";
-            return response;
+            TableDataResponse errorResponse = new TableDataResponse();
+            errorResponse.isSuccessful = false;
+            errorResponse.errorMessage = "Cursor is null";
+            return errorResponse;
         }
     }
 
@@ -493,36 +508,54 @@ public class ClientServer implements Runnable {
         return response;
     }
 
-    public Response getAllPrefData(String tag) {
-        Response response = new Response();
+    public TableDataResponse getAllPrefData(String tag) {
+        TableDataResponse response = new TableDataResponse();
         response.isSuccessful = true;
-        response.columns.add("Key");
-        response.columns.add("Value");
-        response.columns.add("dataType");
+
+        TableDataResponse.TableInfo keyInfo = new TableDataResponse.TableInfo();
+        keyInfo.isPrimary = true;
+        keyInfo.title = "Key";
+
+        TableDataResponse.TableInfo valueInfo = new TableDataResponse.TableInfo();
+        valueInfo.isPrimary = false;
+        valueInfo.title = "Value";
+
+        response.tableInfos = new ArrayList<>();
+        response.tableInfos.add(keyInfo);
+        response.tableInfos.add(valueInfo);
+
+        response.rows = new ArrayList<>();
+
         SharedPreferences preferences = mContext.getSharedPreferences(tag, Context.MODE_PRIVATE);
         Map<String, ?> allEntries = preferences.getAll();
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            List<String> row = new ArrayList<>();
-            row.add(entry.getKey());
+            List<ColumnData> row = new ArrayList<>();
+            ColumnData keyColumnData = new ColumnData();
+            keyColumnData.dataType = DataType.TEXT;
+            keyColumnData.value = entry.getKey();
+
+            row.add(keyColumnData);
+
+            ColumnData valueColumnData = new ColumnData();
+            valueColumnData.value = entry.getValue().toString();
             if (entry.getValue() != null) {
-                row.add(entry.getValue().toString());
                 if (entry.getValue() instanceof String) {
-                    row.add("string");
+                    valueColumnData.dataType = DataType.TEXT;
                 } else if (entry.getValue() instanceof Integer) {
-                    row.add("int");
+                    valueColumnData.dataType = DataType.INTEGER;
                 } else if (entry.getValue() instanceof Long) {
-                    row.add("long");
+                    valueColumnData.dataType = DataType.INTEGER;
                 } else if (entry.getValue() instanceof Float) {
-                    row.add("float");
+                    valueColumnData.dataType = DataType.REAL;
                 } else if (entry.getValue() instanceof Boolean) {
-                    row.add("boolean");
+                    valueColumnData.dataType = DataType.BOOLEAN;
                 } else if (entry.getValue() instanceof Set) {
-                    row.add("stringSet");
+                    valueColumnData.dataType = DataType.TEXT;
                 }
             } else {
-                row.add("");
-                row.add("unknown");
+                valueColumnData.dataType = DataType.TEXT;
             }
+            row.add(valueColumnData);
             response.rows.add(row);
         }
         return response;

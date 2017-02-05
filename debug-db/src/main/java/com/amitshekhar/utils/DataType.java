@@ -29,6 +29,7 @@ public class DataType {
         // This class in not publicly instantiable
     }
 
+    public static final String BOOLEAN = "boolean";
     public static final String INTEGER = "integer";
     public static final String REAL = "real";
     public static final String TEXT = "text";
