@@ -5,6 +5,23 @@ $( document ).ready(function() {
             queryFunction();
         }
     });
+    //update currently selected database
+    $( document ).on( "click", "#db-list .list-group-item", function() {
+        $("#db-list .list-group-item").each(function() {
+            $(this).removeClass('selected');
+        });
+        $(this).addClass('selected');
+    });
+
+    //update currently table database
+    $( document ).on( "click", "#table-list .list-group-item", function() {
+        $("#table-list .list-group-item").each(function() {
+            $(this).removeClass('selected');
+        });
+        $(this).addClass('selected');
+    });
+
+
 });
 
 var isDatabaseSelected = true;
@@ -93,7 +110,8 @@ function openDatabaseAndGetTableList(db) {
            }
            $('#table-list').empty()
            for(var count = 0; count < tableList.length; count++){
-             $("#table-list").append("<a href='#' class='list-group-item' onClick='getData(\""+ tableList[count] + "\");'>" +tableList[count] + "</a>");
+             var tableName = tableList[count];
+             $("#table-list").append("<a href='#' data-db-name='"+db+"' data-table-name='"+tableName+"' class='list-group-item' onClick='getData(\""+ tableName + "\");'>" +tableName + "</a>");
            }
 
    }});

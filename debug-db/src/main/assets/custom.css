@@ -13,3 +13,9 @@
 .list-group-item {
     word-break: break-all;
 }
+
+.list-group-item.selected {
+    background: #dff0d8 !important;
+    color: #3c763d !important;
+    font-weight: bold;
+}
