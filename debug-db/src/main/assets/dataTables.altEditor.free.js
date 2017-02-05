@@ -345,7 +345,7 @@
                     var alertHeading = "Success";
                     if (!isUpdated) {
                         alertAdditionClasses = "alert-danger";
-                        alertMessage = "Error occured while updating this record";
+                        alertMessage = "Error occurred while updating this record";
                         alertHeading = "Error";
                     }
 
