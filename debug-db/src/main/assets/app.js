@@ -122,9 +122,19 @@ function inflateData(result){
 
    if(result.isSuccessful){
       showSuccessInfo();
-      var columnHeader = result.columns.map(function(columnName) {
-           return {"title": columnName};
-       });
+      var columnHeader = result.tableInfos;
+
+      // set function to return cell data for different usages like set, display, filter, search etc..
+      for(var i = 0; i < columnHeader.length; i++) {
+        columnHeader[i]['targets'] = i;
+        columnHeader[i]['data'] = function(row, type, val, meta) {
+            var dataType = row[meta.col].dataType;
+            if (type == "sort" && dataType == "boolean") {
+                return row[meta.col].value ? 1 : 0;
+            }
+            return row[meta.col].value;
+        }
+      }
       var columnData = result.rows;
        var tableId = "#db-data";
         if ($.fn.DataTable.isDataTable(tableId) ) {

@@ -27,6 +27,7 @@ import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.TableDataResponse.TableInfo;
 import com.amitshekhar.model.UpdateRowResponse;
+import com.amitshekhar.model.TableDataResponse.ColumnData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -79,24 +80,31 @@ public class QueryExecutor {
             if (cursor.getCount() > 0) {
 
                 do {
-                    List<Object> row = new ArrayList<>();
+                    List<ColumnData> row = new ArrayList<>();
                     for (int i = 0; i < cursor.getColumnCount(); i++) {
+                        ColumnData columnData = new ColumnData();
                         switch (cursor.getType(i)) {
                             case Cursor.FIELD_TYPE_BLOB:
-                                row.add(cursor.getBlob(i));
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getBlob(i);
                                 break;
                             case Cursor.FIELD_TYPE_FLOAT:
-                                row.add(cursor.getFloat(i));
+                                columnData.dataType = DataType.REAL;
+                                columnData.value = cursor.getFloat(i);
                                 break;
                             case Cursor.FIELD_TYPE_INTEGER:
-                                row.add(cursor.getLong(i));
+                                columnData.dataType = DataType.INTEGER;
+                                columnData.value = cursor.getLong(i);
                                 break;
                             case Cursor.FIELD_TYPE_STRING:
-                                row.add(cursor.getString(i));
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getString(i);
                                 break;
                             default:
-                                row.add("");
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getString(i);
                         }
+                        row.add(columnData);
                     }
                     tableData.rows.add(row);
 
@@ -139,9 +147,6 @@ public class QueryExecutor {
                         switch (columnName) {
                             case Constants.PK:
                                 tableInfo.isPrimary = cursor.getInt(i) == 1;
-                                break;
-                            case Constants.TYPE:
-                                tableInfo.dataType = cursor.getString(i);
                                 break;
                             case Constants.NAME:
                                 tableInfo.title = cursor.getString(i);
