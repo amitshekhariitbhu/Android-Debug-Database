@@ -29,12 +29,14 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.TableDataResponse.ColumnData;
+import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DataType;
 import com.amitshekhar.utils.PrefUtils;
@@ -250,6 +252,15 @@ public class ClientServer implements Runnable {
                 bytes = data.getBytes();
             } else if (route.startsWith("downloadDb")) {
                 bytes = getDatabaseFile();
+            } else if (route.startsWith("updateTableData")) {
+
+                Uri uri = Uri.parse(URLDecoder.decode(route, "UTF-8"));
+                String tableName = uri.getQueryParameter("tableName");
+                String updatedData = uri.getQueryParameter("updatedData");
+
+                UpdateRowResponse response = QueryExecutor.updateRow(mDatabase, tableName, updatedData);
+                String data = mGson.toJson(response);
+                bytes = data.getBytes();
             } else {
                 bytes = loadContent(route);
             }

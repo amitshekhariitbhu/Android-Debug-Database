@@ -146,14 +146,38 @@ function inflateData(result){
 
        $(tableId).dataTable({
            "data": columnData,
-           "columns": columnHeader,
+           "columnDefs": columnHeader,
            'bPaginate': true,
            'searching': true,
            'bFilter': true,
            'bInfo': true,
            "bSort" : true,
            "scrollX": true,
-           "iDisplayLength": 10
+           "iDisplayLength": 10,
+           "dom": "Bfrtip",
+            select: 'single',
+            responsive: true,
+            altEditor: true,     // Enable altEditor
+            buttons: [
+                {
+                    extend: 'selected', // Bind to Selected row
+                    text: 'Edit',
+                    name: 'edit'        // do not change name
+                }
+            ]
+       })
+
+       //attach row-updated listener
+       $(tableId).on('update-row.dt', function (e, updatedRowData, callback) {
+            var updatedRowDataArray = JSON.parse(updatedRowData);
+            //add value for each column
+            var data = columnHeader;
+            for(var i = 0; i < data.length; i++) {
+                data[i].value = updatedRowDataArray[i].value;
+                data[i].dataType = updatedRowDataArray[i].dataType;
+            }
+            //send update table data request to server
+            updateTableData(data, callback);
        });
        // hack to fix alignment issue when scrollX is enabled
        $(".dataTables_scrollHeadInner").css({"width":"100%"});
@@ -162,6 +186,41 @@ function inflateData(result){
       showErrorInfo();
    }
 
+}
+
+//send update database request to server
+function updateTableData(updatedData, callback) {
+    //get currently selected element
+    var selectedTableElement = $("#table-list .list-group-item.selected");
+
+    var filteredUpdatedData = updatedData.map(function(columnData){
+        return {
+            title: columnData.title,
+            isPrimary: columnData.isPrimary,
+            value: columnData.value,
+            dataType: columnData.dataType
+        }
+    });
+    //build request parameters
+    var requestParameters = {};
+    requestParameters.dbName = selectedTableElement.attr('data-db-name');
+    requestParameters.tableName = selectedTableElement.attr('data-table-name');;
+    requestParameters.updatedData = encodeURIComponent(JSON.stringify(filteredUpdatedData));
+
+    //execute request
+    $.ajax({
+        url: "updateTableData",
+        type: 'GET',
+        data: requestParameters,
+        success: function(response) {
+            console.log("Data updated successfully");
+            callback(true);
+        },
+        error: function(xhr, status, error) {
+            console.log("Data updated failed");
+            callback(false);
+        }
+    })
 }
 
 function showSuccessInfo(){

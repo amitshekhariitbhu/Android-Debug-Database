@@ -194,7 +194,7 @@ public class QueryExecutor {
                 } else {
                     switch (rowDataRequest.dataType) {
                         case DataType.INTEGER:
-                            contentValues.put(rowDataRequest.title, Integer.valueOf(rowDataRequest.value));
+                            contentValues.put(rowDataRequest.title, Long.valueOf(rowDataRequest.value));
                             break;
                         case DataType.REAL:
                             contentValues.put(rowDataRequest.title, Double.valueOf(rowDataRequest.value));
