@@ -58,6 +58,7 @@ You will see something like this :
 * Support it by clicking the :star: button on the upper right of this page. :v:
 
 ### TODO
+* Fix emulator issue [Issue Link](https://github.com/amitshekhariitbhu/Android-Debug-Database/issues/6)
 * Edit shared preferences directly from the browser. At present, it is only possible to edit database values.
 * And of course many more features and bug fixes.
 
