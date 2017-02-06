@@ -25,7 +25,6 @@ package com.amitshekhar.server;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,8 +39,8 @@ import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DataType;
 import com.amitshekhar.utils.DatabaseFileProvider;
-import com.amitshekhar.utils.PrefUtils;
-import com.amitshekhar.utils.QueryExecutor;
+import com.amitshekhar.utils.DatabaseHelper;
+import com.amitshekhar.utils.PrefHelper;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -60,8 +59,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class ClientServer implements Runnable {
 
@@ -194,9 +191,9 @@ public class ClientServer implements Runnable {
 
                 if (isDbOpened) {
                     String sql = "SELECT * FROM " + tableName;
-                    response = QueryExecutor.getTableData(mDatabase, sql, tableName);
+                    response = DatabaseHelper.getTableData(mDatabase, sql, tableName);
                 } else {
-                    response = getAllPrefData(tableName);
+                    response = PrefHelper.getAllPrefData(mContext, tableName);
                 }
 
                 String data = mGson.toJson(response);
@@ -239,12 +236,12 @@ public class ClientServer implements Runnable {
                 Response response;
 
                 if (Constants.APP_SHARED_PREFERENCES.equals(database)) {
-                    response = getAllPrefTableName();
+                    response = PrefHelper.getAllPrefTableName(mContext);
                     closeDatabase();
                     mSelectedDatabase = null;
                 } else {
                     openDatabase(database);
-                    response = getAllTableName();
+                    response = DatabaseHelper.getAllTableName(mDatabase);
                     mSelectedDatabase = database;
                 }
 
@@ -258,7 +255,7 @@ public class ClientServer implements Runnable {
                 String tableName = uri.getQueryParameter("tableName");
                 String updatedData = uri.getQueryParameter("updatedData");
 
-                UpdateRowResponse response = QueryExecutor.updateRow(mDatabase, tableName, updatedData);
+                UpdateRowResponse response = DatabaseHelper.updateRow(mDatabase, tableName, updatedData);
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
             } else {
@@ -484,87 +481,5 @@ public class ClientServer implements Runnable {
         return response;
     }
 
-    public Response getAllTableName() {
-        Response response = new Response();
-        Cursor c = mDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-        if (c.moveToFirst()) {
-            while (!c.isAfterLast()) {
-                response.rows.add(c.getString(0));
-                c.moveToNext();
-            }
-        }
-        c.close();
-        response.isSuccessful = true;
-        try {
-            response.dbVersion = mDatabase.getVersion();
-        } catch (Exception ignore) {
-
-        }
-        return response;
-    }
-
-    public Response getAllPrefTableName() {
-        Response response = new Response();
-        List<String> prefTags = PrefUtils.getSharedPreferenceTags(mContext);
-
-        for (String tag : prefTags) {
-            response.rows.add(tag);
-        }
-        response.isSuccessful = true;
-        return response;
-    }
-
-    public TableDataResponse getAllPrefData(String tag) {
-        TableDataResponse response = new TableDataResponse();
-        response.isSuccessful = true;
-
-        TableDataResponse.TableInfo keyInfo = new TableDataResponse.TableInfo();
-        keyInfo.isPrimary = true;
-        keyInfo.title = "Key";
-
-        TableDataResponse.TableInfo valueInfo = new TableDataResponse.TableInfo();
-        valueInfo.isPrimary = false;
-        valueInfo.title = "Value";
-
-        response.tableInfos = new ArrayList<>();
-        response.tableInfos.add(keyInfo);
-        response.tableInfos.add(valueInfo);
-
-        response.rows = new ArrayList<>();
-
-        SharedPreferences preferences = mContext.getSharedPreferences(tag, Context.MODE_PRIVATE);
-        Map<String, ?> allEntries = preferences.getAll();
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            List<ColumnData> row = new ArrayList<>();
-            ColumnData keyColumnData = new ColumnData();
-            keyColumnData.dataType = DataType.TEXT;
-            keyColumnData.value = entry.getKey();
-
-            row.add(keyColumnData);
-
-            ColumnData valueColumnData = new ColumnData();
-            valueColumnData.value = entry.getValue().toString();
-            if (entry.getValue() != null) {
-                if (entry.getValue() instanceof String) {
-                    valueColumnData.dataType = DataType.TEXT;
-                } else if (entry.getValue() instanceof Integer) {
-                    valueColumnData.dataType = DataType.INTEGER;
-                } else if (entry.getValue() instanceof Long) {
-                    valueColumnData.dataType = DataType.INTEGER;
-                } else if (entry.getValue() instanceof Float) {
-                    valueColumnData.dataType = DataType.REAL;
-                } else if (entry.getValue() instanceof Boolean) {
-                    valueColumnData.dataType = DataType.BOOLEAN;
-                } else if (entry.getValue() instanceof Set) {
-                    valueColumnData.dataType = DataType.TEXT;
-                }
-            } else {
-                valueColumnData.dataType = DataType.TEXT;
-            }
-            row.add(valueColumnData);
-            response.rows.add(row);
-        }
-        return response;
-    }
 
 }

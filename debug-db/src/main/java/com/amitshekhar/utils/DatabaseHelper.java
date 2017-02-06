@@ -23,11 +23,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
-import com.amitshekhar.model.TableDataResponse.TableInfo;
 import com.amitshekhar.model.UpdateRowResponse;
-import com.amitshekhar.model.TableDataResponse.ColumnData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -35,15 +34,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by amitshekhar on 04/02/17.
+ * Created by amitshekhar on 06/02/17.
  */
 
-public class QueryExecutor {
+public class DatabaseHelper {
 
     public static final Gson gson = new Gson();
 
-    private QueryExecutor() {
+    private DatabaseHelper() {
         // This class in not publicly instantiable
+    }
+
+    public static Response getAllTableName(SQLiteDatabase database) {
+        Response response = new Response();
+        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                response.rows.add(c.getString(0));
+                c.moveToNext();
+            }
+        }
+        c.close();
+        response.isSuccessful = true;
+        try {
+            response.dbVersion = database.getVersion();
+        } catch (Exception ignore) {
+
+        }
+        return response;
     }
 
     public static TableDataResponse getTableData(SQLiteDatabase db, String selectQuery, String tableName) {
@@ -80,9 +98,9 @@ public class QueryExecutor {
             if (cursor.getCount() > 0) {
 
                 do {
-                    List<ColumnData> row = new ArrayList<>();
+                    List<TableDataResponse.ColumnData> row = new ArrayList<>();
                     for (int i = 0; i < cursor.getColumnCount(); i++) {
-                        ColumnData columnData = new ColumnData();
+                        TableDataResponse.ColumnData columnData = new TableDataResponse.ColumnData();
                         switch (cursor.getType(i)) {
                             case Cursor.FIELD_TYPE_BLOB:
                                 columnData.dataType = DataType.TEXT;
@@ -120,7 +138,7 @@ public class QueryExecutor {
 
     }
 
-    public static List<TableInfo> getTableInfo(SQLiteDatabase db, String pragmaQuery) {
+    public static List<TableDataResponse.TableInfo> getTableInfo(SQLiteDatabase db, String pragmaQuery) {
 
         Cursor cursor;
         try {
@@ -132,13 +150,13 @@ public class QueryExecutor {
 
         if (cursor != null) {
 
-            List<TableInfo> tableInfoList = new ArrayList<>();
+            List<TableDataResponse.TableInfo> tableInfoList = new ArrayList<>();
 
             cursor.moveToFirst();
 
             if (cursor.getCount() > 0) {
                 do {
-                    TableInfo tableInfo = new TableInfo();
+                    TableDataResponse.TableInfo tableInfo = new TableDataResponse.TableInfo();
 
                     for (int i = 0; i < cursor.getColumnCount(); i++) {
 
@@ -226,4 +244,5 @@ public class QueryExecutor {
     public static String getTableName(String selectQuery) {
         return null;
     }
+
 }
