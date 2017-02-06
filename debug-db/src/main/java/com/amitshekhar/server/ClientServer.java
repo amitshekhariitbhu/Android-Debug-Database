@@ -39,6 +39,7 @@ import com.amitshekhar.model.TableDataResponse.ColumnData;
 import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DataType;
+import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.PrefUtils;
 import com.amitshekhar.utils.QueryExecutor;
 import com.google.gson.Gson;
@@ -57,7 +58,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,9 +90,9 @@ public class ClientServer implements Runnable {
 
     private Context mContext;
     private SQLiteDatabase mDatabase;
-    private File mDatabaseDir;
     private Gson mGson;
     private boolean isDbOpenned;
+    HashMap<String, File> databaseFiles;
 
     /**
      * Hold the selected database name
@@ -106,7 +107,6 @@ public class ClientServer implements Runnable {
         mAssets = context.getResources().getAssets();
         mContext = context;
         mGson = new Gson();
-        getDatabaseDir();
     }
 
     /**
@@ -194,7 +194,7 @@ public class ClientServer implements Runnable {
 
                 if (isDbOpenned) {
                     String sql = "SELECT * FROM " + tableName;
-                    response = QueryExecutor.getTableData(mDatabase,sql,tableName);
+                    response = QueryExecutor.getTableData(mDatabase, sql, tableName);
                 } else {
                     response = getAllPrefData(tableName);
                 }
@@ -356,7 +356,7 @@ public class ClientServer implements Runnable {
             return null;
         }
 
-        File file = new File(mDatabaseDir, mSelectedDatabase);
+        File file = databaseFiles.get(mSelectedDatabase);
 
         byte[] byteArray = null;
         try {
@@ -377,11 +377,6 @@ public class ClientServer implements Runnable {
         return byteArray;
     }
 
-    private void getDatabaseDir() {
-        File root = mContext.getFilesDir().getParentFile();
-        File dbRoot = new File(root, "/databases");
-        mDatabaseDir = dbRoot;
-    }
 
     private void openDatabase(String database) {
         mDatabase = mContext.openOrCreateDatabase(database, 0, null);
@@ -477,11 +472,11 @@ public class ClientServer implements Runnable {
     }
 
     public Response getDBList() {
+        databaseFiles = DatabaseFileProvider.getDatabaseFiles(mContext);
         Response response = new Response();
-        if (mDatabaseDir != null && mDatabaseDir.list() != null) {
-            String[] list = mDatabaseDir.list();
-            if (list != null) {
-                Collections.addAll(response.rows, list);
+        if (databaseFiles != null) {
+            for (HashMap.Entry<String, File> entry : databaseFiles.entrySet()) {
+                response.rows.add(entry.getKey());
             }
         }
         response.rows.add(Constants.APP_SHARED_PREFERENCES);
