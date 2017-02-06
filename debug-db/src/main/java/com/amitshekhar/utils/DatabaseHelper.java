@@ -104,7 +104,7 @@ public class DatabaseHelper {
                         switch (cursor.getType(i)) {
                             case Cursor.FIELD_TYPE_BLOB:
                                 columnData.dataType = DataType.TEXT;
-                                columnData.value = cursor.getBlob(i);
+                                columnData.value = ConverterUtils.blobToString(cursor.getBlob(i));
                                 break;
                             case Cursor.FIELD_TYPE_FLOAT:
                                 columnData.dataType = DataType.REAL;

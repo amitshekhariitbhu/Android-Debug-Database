@@ -37,6 +37,7 @@ import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.TableDataResponse.ColumnData;
 import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.utils.Constants;
+import com.amitshekhar.utils.ConverterUtils;
 import com.amitshekhar.utils.DataType;
 import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
@@ -434,7 +435,7 @@ public class ClientServer implements Runnable {
                         switch (cursor.getType(i)) {
                             case Cursor.FIELD_TYPE_BLOB:
                                 columnData.dataType = DataType.TEXT;
-                                columnData.value = cursor.getBlob(i);
+                                columnData.value = ConverterUtils.blobToString(cursor.getBlob(i));
                                 break;
                             case Cursor.FIELD_TYPE_FLOAT:
                                 columnData.dataType = DataType.REAL;
