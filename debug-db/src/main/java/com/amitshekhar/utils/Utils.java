@@ -43,12 +43,6 @@ public class Utils {
         // This class in not publicly instantiable
     }
 
-    /**
-     * Detects the MIME type from the {@code fileName}.
-     *
-     * @param fileName The name of the file.
-     * @return A MIME type.
-     */
     public static String detectMimeType(String fileName) {
         if (TextUtils.isEmpty(fileName)) {
             return null;
@@ -63,14 +57,6 @@ public class Utils {
         }
     }
 
-    /**
-     * Loads all the content of {@code fileName}.
-     *
-     * @param fileName     The name of the file.
-     * @param assetManager The AssetManager.
-     * @return The content of the file.
-     * @throws IOException
-     */
     public static byte[] loadContent(String fileName, AssetManager assetManager) throws IOException {
         InputStream input = null;
         try {

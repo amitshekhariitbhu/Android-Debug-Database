@@ -34,48 +34,26 @@ import java.net.SocketException;
 
 public class ClientServer implements Runnable {
 
-    private static final String TAG = "SimpleWebServer";
+    private static final String TAG = "ClientServer";
 
-    /**
-     * The port number we listen to
-     */
     private final int mPort;
 
-    /**
-     * True if the server is running.
-     */
     private boolean mIsRunning;
 
-    /**
-     * The {@link ServerSocket} that we listen to.
-     */
     private ServerSocket mServerSocket;
 
-    /**
-     * Handler for handling request.
-     */
-    private final RequestHandler requestHandler;
+    private final RequestHandler mRequestHandler;
 
-
-    /**
-     * ClientServer constructor.
-     */
     public ClientServer(Context context, int port) {
-        requestHandler = new RequestHandler(context);
+        mRequestHandler = new RequestHandler(context);
         mPort = port;
     }
 
-    /**
-     * This method starts the web server listening to the specified port.
-     */
     public void start() {
         mIsRunning = true;
         new Thread(this).start();
     }
 
-    /**
-     * This method stops the web server
-     */
     public void stop() {
         try {
             mIsRunning = false;
@@ -94,7 +72,7 @@ public class ClientServer implements Runnable {
             mServerSocket = new ServerSocket(mPort);
             while (mIsRunning) {
                 Socket socket = mServerSocket.accept();
-                requestHandler.handle(socket);
+                mRequestHandler.handle(socket);
                 socket.close();
             }
         } catch (SocketException e) {

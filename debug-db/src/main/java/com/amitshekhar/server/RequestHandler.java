@@ -67,12 +67,6 @@ public class RequestHandler {
         mGson = new Gson();
     }
 
-    /**
-     * Respond to a request from a client.
-     *
-     * @param socket The client socket.
-     * @throws IOException
-     */
     public void handle(Socket socket) throws IOException {
         BufferedReader reader = null;
         PrintStream output = null;
@@ -100,88 +94,26 @@ public class RequestHandler {
 
             byte[] bytes;
 
-            if (route.startsWith("getAllDataFromTheTable")) {
-                String tableName = null;
-
-                if (route.contains("?tableName=")) {
-                    tableName = route.substring(route.indexOf("=") + 1, route.length());
-                }
-
-                TableDataResponse response;
-
-                if (isDbOpened) {
-                    String sql = "SELECT * FROM " + tableName;
-                    response = DatabaseHelper.getTableData(mDatabase, sql, tableName);
-                } else {
-                    response = PrefHelper.getAllPrefData(mContext, tableName);
-                }
-
-                String data = mGson.toJson(response);
-                bytes = data.getBytes();
-
-            } else if (route.startsWith("query")) {
-                String query = null;
-                if (route.contains("?query=")) {
-                    query = route.substring(route.indexOf("=") + 1, route.length());
-                }
-                try {
-                    query = java.net.URLDecoder.decode(query, "UTF-8");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                String first = query.split(" ")[0].toLowerCase();
-
-                String data;
-                if (first.equals("select")) {
-                    TableDataResponse response = DatabaseHelper.query(mDatabase, query);
-                    data = mGson.toJson(response);
-                } else {
-                    Response response = DatabaseHelper.exec(mDatabase, query);
-                    data = mGson.toJson(response);
-                }
-
-                bytes = data.getBytes();
-
-            } else if (route.startsWith("getDbList")) {
-                Response response = getDBList();
-                String data = mGson.toJson(response);
-                bytes = data.getBytes();
+            if (route.startsWith("getDbList")) {
+                final String response = getDBListResponse();
+                bytes = response.getBytes();
+            } else if (route.startsWith("getAllDataFromTheTable")) {
+                final String response = getAllDataFromTheTableResponse(route);
+                bytes = response.getBytes();
             } else if (route.startsWith("getTableList")) {
-                String database = null;
-                if (route.contains("?database=")) {
-                    database = route.substring(route.indexOf("=") + 1, route.length());
-                }
-
-                Response response;
-
-                if (Constants.APP_SHARED_PREFERENCES.equals(database)) {
-                    response = PrefHelper.getAllPrefTableName(mContext);
-                    closeDatabase();
-                    mSelectedDatabase = null;
-                } else {
-                    openDatabase(database);
-                    response = DatabaseHelper.getAllTableName(mDatabase);
-                    mSelectedDatabase = database;
-                }
-
-                String data = mGson.toJson(response);
-                bytes = data.getBytes();
+                final String response = getTableListResponse(route);
+                bytes = response.getBytes();
+            } else if (route.startsWith("updateTableData")) {
+                final String response = updateTableDataAndGetResponse(route);
+                bytes = response.getBytes();
+            } else if (route.startsWith("query")) {
+                final String response = executeQueryAndGetResponse(route);
+                bytes = response.getBytes();
             } else if (route.startsWith("downloadDb")) {
                 bytes = Utils.getDatabase(mSelectedDatabase, databaseFiles);
-            } else if (route.startsWith("updateTableData")) {
-                Uri uri = Uri.parse(URLDecoder.decode(route, "UTF-8"));
-                String tableName = uri.getQueryParameter("tableName");
-                String updatedData = uri.getQueryParameter("updatedData");
-                List<RowDataRequest> rowDataRequests = mGson.fromJson(updatedData, new TypeToken<List<RowDataRequest>>() {
-                }.getType());
-                UpdateRowResponse response = DatabaseHelper.updateRow(mDatabase, tableName, rowDataRequests);
-                String data = mGson.toJson(response);
-                bytes = data.getBytes();
             } else {
                 bytes = Utils.loadContent(route, mAssets);
             }
-
 
             if (null == bytes) {
                 writeServerError(output);
@@ -214,16 +146,10 @@ public class RequestHandler {
         }
     }
 
-    /**
-     * Writes a server error response (HTTP/1.0 500) to the given output stream.
-     *
-     * @param output The output stream.
-     */
     private void writeServerError(PrintStream output) {
         output.println("HTTP/1.0 500 Internal Server Error");
         output.flush();
     }
-
 
     private void openDatabase(String database) {
         mDatabase = mContext.openOrCreateDatabase(database, 0, null);
@@ -235,7 +161,7 @@ public class RequestHandler {
         isDbOpened = false;
     }
 
-    private Response getDBList() {
+    private String getDBListResponse() {
         databaseFiles = DatabaseFileProvider.getDatabaseFiles(mContext);
         Response response = new Response();
         if (databaseFiles != null) {
@@ -245,7 +171,90 @@ public class RequestHandler {
         }
         response.rows.add(Constants.APP_SHARED_PREFERENCES);
         response.isSuccessful = true;
-        return response;
+        return mGson.toJson(response);
+    }
+
+    private String getAllDataFromTheTableResponse(String route) {
+
+        String tableName = null;
+
+        if (route.contains("?tableName=")) {
+            tableName = route.substring(route.indexOf("=") + 1, route.length());
+        }
+
+        TableDataResponse response;
+
+        if (isDbOpened) {
+            String sql = "SELECT * FROM " + tableName;
+            response = DatabaseHelper.getTableData(mDatabase, sql, tableName);
+        } else {
+            response = PrefHelper.getAllPrefData(mContext, tableName);
+        }
+
+        return mGson.toJson(response);
+
+    }
+
+    private String executeQueryAndGetResponse(String route) {
+        String query = null;
+        if (route.contains("?query=")) {
+            query = route.substring(route.indexOf("=") + 1, route.length());
+        }
+        try {
+            query = java.net.URLDecoder.decode(query, "UTF-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String first = query.split(" ")[0].toLowerCase();
+
+        String data;
+        if (first.equals("select")) {
+            TableDataResponse response = DatabaseHelper.query(mDatabase, query);
+            data = mGson.toJson(response);
+        } else {
+            Response response = DatabaseHelper.exec(mDatabase, query);
+            data = mGson.toJson(response);
+        }
+        return data;
+    }
+
+    private String getTableListResponse(String route) {
+        String database = null;
+        if (route.contains("?database=")) {
+            database = route.substring(route.indexOf("=") + 1, route.length());
+        }
+
+        Response response;
+
+        if (Constants.APP_SHARED_PREFERENCES.equals(database)) {
+            response = PrefHelper.getAllPrefTableName(mContext);
+            closeDatabase();
+            mSelectedDatabase = null;
+        } else {
+            openDatabase(database);
+            response = DatabaseHelper.getAllTableName(mDatabase);
+            mSelectedDatabase = database;
+        }
+        return mGson.toJson(response);
+    }
+
+    private String updateTableDataAndGetResponse(String route) {
+        UpdateRowResponse response;
+        try {
+            Uri uri = Uri.parse(URLDecoder.decode(route, "UTF-8"));
+            String tableName = uri.getQueryParameter("tableName");
+            String updatedData = uri.getQueryParameter("updatedData");
+            List<RowDataRequest> rowDataRequests = mGson.fromJson(updatedData, new TypeToken<List<RowDataRequest>>() {
+            }.getType());
+            response = DatabaseHelper.updateRow(mDatabase, tableName, rowDataRequests);
+            return mGson.toJson(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new UpdateRowResponse();
+            response.isSuccessful = false;
+            return mGson.toJson(response);
+        }
     }
 
 }
