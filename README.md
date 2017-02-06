@@ -35,7 +35,9 @@ That’s all, just start the application, you will see in the logcat an entry li
 
 Now open the provided link in your browser.
 
-Important : Your Android phone and laptop should be connected to the same Network (Wifi or LAN).
+Important:
+- Your Android phone and laptop should be connected to the same Network (Wifi or LAN).
+- If you are using it over usb, run `adb forward tcp:8080 tcp:8080`
 
 Note      : If you want use different port other than 8080. 
             In the app build.gradle file under buildTypes do the following change
