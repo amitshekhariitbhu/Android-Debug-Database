@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.amitshekhar.model.Response;
+import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.utils.Constants;
@@ -40,6 +41,7 @@ import com.amitshekhar.utils.DatabaseHelper;
 import com.amitshekhar.utils.PrefHelper;
 import com.amitshekhar.utils.Utils;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,6 +53,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.List;
 
 public class ClientServer implements Runnable {
 
@@ -242,12 +245,12 @@ public class ClientServer implements Runnable {
             } else if (route.startsWith("downloadDb")) {
                 bytes = Utils.getDatabase(mSelectedDatabase, databaseFiles);
             } else if (route.startsWith("updateTableData")) {
-
                 Uri uri = Uri.parse(URLDecoder.decode(route, "UTF-8"));
                 String tableName = uri.getQueryParameter("tableName");
                 String updatedData = uri.getQueryParameter("updatedData");
-
-                UpdateRowResponse response = DatabaseHelper.updateRow(mDatabase, tableName, updatedData);
+                List<RowDataRequest> rowDataRequests = mGson.fromJson(updatedData, new TypeToken<List<RowDataRequest>>() {
+                }.getType());
+                UpdateRowResponse response = DatabaseHelper.updateRow(mDatabase, tableName, rowDataRequests);
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
             } else {

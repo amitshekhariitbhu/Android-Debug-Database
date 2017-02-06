@@ -27,8 +27,6 @@ import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +36,6 @@ import java.util.List;
  */
 
 public class DatabaseHelper {
-
-    public static final Gson gson = new Gson();
 
     private DatabaseHelper() {
         // This class in not publicly instantiable
@@ -183,62 +179,53 @@ public class DatabaseHelper {
         return null;
     }
 
-    public static UpdateRowResponse updateRow(SQLiteDatabase db, String tableName, String data) {
+    public static UpdateRowResponse updateRow(SQLiteDatabase db, String tableName, List<RowDataRequest> rowDataRequests) {
 
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 
-        if (data == null) {
+        if (rowDataRequests == null) {
             updateRowResponse.isSuccessful = false;
             return updateRowResponse;
         }
 
-        List<RowDataRequest> rowDataRequests = gson.fromJson(data, new TypeToken<List<RowDataRequest>>() {
-        }.getType());
+        ContentValues contentValues = new ContentValues();
 
-        if (rowDataRequests != null) {
-            ContentValues contentValues = new ContentValues();
+        String whereClause = null;
+        List<String> whereArgsList = new ArrayList<>();
 
-            String whereClause = null;
-            List<String> whereArgsList = new ArrayList<>();
-
-            for (RowDataRequest rowDataRequest : rowDataRequests) {
-                if (rowDataRequest.isPrimary) {
-                    if (whereClause == null) {
-                        whereClause = rowDataRequest.title + "=? ";
-                    } else {
-                        whereClause = "and " + rowDataRequest.title + "=? ";
-                    }
-                    whereArgsList.add(rowDataRequest.value);
+        for (RowDataRequest rowDataRequest : rowDataRequests) {
+            if (rowDataRequest.isPrimary) {
+                if (whereClause == null) {
+                    whereClause = rowDataRequest.title + "=? ";
                 } else {
-                    switch (rowDataRequest.dataType) {
-                        case DataType.INTEGER:
-                            contentValues.put(rowDataRequest.title, Long.valueOf(rowDataRequest.value));
-                            break;
-                        case DataType.REAL:
-                            contentValues.put(rowDataRequest.title, Double.valueOf(rowDataRequest.value));
-                            break;
-                        case DataType.TEXT:
-                            contentValues.put(rowDataRequest.title, rowDataRequest.value);
-                            break;
-                        default:
-                    }
+                    whereClause = "and " + rowDataRequest.title + "=? ";
+                }
+                whereArgsList.add(rowDataRequest.value);
+            } else {
+                switch (rowDataRequest.dataType) {
+                    case DataType.INTEGER:
+                        contentValues.put(rowDataRequest.title, Long.valueOf(rowDataRequest.value));
+                        break;
+                    case DataType.REAL:
+                        contentValues.put(rowDataRequest.title, Double.valueOf(rowDataRequest.value));
+                        break;
+                    case DataType.TEXT:
+                        contentValues.put(rowDataRequest.title, rowDataRequest.value);
+                        break;
+                    default:
                 }
             }
-
-            String[] whereArgs = new String[whereArgsList.size()];
-
-            for (int i = 0; i < whereArgsList.size(); i++) {
-                whereArgs[i] = whereArgsList.get(i);
-            }
-
-            db.update(tableName, contentValues, whereClause, whereArgs);
-            updateRowResponse.isSuccessful = true;
-            return updateRowResponse;
-
-        } else {
-            updateRowResponse.isSuccessful = false;
-            return updateRowResponse;
         }
+
+        String[] whereArgs = new String[whereArgsList.size()];
+
+        for (int i = 0; i < whereArgsList.size(); i++) {
+            whereArgs[i] = whereArgsList.get(i);
+        }
+
+        db.update(tableName, contentValues, whereClause, whereArgs);
+        updateRowResponse.isSuccessful = true;
+        return updateRowResponse;
     }
 
     public static TableDataResponse query(SQLiteDatabase database, String sql) {
