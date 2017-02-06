@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.sample.database.CarDBHelper;
 import com.sample.database.ContactDBHelper;
 
 import java.util.HashSet;
@@ -71,6 +72,16 @@ public class MainActivity extends AppCompatActivity {
                 String street = "street_" + i;
                 String place = "place_" + i;
                 contactDBHelper.insertContact(name, phone, email, street, place);
+            }
+        }
+
+        CarDBHelper carDBHelper = new CarDBHelper(getApplicationContext());
+        if (carDBHelper.count() == 0) {
+            for (int i = 0; i < 50; i++) {
+                String name = "name_" + i;
+                String color = "RED";
+                float mileage = i + 10.45f;
+                carDBHelper.insertCar(name, color, mileage);
             }
         }
     }

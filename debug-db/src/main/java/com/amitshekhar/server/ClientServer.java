@@ -91,7 +91,7 @@ public class ClientServer implements Runnable {
     private Context mContext;
     private SQLiteDatabase mDatabase;
     private Gson mGson;
-    private boolean isDbOpenned;
+    private boolean isDbOpened;
     HashMap<String, File> databaseFiles;
 
     /**
@@ -192,7 +192,7 @@ public class ClientServer implements Runnable {
 
                 TableDataResponse response = null;
 
-                if (isDbOpenned) {
+                if (isDbOpened) {
                     String sql = "SELECT * FROM " + tableName;
                     response = QueryExecutor.getTableData(mDatabase, sql, tableName);
                 } else {
@@ -380,12 +380,12 @@ public class ClientServer implements Runnable {
 
     private void openDatabase(String database) {
         mDatabase = mContext.openOrCreateDatabase(database, 0, null);
-        isDbOpenned = true;
+        isDbOpened = true;
     }
 
     private void closeDatabase() {
         mDatabase = null;
-        isDbOpenned = false;
+        isDbOpened = false;
     }
 
     private Response exec(String sql) {
@@ -441,7 +441,7 @@ public class ClientServer implements Runnable {
                                 break;
                             case Cursor.FIELD_TYPE_FLOAT:
                                 columnData.dataType = DataType.REAL;
-                                columnData.value = cursor.getFloat(i);
+                                columnData.value = cursor.getDouble(i);
                                 break;
                             case Cursor.FIELD_TYPE_INTEGER:
                                 columnData.dataType = DataType.INTEGER;
