@@ -241,6 +241,89 @@ public class DatabaseHelper {
         }
     }
 
+    public static TableDataResponse query(SQLiteDatabase database, String sql) {
+        Cursor cursor;
+        try {
+            cursor = database.rawQuery(sql, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            TableDataResponse errorResponse = new TableDataResponse();
+            errorResponse.isSuccessful = false;
+            errorResponse.errorMessage = e.getMessage();
+            return errorResponse;
+        }
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            TableDataResponse response = new TableDataResponse();
+            response.isSuccessful = true;
+
+            response.tableInfos = new ArrayList<>();
+            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                TableDataResponse.TableInfo tableInfo = new TableDataResponse.TableInfo();
+                tableInfo.title = cursor.getColumnName(i);
+                tableInfo.isPrimary = false;
+
+                response.tableInfos.add(tableInfo);
+            }
+
+            response.rows = new ArrayList<>();
+            if (cursor.getCount() > 0) {
+                do {
+                    List<TableDataResponse.ColumnData> row = new ArrayList<>();
+                    for (int i = 0; i < cursor.getColumnCount(); i++) {
+                        TableDataResponse.ColumnData columnData = new TableDataResponse.ColumnData();
+                        switch (cursor.getType(i)) {
+                            case Cursor.FIELD_TYPE_BLOB:
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = ConverterUtils.blobToString(cursor.getBlob(i));
+                                break;
+                            case Cursor.FIELD_TYPE_FLOAT:
+                                columnData.dataType = DataType.REAL;
+                                columnData.value = cursor.getDouble(i);
+                                break;
+                            case Cursor.FIELD_TYPE_INTEGER:
+                                columnData.dataType = DataType.INTEGER;
+                                columnData.value = cursor.getLong(i);
+                                break;
+                            case Cursor.FIELD_TYPE_STRING:
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getString(i);
+                                break;
+                            default:
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getString(i);
+                        }
+                        row.add(columnData);
+                    }
+                    response.rows.add(row);
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            return response;
+        } else {
+            TableDataResponse errorResponse = new TableDataResponse();
+            errorResponse.isSuccessful = false;
+            errorResponse.errorMessage = "Cursor is null";
+            return errorResponse;
+        }
+    }
+
+    public static Response exec(SQLiteDatabase database, String sql) {
+        Response response = new Response();
+        try {
+            database.execSQL(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.isSuccessful = false;
+            response.error = e.getMessage();
+            return response;
+        }
+        response.isSuccessful = true;
+        return response;
+    }
+
     public static String getTableName(String selectQuery) {
         return null;
     }
