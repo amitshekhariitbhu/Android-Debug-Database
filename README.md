@@ -53,12 +53,15 @@ You will see something like this :
 
 <img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdb.png >
 
+### Working with emulator
+- Android Default Emulator: run `adb forward tcp:8080 tcp:8080` and open http://localhost:8080
+- Genymotion Emulator: Enable bridge from configure virtual device (option available in genymotion)
 
 ### Find this project useful ? :heart:
 * Support it by clicking the :star: button on the upper right of this page. :v:
 
 ### TODO
-* Fix emulator issue [Issue Link](https://github.com/amitshekhariitbhu/Android-Debug-Database/issues/6)
+* Simplify emulator issue [Issue Link](https://github.com/amitshekhariitbhu/Android-Debug-Database/issues/6)
 * Edit shared preferences directly from the browser. At present, it is only possible to edit database values.
 * And of course many more features and bug fixes.
 
