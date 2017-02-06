@@ -26,7 +26,6 @@ package com.amitshekhar.server;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -34,32 +33,24 @@ import android.util.Log;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.TableDataResponse;
-import com.amitshekhar.model.TableDataResponse.ColumnData;
 import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.utils.Constants;
-import com.amitshekhar.utils.ConverterUtils;
-import com.amitshekhar.utils.DataType;
 import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
 import com.amitshekhar.utils.PrefHelper;
+import com.amitshekhar.utils.Utils;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class ClientServer implements Runnable {
 
@@ -90,7 +81,7 @@ public class ClientServer implements Runnable {
     private SQLiteDatabase mDatabase;
     private Gson mGson;
     private boolean isDbOpened;
-    HashMap<String, File> databaseFiles;
+    private HashMap<String, File> databaseFiles;
 
     /**
      * Hold the selected database name
@@ -188,7 +179,7 @@ public class ClientServer implements Runnable {
                     tableName = route.substring(route.indexOf("=") + 1, route.length());
                 }
 
-                TableDataResponse response = null;
+                TableDataResponse response;
 
                 if (isDbOpened) {
                     String sql = "SELECT * FROM " + tableName;
@@ -213,12 +204,12 @@ public class ClientServer implements Runnable {
 
                 String first = query.split(" ")[0].toLowerCase();
 
-                String data = "";
+                String data;
                 if (first.equals("select")) {
-                    TableDataResponse response = query(query);
+                    TableDataResponse response = DatabaseHelper.query(mDatabase, query);
                     data = mGson.toJson(response);
                 } else {
-                    Response response = exec(query);
+                    Response response = DatabaseHelper.exec(mDatabase, query);
                     data = mGson.toJson(response);
                 }
 
@@ -249,7 +240,7 @@ public class ClientServer implements Runnable {
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
             } else if (route.startsWith("downloadDb")) {
-                bytes = getDatabaseFile();
+                bytes = Utils.getDatabase(mSelectedDatabase, databaseFiles);
             } else if (route.startsWith("updateTableData")) {
 
                 Uri uri = Uri.parse(URLDecoder.decode(route, "UTF-8"));
@@ -260,7 +251,7 @@ public class ClientServer implements Runnable {
                 String data = mGson.toJson(response);
                 bytes = data.getBytes();
             } else {
-                bytes = loadContent(route);
+                bytes = Utils.loadContent(route, mAssets);
             }
 
 
@@ -271,7 +262,7 @@ public class ClientServer implements Runnable {
 
             // Send out the content.
             output.println("HTTP/1.0 200 OK");
-            output.println("Content-Type: " + detectMimeType(route));
+            output.println("Content-Type: " + Utils.detectMimeType(route));
 
             if (route.startsWith("downloadDb")) {
                 output.println("Content-Disposition: attachment; filename=" + mSelectedDatabase);
@@ -282,11 +273,15 @@ public class ClientServer implements Runnable {
             output.write(bytes);
             output.flush();
         } finally {
-            if (null != output) {
-                output.close();
-            }
-            if (null != reader) {
-                reader.close();
+            try {
+                if (null != output) {
+                    output.close();
+                }
+                if (null != reader) {
+                    reader.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -301,80 +296,6 @@ public class ClientServer implements Runnable {
         output.flush();
     }
 
-    /**
-     * Loads all the content of {@code fileName}.
-     *
-     * @param fileName The name of the file.
-     * @return The content of the file.
-     * @throws IOException
-     */
-    private byte[] loadContent(String fileName) throws IOException {
-        InputStream input = null;
-        try {
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            input = mAssets.open(fileName);
-            byte[] buffer = new byte[1024];
-            int size;
-            while (-1 != (size = input.read(buffer))) {
-                output.write(buffer, 0, size);
-            }
-            output.flush();
-            return output.toByteArray();
-        } catch (FileNotFoundException e) {
-            return null;
-        } finally {
-            if (null != input) {
-                input.close();
-            }
-        }
-    }
-
-    /**
-     * Detects the MIME type from the {@code fileName}.
-     *
-     * @param fileName The name of the file.
-     * @return A MIME type.
-     */
-    private String detectMimeType(String fileName) {
-        if (TextUtils.isEmpty(fileName)) {
-            return null;
-        } else if (fileName.endsWith(".html")) {
-            return "text/html";
-        } else if (fileName.endsWith(".js")) {
-            return "application/javascript";
-        } else if (fileName.endsWith(".css")) {
-            return "text/css";
-        } else {
-            return "application/octet-stream";
-        }
-    }
-
-    private byte[] getDatabaseFile() {
-        if (TextUtils.isEmpty(mSelectedDatabase)) {
-            return null;
-        }
-
-        File file = databaseFiles.get(mSelectedDatabase);
-
-        byte[] byteArray = null;
-        try {
-            InputStream inputStream = new FileInputStream(file);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[(int) file.length()];
-            int bytesRead = 0;
-
-            while ((bytesRead = inputStream.read(b)) != -1) {
-                bos.write(b, 0, bytesRead);
-            }
-
-            byteArray = bos.toByteArray();
-        } catch (IOException e) {
-            Log.e(TAG, "getDatabaseFile: ", e);
-        }
-
-        return byteArray;
-    }
-
 
     private void openDatabase(String database) {
         mDatabase = mContext.openOrCreateDatabase(database, 0, null);
@@ -386,90 +307,7 @@ public class ClientServer implements Runnable {
         isDbOpened = false;
     }
 
-    private Response exec(String sql) {
-        Response response = new Response();
-        try {
-            mDatabase.execSQL(sql);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.isSuccessful = false;
-            response.error = e.getMessage();
-            return response;
-        }
-        response.isSuccessful = true;
-        return response;
-    }
-
-    private TableDataResponse query(String sql) {
-        Cursor cursor;
-        try {
-            cursor = mDatabase.rawQuery(sql, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            TableDataResponse errorResponse = new TableDataResponse();
-            errorResponse.isSuccessful = false;
-            errorResponse.errorMessage = e.getMessage();
-            return errorResponse;
-        }
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-            TableDataResponse response = new TableDataResponse();
-            response.isSuccessful = true;
-
-            response.tableInfos = new ArrayList<>();
-            for (int i = 0; i < cursor.getColumnCount(); i++) {
-                TableDataResponse.TableInfo tableInfo = new TableDataResponse.TableInfo();
-                tableInfo.title = cursor.getColumnName(i);
-                tableInfo.isPrimary = false;
-
-                response.tableInfos.add(tableInfo);
-            }
-
-            response.rows = new ArrayList<>();
-            if (cursor.getCount() > 0) {
-                do {
-                    List<ColumnData> row = new ArrayList<>();
-                    for (int i = 0; i < cursor.getColumnCount(); i++) {
-                        ColumnData columnData = new ColumnData();
-                        switch (cursor.getType(i)) {
-                            case Cursor.FIELD_TYPE_BLOB:
-                                columnData.dataType = DataType.TEXT;
-                                columnData.value = ConverterUtils.blobToString(cursor.getBlob(i));
-                                break;
-                            case Cursor.FIELD_TYPE_FLOAT:
-                                columnData.dataType = DataType.REAL;
-                                columnData.value = cursor.getDouble(i);
-                                break;
-                            case Cursor.FIELD_TYPE_INTEGER:
-                                columnData.dataType = DataType.INTEGER;
-                                columnData.value = cursor.getLong(i);
-                                break;
-                            case Cursor.FIELD_TYPE_STRING:
-                                columnData.dataType = DataType.TEXT;
-                                columnData.value = cursor.getString(i);
-                                break;
-                            default:
-                                columnData.dataType = DataType.TEXT;
-                                columnData.value = cursor.getString(i);
-                        }
-                        row.add(columnData);
-                    }
-                    response.rows.add(row);
-
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
-            return response;
-        } else {
-            TableDataResponse errorResponse = new TableDataResponse();
-            errorResponse.isSuccessful = false;
-            errorResponse.errorMessage = "Cursor is null";
-            return errorResponse;
-        }
-    }
-
-    public Response getDBList() {
+    private Response getDBList() {
         databaseFiles = DatabaseFileProvider.getDatabaseFiles(mContext);
         Response response = new Response();
         if (databaseFiles != null) {
@@ -481,6 +319,5 @@ public class ClientServer implements Runnable {
         response.isSuccessful = true;
         return response;
     }
-
 
 }
