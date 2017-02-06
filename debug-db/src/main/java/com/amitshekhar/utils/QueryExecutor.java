@@ -90,7 +90,7 @@ public class QueryExecutor {
                                 break;
                             case Cursor.FIELD_TYPE_FLOAT:
                                 columnData.dataType = DataType.REAL;
-                                columnData.value = cursor.getFloat(i);
+                                columnData.value = cursor.getDouble(i);
                                 break;
                             case Cursor.FIELD_TYPE_INTEGER:
                                 columnData.dataType = DataType.INTEGER;
