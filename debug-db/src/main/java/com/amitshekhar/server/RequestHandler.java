@@ -90,7 +90,7 @@ public class RequestHandler {
             output = new PrintStream(socket.getOutputStream());
 
             if (route == null || route.isEmpty()) {
-                route = "debugDbHome/index.html";
+                route = "index.html";
             }
 
             byte[] bytes;
