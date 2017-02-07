@@ -230,7 +230,7 @@ public class RequestHandler {
         if (Constants.APP_SHARED_PREFERENCES.equals(database)) {
             response = PrefHelper.getAllPrefTableName(mContext);
             closeDatabase();
-            mSelectedDatabase = null;
+            mSelectedDatabase = Constants.APP_SHARED_PREFERENCES;
         } else {
             openDatabase(database);
             response = DatabaseHelper.getAllTableName(mDatabase);
@@ -247,7 +247,11 @@ public class RequestHandler {
             String updatedData = uri.getQueryParameter("updatedData");
             List<RowDataRequest> rowDataRequests = mGson.fromJson(updatedData, new TypeToken<List<RowDataRequest>>() {
             }.getType());
-            response = DatabaseHelper.updateRow(mDatabase, tableName, rowDataRequests);
+            if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
+                response = PrefHelper.updateRow(mContext, tableName, rowDataRequests);
+            } else {
+                response = DatabaseHelper.updateRow(mDatabase, tableName, rowDataRequests);
+            }
             return mGson.toJson(response);
         } catch (Exception e) {
             e.printStackTrace();
