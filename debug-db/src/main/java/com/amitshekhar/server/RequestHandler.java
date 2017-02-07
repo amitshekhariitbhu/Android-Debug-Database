@@ -106,6 +106,9 @@ public class RequestHandler {
             } else if (route.startsWith("updateTableData")) {
                 final String response = updateTableDataAndGetResponse(route);
                 bytes = response.getBytes();
+            } else if (route.startsWith("deleteTableData")) {
+                final String response = deleteTableDataAndGetResponse(route);
+                bytes = response.getBytes();
             } else if (route.startsWith("query")) {
                 final String response = executeQueryAndGetResponse(route);
                 bytes = response.getBytes();
@@ -268,6 +271,29 @@ public class RequestHandler {
                 response = PrefHelper.updateRow(mContext, tableName, rowDataRequests);
             } else {
                 response = DatabaseHelper.updateRow(mDatabase, tableName, rowDataRequests);
+            }
+            return mGson.toJson(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new UpdateRowResponse();
+            response.isSuccessful = false;
+            return mGson.toJson(response);
+        }
+    }
+
+
+    private String deleteTableDataAndGetResponse(String route) {
+        UpdateRowResponse response;
+        try {
+            Uri uri = Uri.parse(URLDecoder.decode(route, "UTF-8"));
+            String tableName = uri.getQueryParameter("tableName");
+            String updatedData = uri.getQueryParameter("deleteData");
+            List<RowDataRequest> rowDataRequests = mGson.fromJson(updatedData, new TypeToken<List<RowDataRequest>>() {
+            }.getType());
+            if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
+                response = PrefHelper.deleteRow(mContext, tableName, rowDataRequests);
+            } else {
+                response = DatabaseHelper.deleteRow(mDatabase, tableName, rowDataRequests);
             }
             return mGson.toJson(response);
         } catch (Exception e) {
