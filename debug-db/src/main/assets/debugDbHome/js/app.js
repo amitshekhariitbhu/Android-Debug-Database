@@ -291,6 +291,7 @@ function deleteTableData(deleteData, callback) {
                 if(response.isSuccessful){
                    console.log("Data deleted successfully");
                    callback(true);
+                   showSuccessInfo("Data Deleted Successfully");
                 } else {
                    console.log("Data delete failed");
                    callback(false);

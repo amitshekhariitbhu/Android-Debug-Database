@@ -487,7 +487,6 @@
             that._emitEvent("delete-row", [
                             JSON.stringify(data),
                             function(isDeleted) {
-                                //remove existing alert elements
                                if (isDeleted) {
                                     dt.row({
                                         selected: true
