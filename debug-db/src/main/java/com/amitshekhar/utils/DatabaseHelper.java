@@ -63,7 +63,7 @@ public class DatabaseHelper {
     public static TableDataResponse getTableData(SQLiteDatabase db, String selectQuery, String tableName) {
 
         TableDataResponse tableData = new TableDataResponse();
-
+        tableData.isSelectQuery = true;
         if (tableName == null) {
             tableName = getTableName(selectQuery);
         }
@@ -239,18 +239,19 @@ public class DatabaseHelper {
         return updateRowResponse;
     }
 
-    public static Response exec(SQLiteDatabase database, String sql) {
-        Response response = new Response();
+    public static TableDataResponse exec(SQLiteDatabase database, String sql) {
+        TableDataResponse tableDataResponse = new TableDataResponse();
+        tableDataResponse.isSelectQuery = false;
         try {
             database.execSQL(sql);
         } catch (Exception e) {
             e.printStackTrace();
-            response.isSuccessful = false;
-            response.error = e.getMessage();
-            return response;
+            tableDataResponse.isSuccessful = false;
+            tableDataResponse.errorMessage = e.getMessage();
+            return tableDataResponse;
         }
-        response.isSuccessful = true;
-        return response;
+        tableDataResponse.isSuccessful = true;
+        return tableDataResponse;
     }
 
     private static String getTableName(String selectQuery) {
