@@ -213,12 +213,14 @@ function updateTableData(updatedData, callback) {
         type: 'GET',
         data: requestParameters,
         success: function(response) {
-            console.log("Data updated successfully");
-            callback(true);
-        },
-        error: function(xhr, status, error) {
-            console.log("Data updated failed");
-            callback(false);
+            response = JSON.parse(response);
+            if(response.isSuccessful){
+               console.log("Data updated successfully");
+               callback(true);
+            } else {
+               console.log("Data updated failed");
+               callback(false);
+            }
         }
     })
 }
