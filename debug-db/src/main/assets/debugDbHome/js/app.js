@@ -147,7 +147,7 @@ function inflateData(result){
         }
 
        $("#db-data-div").remove();
-       $("#parent-data-div").append('<div id="db-data-div"><table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered display" id="db-data"></table></div>');
+       $("#parent-data-div").append('<div id="db-data-div"><table class="display nowrap" cellpadding="0" border="0" cellspacing="0" width="100%" class="table table-striped table-bordered display" id="db-data"></table></div>');
 
        $(tableId).dataTable({
            "data": columnData,
@@ -161,7 +161,6 @@ function inflateData(result){
            "iDisplayLength": 10,
            "dom": "Bfrtip",
             select: 'single',
-            responsive: true,
             altEditor: true,     // Enable altEditor
             buttons: [
                 {
