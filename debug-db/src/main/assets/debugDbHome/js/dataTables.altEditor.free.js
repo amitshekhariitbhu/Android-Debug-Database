@@ -278,6 +278,18 @@
                     case 'boolean':
                         inputType = "checkbox";
                         break;
+                    case 'long':
+                        inputType = "number";
+                        break;
+                    case 'float':
+                        inputType = "number";
+                        break;
+                    case 'text':
+                        inputType = "text";
+                        break;
+                    case 'string_set':
+                        inputType = "text";
+                        break;
                 }
                 //set input to read-only if it is a primary key
                 if (columnDefs[j].isPrimary) {
