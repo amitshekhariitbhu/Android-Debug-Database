@@ -152,11 +152,15 @@ public class RequestHandler {
     }
 
     private void openDatabase(String database) {
+        closeDatabase();
         mDatabase = mContext.openOrCreateDatabase(database, 0, null);
         isDbOpened = true;
     }
 
     private void closeDatabase() {
+        if (mDatabase != null && mDatabase.isOpen()) {
+            mDatabase.close();
+        }
         mDatabase = null;
         isDbOpened = false;
     }
