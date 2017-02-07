@@ -124,6 +124,7 @@ function inflateData(result){
 
       if(!result.isSelectQuery){
          showSuccessInfo("Query Executed Successfully");
+         return;
       }
 
       var columnHeader = result.tableInfos;
