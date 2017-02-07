@@ -183,7 +183,7 @@ public class DatabaseHelper {
 
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 
-        if (rowDataRequests == null) {
+        if (rowDataRequests == null || tableName == null) {
             updateRowResponse.isSuccessful = false;
             return updateRowResponse;
         }

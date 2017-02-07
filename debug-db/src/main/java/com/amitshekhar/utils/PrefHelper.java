@@ -23,11 +23,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.amitshekhar.model.Response;
+import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
+import com.amitshekhar.model.UpdateRowResponse;
+
+import org.json.JSONArray;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -133,5 +138,51 @@ public class PrefHelper {
 
         return response;
 
+    }
+
+    public static UpdateRowResponse updateRow(Context context, String tableName, List<RowDataRequest> rowDataRequests) {
+        UpdateRowResponse updateRowResponse = new UpdateRowResponse();
+
+        RowDataRequest rowDataKey = rowDataRequests.get(0);
+        RowDataRequest rowDataValue = rowDataRequests.get(1);
+
+        String key = rowDataKey.value;
+        String value = rowDataValue.value;
+
+        SharedPreferences preferences = context.getSharedPreferences(tableName, Context.MODE_PRIVATE);
+        Map<String, ?> allEntries = preferences.getAll();
+
+        Object prevValue = allEntries.get(key);
+
+        try {
+            if (prevValue instanceof String) {
+                preferences.edit().putString(key, value).apply();
+                updateRowResponse.isSuccessful = true;
+            } else if (prevValue instanceof Integer) {
+                preferences.edit().putInt(key, Integer.valueOf(value)).apply();
+                updateRowResponse.isSuccessful = true;
+            } else if (prevValue instanceof Long) {
+                preferences.edit().putLong(key, Long.valueOf(value)).apply();
+                updateRowResponse.isSuccessful = true;
+            } else if (prevValue instanceof Float) {
+                preferences.edit().putFloat(key, Float.valueOf(value)).apply();
+                updateRowResponse.isSuccessful = true;
+            } else if (prevValue instanceof Boolean) {
+                preferences.edit().putBoolean(key, Boolean.valueOf(value)).apply();
+                updateRowResponse.isSuccessful = true;
+            } else if (prevValue instanceof Set) {
+                JSONArray jsonArray = new JSONArray(value);
+                Set<String> stringSet = new HashSet<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    stringSet.add(jsonArray.getString(i));
+                }
+                preferences.edit().putStringSet(key, stringSet).apply();
+                updateRowResponse.isSuccessful = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return updateRowResponse;
     }
 }
