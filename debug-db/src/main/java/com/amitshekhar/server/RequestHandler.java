@@ -216,7 +216,7 @@ public class RequestHandler {
             if (query != null) {
                 first = query.split(" ")[0].toLowerCase();
                 if (first.equals("select")) {
-                    TableDataResponse response = DatabaseHelper.query(mDatabase, query);
+                    TableDataResponse response = DatabaseHelper.getTableData(mDatabase, query, null);
                     data = mGson.toJson(response);
                 } else {
                     Response response = DatabaseHelper.exec(mDatabase, query);
