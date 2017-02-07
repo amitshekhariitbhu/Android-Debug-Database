@@ -163,6 +163,11 @@ function inflateData(result){
                     extend: 'selected', // Bind to Selected row
                     text: 'Edit',
                     name: 'edit'        // do not change name
+                },
+                {
+                    extend: 'selected',
+                    text: 'Delete',
+                    name: 'delete'
                 }
             ]
        })
@@ -179,6 +184,26 @@ function inflateData(result){
             //send update table data request to server
             updateTableData(data, callback);
        });
+
+
+       //attach delete-updated listener
+       $(tableId).on('delete-row.dt', function (e, updatedRowData, callback) {
+            var deleteRowDataArray = JSON.parse(updatedRowData);
+
+            console.log(deleteRowDataArray);
+
+            //add value for each column
+            var data = columnHeader;
+            for(var i = 0; i < data.length; i++) {
+                data[i].value = deleteRowDataArray[i].value;
+                data[i].dataType = deleteRowDataArray[i].dataType;
+
+            }
+
+            //send delete table data request to server
+            deleteTableData(data, callback);
+       });
+
        // hack to fix alignment issue when scrollX is enabled
        $(".dataTables_scrollHeadInner").css({"width":"100%"});
        $(".table ").css({"width":"100%"});
@@ -222,6 +247,45 @@ function updateTableData(updatedData, callback) {
                callback(false);
             }
         }
+    })
+}
+
+
+function deleteTableData(deleteData, callback) {
+
+    var selectedTableElement = $("#table-list .list-group-item.selected");
+        var filteredUpdatedData = deleteData.map(function(columnData){
+            return {
+                title: columnData.title,
+                isPrimary: columnData.isPrimary,
+                value: columnData.value,
+                dataType: columnData.dataType
+            }
+        });
+
+        console.log(filteredUpdatedData);
+
+        //build request parameters
+        var requestParameters = {};
+        requestParameters.dbName = selectedTableElement.attr('data-db-name');
+        requestParameters.tableName = selectedTableElement.attr('data-table-name');;
+        requestParameters.deleteData = encodeURIComponent(JSON.stringify(filteredUpdatedData));
+
+        //execute request
+        $.ajax({
+            url: "deleteTableData",
+            type: 'GET',
+            data: requestParameters,
+            success: function(response) {
+                response = JSON.parse(response);
+                if(response.isSuccessful){
+                   console.log("Data deleted successfully");
+                   callback(true);
+                } else {
+                   console.log("Data delete failed");
+                   callback(false);
+                }
+            }
     })
 }
 

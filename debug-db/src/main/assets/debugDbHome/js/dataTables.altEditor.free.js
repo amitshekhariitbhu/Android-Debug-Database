@@ -412,9 +412,34 @@
 
             data += "<form name='altEditor-form' role='form'>";
             for (var i in columnDefs) {
+                var cellData = adata.data()[0][i];
 
-                data += "<div class='form-group'><label for='" + columnDefs[i].title + "'>" + columnDefs[i].title + " : </label><input  type='hidden'  id='" + columnDefs[i].title + "' name='" + columnDefs[i].title + "' placeholder='" + columnDefs[i].title + "' style='overflow:hidden'  class='form-control' value='" + adata.data()[0][i] + "' >" + adata.data()[0][i] + "</input></div>";
+                var inputType = "text";
+                switch (cellData.dataType) {
+                    case 'integer':
+                        inputType = "number";
+                        break;
+                    case 'real':
+                        inputType = "number";
+                        break;
+                    case 'boolean':
+                        inputType = "checkbox";
+                        break;
+                    case 'long':
+                        inputType = "number";
+                        break;
+                    case 'float':
+                        inputType = "number";
+                        break;
+                    case 'text':
+                        inputType = "text";
+                        break;
+                    case 'string_set':
+                        inputType = "text";
+                        break;
+                }
 
+                data += "<div class='form-group'><label for='" + columnDefs[i].title + "'>" + columnDefs[i].title + " : </label><input  type='hidden' data-type='" + inputType + "'  id='" + columnDefs[i].title + "' name='" + columnDefs[i].title + "' placeholder='" + columnDefs[i].title + "' style='overflow:hidden'  class='form-control' value='" + cellData.value + "' >" + cellData.value + "</input></div>";
             }
             data += "</form>";
 
@@ -434,6 +459,22 @@
             var that = this;
             var dt = this.s.dt;
 
+            var data = [];
+
+            $('form[name="altEditor-form"] input').each(function(i) {
+                var addToList = true;
+                var value = $(this).val();
+                value = $(this).val();
+
+                console.log("Value : " + value);
+                if (addToList){
+                    data.push({
+                        "value": value,
+                        "dataType": $(this).attr('data-type')
+                    });
+                }
+            });
+
             $('#altEditor-modal .modal-body .alert').remove();
 
             var message = '<div class="alert alert-success" role="alert">\
@@ -442,11 +483,25 @@
 
             $('#altEditor-modal .modal-body').append(message);
 
-            dt.row({
-                selected: true
-            }).remove();
 
-            dt.draw();
+            that._emitEvent("delete-row", [
+                            JSON.stringify(data),
+                            function(isDeleted) {
+                                //remove existing alert elements
+                               if (isDeleted) {
+                                    dt.row({
+                                        selected: true
+                                    }).remove();
+
+                                    dt.draw();
+                               }
+
+                                //remove existing alert elements
+                                $('#altEditor-modal').modal('hide');
+                            }
+                        ]);
+
+
 
         },
 
