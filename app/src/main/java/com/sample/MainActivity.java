@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 String email = "email_" + i;
                 String street = "street_" + i;
                 String place = "place_" + i;
-                contactDBHelper.insertContact(name, phone, email, street, place);
+                contactDBHelper.insertContact(name, phone, email, street, null);
             }
         }
 

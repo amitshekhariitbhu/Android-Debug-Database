@@ -35,6 +35,7 @@ import com.amitshekhar.utils.DatabaseHelper;
 import com.amitshekhar.utils.PrefHelper;
 import com.amitshekhar.utils.Utils;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
@@ -64,7 +65,7 @@ public class RequestHandler {
     public RequestHandler(Context context) {
         mContext = context;
         mAssets = context.getResources().getAssets();
-        mGson = new Gson();
+        mGson = new GsonBuilder().serializeNulls().create();
     }
 
     public void handle(Socket socket) throws IOException {
