@@ -201,25 +201,38 @@ public class RequestHandler {
 
     private String executeQueryAndGetResponse(String route) {
         String query = null;
-        if (route.contains("?query=")) {
-            query = route.substring(route.indexOf("=") + 1, route.length());
-        }
+        String data = null;
+        String first;
         try {
-            query = java.net.URLDecoder.decode(query, "UTF-8");
+            if (route.contains("?query=")) {
+                query = route.substring(route.indexOf("=") + 1, route.length());
+            }
+            try {
+                query = URLDecoder.decode(query, "UTF-8");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (query != null) {
+                first = query.split(" ")[0].toLowerCase();
+                if (first.equals("select")) {
+                    TableDataResponse response = DatabaseHelper.query(mDatabase, query);
+                    data = mGson.toJson(response);
+                } else {
+                    Response response = DatabaseHelper.exec(mDatabase, query);
+                    data = mGson.toJson(response);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        String first = query.split(" ")[0].toLowerCase();
-
-        String data;
-        if (first.equals("select")) {
-            TableDataResponse response = DatabaseHelper.query(mDatabase, query);
-            data = mGson.toJson(response);
-        } else {
-            Response response = DatabaseHelper.exec(mDatabase, query);
+        if (data == null) {
+            Response response = new Response();
+            response.isSuccessful = false;
             data = mGson.toJson(response);
         }
+
         return data;
     }
 
