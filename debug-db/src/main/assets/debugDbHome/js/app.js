@@ -300,17 +300,23 @@ function deleteTableData(deleteData, callback) {
 }
 
 function showSuccessInfo(message){
-    var snackbar = document.getElementById("snackbar")
-    snackbar.className = "show";
-    snackbar.style.backgroundColor = "#5cb85c";
-    snackbar.innerHTML = message;
-    setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 3000);
+    var snackbarId = "snackbar";
+    var snackbarElement = $("#"+snackbarId);
+    snackbarElement.addClass("show");
+    snackbarElement.css({"backgroundColor": "#5cb85c"});
+    snackbarElement.html(message)
+    setTimeout(function(){
+        snackbarElement.removeClass("show");
+    }, 3000);
 }
 
 function showErrorInfo(message){
-    var snackbar = document.getElementById("snackbar")
-    snackbar.className = "show";
-    snackbar.style.backgroundColor = "#d9534f";
-    snackbar.innerHTML = message;
-    setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 3000);
+    var snackbarId = "snackbar";
+    var snackbarElement = $("#"+snackbarId);
+    snackbarElement.addClass("show");
+    snackbarElement.css({"backgroundColor": "#d9534f"});
+    snackbarElement.html(message)
+    setTimeout(function(){
+        snackbarElement.removeClass("show");
+    }, 3000);
 }
