@@ -25,9 +25,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.sample.database.CarDBHelper;
 import com.sample.database.ContactDBHelper;
+import com.sample.utils.Utils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -84,5 +86,9 @@ public class MainActivity extends AppCompatActivity {
                 carDBHelper.insertCar(name, color, mileage);
             }
         }
+    }
+
+    public void showDebugDbAddress(View view) {
+        Utils.showDebugDBAddressLogToast(getApplicationContext());
     }
 }
