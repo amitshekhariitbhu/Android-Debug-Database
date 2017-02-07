@@ -222,7 +222,7 @@ public class RequestHandler {
                     TableDataResponse response = DatabaseHelper.getTableData(mDatabase, query, null);
                     data = mGson.toJson(response);
                 } else {
-                    Response response = DatabaseHelper.exec(mDatabase, query);
+                    TableDataResponse response = DatabaseHelper.exec(mDatabase, query);
                     data = mGson.toJson(response);
                 }
             }
