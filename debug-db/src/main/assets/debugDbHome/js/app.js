@@ -189,7 +189,7 @@ function inflateData(result){
        $(".table ").css({"width":"100%"});
    }else{
       if(!result.isSelectQuery){
-         showSuccessInfo("Query Execution Failed");
+         showErrorInfo("Query Execution Failed");
       }else {
          showErrorInfo("Some Error Occurred");
       }
@@ -240,7 +240,7 @@ function showSuccessInfo(message){
     snackbar.className = "show";
     snackbar.style.backgroundColor = "#5cb85c";
     snackbar.innerHTML = message;
-    setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 2000);
+    setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 3000);
 }
 
 function showErrorInfo(message){
@@ -248,5 +248,5 @@ function showErrorInfo(message){
     snackbar.className = "show";
     snackbar.style.backgroundColor = "#d9534f";
     snackbar.innerHTML = message;
-    setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 2000);
+    setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 3000);
 }
