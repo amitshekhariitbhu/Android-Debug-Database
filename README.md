@@ -35,7 +35,9 @@ That’s all, just start the application, you will see in the logcat an entry li
 
 Now open the provided link in your browser.
 
-Important : Your Android phone and laptop should be connected to the same Network (Wifi or LAN).
+Important:
+- Your Android phone and laptop should be connected to the same Network (Wifi or LAN).
+- If you are using it over usb, run `adb forward tcp:8080 tcp:8080`
 
 Note      : If you want use different port other than 8080. 
             In the app build.gradle file under buildTypes do the following change
@@ -56,6 +58,23 @@ You will see something like this :
 ### Working with emulator
 - Android Default Emulator: run `adb forward tcp:8080 tcp:8080` and open http://localhost:8080
 - Genymotion Emulator: Enable bridge from configure virtual device (option available in genymotion)
+
+### Getting address With toast, in case you missed the address log in logcat
+As this library is auto-initialize, if you want to get the address log, add the following method and call
+```java
+public static void showDebugDBAddressLogToast(Context context) {
+  if (BuildConfig.DEBUG) {
+     try {
+          Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
+          Method getAddressLog = debugDB.getMethod("getAddressLog");
+          Object value = getAddressLog.invoke(null);
+          Toast.makeText(context, (String) value, Toast.LENGTH_LONG).show();
+     } catch (Exception ignore) {
+
+     }
+  }
+}
+```
 
 ### Find this project useful ? :heart:
 * Support it by clicking the :star: button on the upper right of this page. :v:
