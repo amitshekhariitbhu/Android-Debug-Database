@@ -118,10 +118,11 @@
                 <label for="query">Query</label>
                 <input class="form-control" id="query">
             </div>
-            <button id="selected-db-info" type="button" onclick="downloadDb()" class="btn btn-info">Welcome</button>
-            <button id="success-info" type="button" class="btn btn-success display-none">Query Executed</button>
-            <button id="error-info" type="button" class="btn btn-danger display-none">Query Not Executed</button>
-            <button id="run-query" type="submit" onclick="queryFunction()" class="btn btn-primary pull-right disabled">Run
+            <button id="selected-db-info" type="button" onclick="downloadDb()" class="btn btn-info">
+                Welcome
+            </button>
+            <button id="run-query" type="submit" onclick="queryFunction()"
+                    class="btn btn-primary pull-right disabled">Run
                 Query
             </button>
         </div>
@@ -152,6 +153,8 @@
             </div>
         </div>
     </div>
+
+    <div id="snackbar">Data Updated Successfully</div>
 
 </div>
 

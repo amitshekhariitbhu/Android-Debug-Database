@@ -88,6 +88,7 @@ public class PrefHelper {
 
         TableDataResponse response = new TableDataResponse();
         response.isSuccessful = true;
+        response.isSelectQuery = true;
 
         TableDataResponse.TableInfo keyInfo = new TableDataResponse.TableInfo();
         keyInfo.isPrimary = true;
