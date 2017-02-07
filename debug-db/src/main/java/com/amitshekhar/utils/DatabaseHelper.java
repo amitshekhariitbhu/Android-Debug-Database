@@ -205,6 +205,9 @@ public class DatabaseHelper {
         List<String> whereArgsList = new ArrayList<>();
 
         for (RowDataRequest rowDataRequest : rowDataRequests) {
+            if (Constants.NULL.equals(rowDataRequest.value)) {
+                rowDataRequest.value = null;
+            }
             if (rowDataRequest.isPrimary) {
                 if (whereClause == null) {
                     whereClause = rowDataRequest.title + "=? ";
@@ -254,6 +257,9 @@ public class DatabaseHelper {
         List<String> whereArgsList = new ArrayList<>();
 
         for (RowDataRequest rowDataRequest : rowDataRequests) {
+            if (Constants.NULL.equals(rowDataRequest.value)) {
+                rowDataRequest.value = null;
+            }
             if (rowDataRequest.isPrimary) {
                 if (whereClause == null) {
                     whereClause = rowDataRequest.title + "=? ";
@@ -279,7 +285,6 @@ public class DatabaseHelper {
         updateRowResponse.isSuccessful = true;
         return updateRowResponse;
     }
-
 
 
     public static TableDataResponse exec(SQLiteDatabase database, String sql) {
