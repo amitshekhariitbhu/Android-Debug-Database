@@ -239,6 +239,49 @@ public class DatabaseHelper {
         return updateRowResponse;
     }
 
+
+    public static UpdateRowResponse deleteRow(SQLiteDatabase db, String tableName, List<RowDataRequest> rowDataRequests) {
+
+        UpdateRowResponse updateRowResponse = new UpdateRowResponse();
+
+        if (rowDataRequests == null || tableName == null) {
+            updateRowResponse.isSuccessful = false;
+            return updateRowResponse;
+        }
+
+
+        String whereClause = null;
+        List<String> whereArgsList = new ArrayList<>();
+
+        for (RowDataRequest rowDataRequest : rowDataRequests) {
+            if (rowDataRequest.isPrimary) {
+                if (whereClause == null) {
+                    whereClause = rowDataRequest.title + "=? ";
+                } else {
+                    whereClause = "and " + rowDataRequest.title + "=? ";
+                }
+                whereArgsList.add(rowDataRequest.value);
+            }
+        }
+
+        if (whereArgsList.size() == 0) {
+            updateRowResponse.isSuccessful = true;
+            return updateRowResponse;
+        }
+
+        String[] whereArgs = new String[whereArgsList.size()];
+
+        for (int i = 0; i < whereArgsList.size(); i++) {
+            whereArgs[i] = whereArgsList.get(i);
+        }
+
+        db.delete(tableName, whereClause, whereArgs);
+        updateRowResponse.isSuccessful = true;
+        return updateRowResponse;
+    }
+
+
+
     public static TableDataResponse exec(SQLiteDatabase database, String sql) {
         TableDataResponse tableDataResponse = new TableDataResponse();
         tableDataResponse.isSelectQuery = false;

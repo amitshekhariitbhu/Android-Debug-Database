@@ -198,4 +198,30 @@ public class PrefHelper {
 
         return updateRowResponse;
     }
+
+
+    public static UpdateRowResponse deleteRow(Context context, String tableName, List<RowDataRequest> rowDataRequests) {
+        UpdateRowResponse updateRowResponse = new UpdateRowResponse();
+
+        if (tableName == null) {
+            return updateRowResponse;
+        }
+
+        RowDataRequest rowDataKey = rowDataRequests.get(0);
+
+        String key = rowDataKey.value;
+
+
+        SharedPreferences preferences = context.getSharedPreferences(tableName, Context.MODE_PRIVATE);
+
+        try {
+            preferences.edit()
+                    .remove(key).apply();
+            updateRowResponse.isSuccessful = true;
+        } catch (Exception ex) {
+            updateRowResponse.isSuccessful = false;
+        }
+
+        return updateRowResponse;
+    }
 }
