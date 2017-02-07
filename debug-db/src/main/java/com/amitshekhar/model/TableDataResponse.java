@@ -32,6 +32,7 @@ public class TableDataResponse {
     public List<Object> rows;
     public String errorMessage;
     public boolean isEditable;
+    public boolean isSelectQuery;
 
     public static class TableInfo {
         public String title;

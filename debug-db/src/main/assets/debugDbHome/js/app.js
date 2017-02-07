@@ -121,7 +121,11 @@ function openDatabaseAndGetTableList(db) {
 function inflateData(result){
 
    if(result.isSuccessful){
-      showSuccessInfo();
+
+      if(!result.isSelectQuery){
+         showSuccessInfo("Query Executed Successfully");
+      }
+
       var columnHeader = result.tableInfos;
 
       // set function to return cell data for different usages like set, display, filter, search etc..
@@ -183,7 +187,11 @@ function inflateData(result){
        $(".dataTables_scrollHeadInner").css({"width":"100%"});
        $(".table ").css({"width":"100%"});
    }else{
-      showErrorInfo();
+      if(!result.isSelectQuery){
+         showSuccessInfo("Query Execution Failed");
+      }else {
+         showErrorInfo("Some Error Occurred");
+      }
    }
 
 }
@@ -217,6 +225,7 @@ function updateTableData(updatedData, callback) {
             if(response.isSuccessful){
                console.log("Data updated successfully");
                callback(true);
+               showSuccessInfo("Data Updated Successfully");
             } else {
                console.log("Data updated failed");
                callback(false);
@@ -225,17 +234,18 @@ function updateTableData(updatedData, callback) {
     })
 }
 
-function showSuccessInfo(){
-    $("#success-info").show();
-    $("#error-info").hide();
+function showSuccessInfo(message){
+    var snackbar = document.getElementById("snackbar")
+    snackbar.className = "show";
+    snackbar.style.backgroundColor = "#5cb85c";
+    snackbar.innerHTML = message;
+    setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 2000);
 }
 
-function showErrorInfo(){
-    $("#success-info").hide();
-    $("#error-info").show();
-}
-
-function hideBothInfo(){
-    $("#success-info").hide();
-    $("#error-info").hide();
+function showErrorInfo(message){
+    var snackbar = document.getElementById("snackbar")
+    snackbar.className = "show";
+    snackbar.style.backgroundColor = "#d9534f";
+    snackbar.innerHTML = message;
+    setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 2000);
 }
