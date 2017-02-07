@@ -348,8 +348,7 @@
             that._emitEvent("update-row", [
                 JSON.stringify(data),
                 function(isUpdated) {
-                    //remove existing alert elements
-                    $('#altEditor-modal .modal-body .alert').remove();
+
 
                     //set error message and other properties based on whether update is successfull or not
                     var alertAdditionClasses = "alert-success";
@@ -378,6 +377,8 @@
                         dt.row({
                             selected: true
                         }).data(data);
+                        //remove existing alert elements
+                        $('#altEditor-modal').modal('hide');
                     }
                     $("#editRowBtn").removeClass('disabled');
                     $("#editRowBtn").text(editButtonCurrentText);
