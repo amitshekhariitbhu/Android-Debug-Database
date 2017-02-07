@@ -87,6 +87,19 @@ public class DatabaseHelper {
 
         if (cursor != null) {
             cursor.moveToFirst();
+
+            // setting tableInfo when tableName is not known and making
+            // it non-editable also by making isPrimary true for all
+            if (tableData.tableInfos == null) {
+                tableData.tableInfos = new ArrayList<>();
+                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                    TableDataResponse.TableInfo tableInfo = new TableDataResponse.TableInfo();
+                    tableInfo.title = cursor.getColumnName(i);
+                    tableInfo.isPrimary = true;
+                    tableData.tableInfos.add(tableInfo);
+                }
+            }
+
             tableData.isSuccessful = true;
             tableData.rows = new ArrayList<>();
             if (cursor.getCount() > 0) {
