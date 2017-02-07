@@ -121,13 +121,13 @@ public class PrefHelper {
                 } else if (entry.getValue() instanceof Integer) {
                     valueColumnData.dataType = DataType.INTEGER;
                 } else if (entry.getValue() instanceof Long) {
-                    valueColumnData.dataType = DataType.INTEGER;
+                    valueColumnData.dataType = DataType.LONG;
                 } else if (entry.getValue() instanceof Float) {
-                    valueColumnData.dataType = DataType.REAL;
+                    valueColumnData.dataType = DataType.FLOAT;
                 } else if (entry.getValue() instanceof Boolean) {
                     valueColumnData.dataType = DataType.BOOLEAN;
                 } else if (entry.getValue() instanceof Set) {
-                    valueColumnData.dataType = DataType.TEXT;
+                    valueColumnData.dataType = DataType.STRING_SET;
                 }
             } else {
                 valueColumnData.dataType = DataType.TEXT;
@@ -143,41 +143,53 @@ public class PrefHelper {
     public static UpdateRowResponse updateRow(Context context, String tableName, List<RowDataRequest> rowDataRequests) {
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 
+        if (tableName == null) {
+            return updateRowResponse;
+        }
+
         RowDataRequest rowDataKey = rowDataRequests.get(0);
         RowDataRequest rowDataValue = rowDataRequests.get(1);
 
         String key = rowDataKey.value;
         String value = rowDataValue.value;
+        String dataType = rowDataValue.dataType;
 
         SharedPreferences preferences = context.getSharedPreferences(tableName, Context.MODE_PRIVATE);
-        Map<String, ?> allEntries = preferences.getAll();
-
-        Object prevValue = allEntries.get(key);
 
         try {
-            if (prevValue instanceof String) {
-                preferences.edit().putString(key, value).apply();
-                updateRowResponse.isSuccessful = true;
-            } else if (prevValue instanceof Integer) {
-                preferences.edit().putInt(key, Integer.valueOf(value)).apply();
-                updateRowResponse.isSuccessful = true;
-            } else if (prevValue instanceof Long) {
-                preferences.edit().putLong(key, Long.valueOf(value)).apply();
-                updateRowResponse.isSuccessful = true;
-            } else if (prevValue instanceof Float) {
-                preferences.edit().putFloat(key, Float.valueOf(value)).apply();
-                updateRowResponse.isSuccessful = true;
-            } else if (prevValue instanceof Boolean) {
-                preferences.edit().putBoolean(key, Boolean.valueOf(value)).apply();
-                updateRowResponse.isSuccessful = true;
-            } else if (prevValue instanceof Set) {
-                JSONArray jsonArray = new JSONArray(value);
-                Set<String> stringSet = new HashSet<>();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    stringSet.add(jsonArray.getString(i));
-                }
-                preferences.edit().putStringSet(key, stringSet).apply();
-                updateRowResponse.isSuccessful = true;
+            switch (dataType) {
+                case DataType.TEXT:
+                    preferences.edit().putString(key, value).apply();
+                    updateRowResponse.isSuccessful = true;
+                    break;
+                case DataType.INTEGER:
+                    preferences.edit().putInt(key, Integer.valueOf(value)).apply();
+                    updateRowResponse.isSuccessful = true;
+                    break;
+                case DataType.LONG:
+                    preferences.edit().putLong(key, Long.valueOf(value)).apply();
+                    updateRowResponse.isSuccessful = true;
+                    break;
+                case DataType.FLOAT:
+                    preferences.edit().putFloat(key, Float.valueOf(value)).apply();
+                    updateRowResponse.isSuccessful = true;
+                    break;
+                case DataType.BOOLEAN:
+                    preferences.edit().putBoolean(key, Boolean.valueOf(value)).apply();
+                    updateRowResponse.isSuccessful = true;
+                    break;
+                case DataType.STRING_SET:
+                    JSONArray jsonArray = new JSONArray(value);
+                    Set<String> stringSet = new HashSet<>();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        stringSet.add(jsonArray.getString(i));
+                    }
+                    preferences.edit().putStringSet(key, stringSet).apply();
+                    updateRowResponse.isSuccessful = true;
+                    break;
+                default:
+                    preferences.edit().putString(key, value).apply();
+                    updateRowResponse.isSuccessful = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
