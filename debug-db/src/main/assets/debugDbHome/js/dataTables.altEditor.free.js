@@ -259,7 +259,7 @@
                 var option1Checked = "";
                 var option2Checked = "checked";
                 if (cellData.dataType == "boolean") {
-                    if(cellData.value) {
+                    if(JSON.parse(cellData.value)) {
                         option1Checked = "checked";
                         option2Checked = "";
                     }
