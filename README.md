@@ -61,7 +61,7 @@ You will see something like this :
 
 ### Getting address With toast, in case you missed the address log in logcat
 As this library is auto-initialize, if you want to get the address log only in debug build, add the following method and call
-`java
+```java
 public static void showDebugDBAddressLogToast(Context context) {
   if (BuildConfig.DEBUG) {
      try {
@@ -74,7 +74,7 @@ public static void showDebugDBAddressLogToast(Context context) {
          }
   }
 }
-`
+```
 
 ### Find this project useful ? :heart:
 * Support it by clicking the :star: button on the upper right of this page. :v:
