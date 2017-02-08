@@ -22,7 +22,7 @@
 ### Using Android Debug Database Library in your application
 Add this to your app's build.gradle
 ```groovy
-debugCompile 'com.amitshekhar.android:debug-db:0.5.0'
+debugCompile 'com.amitshekhar.android:debug-db:1.0.0'
 ```
 
 Use `debugCompile` so that it will only compile in your debug build and not in your release apk.
@@ -81,7 +81,6 @@ public static void showDebugDBAddressLogToast(Context context) {
 
 ### TODO
 * Simplify emulator issue [Issue Link](https://github.com/amitshekhariitbhu/Android-Debug-Database/issues/6)
-* Edit shared preferences directly from the browser. At present, it is only possible to edit database values.
 * And of course many more features and bug fixes.
 
 ### Contact - Let's become friends
