@@ -155,6 +155,10 @@ public class PrefHelper {
         String value = rowDataValue.value;
         String dataType = rowDataValue.dataType;
 
+        if (Constants.NULL.equals(value)) {
+            value = null;
+        }
+
         SharedPreferences preferences = context.getSharedPreferences(tableName, Context.MODE_PRIVATE);
 
         try {
