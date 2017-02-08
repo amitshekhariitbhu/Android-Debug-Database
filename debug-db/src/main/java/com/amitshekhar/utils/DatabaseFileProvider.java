@@ -19,19 +19,30 @@
 
 package com.amitshekhar.utils;
 
+import android.content.Context;
+
+import java.io.File;
+import java.util.HashMap;
+
 /**
- * Created by amitshekhar on 16/11/16.
+ * Created by amitshekhar on 06/02/17.
  */
 
-public final class Constants {
+public class DatabaseFileProvider {
 
-    private Constants() {
+    private DatabaseFileProvider() {
         // This class in not publicly instantiable
     }
 
-    public static final String APP_SHARED_PREFERENCES = "APP_SHARED_PREFERENCES";
-    public static final String PK = "pk";
-    public static final String NAME = "name";
-    public static final String NULL = "null";
-
+    public static HashMap<String, File> getDatabaseFiles(Context context) {
+        HashMap<String, File> databaseFiles = new HashMap<>();
+        try {
+            for (String databaseName : context.databaseList()) {
+                databaseFiles.put(databaseName, context.getDatabasePath(databaseName));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return databaseFiles;
+    }
 }

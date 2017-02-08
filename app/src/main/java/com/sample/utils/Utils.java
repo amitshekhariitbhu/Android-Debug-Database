@@ -17,21 +17,35 @@
  *
  */
 
-package com.amitshekhar.utils;
+package com.sample.utils;
+
+import android.content.Context;
+import android.widget.Toast;
+
+import com.sample.BuildConfig;
+
+import java.lang.reflect.Method;
 
 /**
- * Created by amitshekhar on 16/11/16.
+ * Created by amitshekhar on 07/02/17.
  */
 
-public final class Constants {
+public class Utils {
 
-    private Constants() {
-        // This class in not publicly instantiable
+    private Utils() {
+
     }
 
-    public static final String APP_SHARED_PREFERENCES = "APP_SHARED_PREFERENCES";
-    public static final String PK = "pk";
-    public static final String NAME = "name";
-    public static final String NULL = "null";
+    public static void showDebugDBAddressLogToast(Context context) {
+        if (BuildConfig.DEBUG) {
+            try {
+                Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
+                Method getAddressLog = debugDB.getMethod("getAddressLog");
+                Object value = getAddressLog.invoke(null);
+                Toast.makeText(context, (String) value, Toast.LENGTH_LONG).show();
+            } catch (Exception ignore) {
 
+            }
+        }
+    }
 }
