@@ -20,18 +20,21 @@
 package com.amitshekhar.utils;
 
 /**
- * Created by amitshekhar on 16/11/16.
+ * Created by amitshekhar on 04/02/17.
  */
 
-public final class Constants {
+public class DataType {
 
-    private Constants() {
+    private DataType() {
         // This class in not publicly instantiable
     }
 
-    public static final String APP_SHARED_PREFERENCES = "APP_SHARED_PREFERENCES";
-    public static final String PK = "pk";
-    public static final String NAME = "name";
-    public static final String NULL = "null";
+    public static final String BOOLEAN = "boolean";
+    public static final String INTEGER = "integer";
+    public static final String REAL = "real";
+    public static final String TEXT = "text";
+    public static final String LONG = "long";
+    public static final String FLOAT = "float";
+    public static final String STRING_SET = "string_set";
 
 }

@@ -19,42 +19,42 @@
 
 package com.amitshekhar.utils;
 
-import android.content.Context;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
 
 /**
- * Created by amitshekhar on 16/11/16.
+ * Created by amitshekhar on 06/02/17.
  */
 
-public final class PrefUtils {
+public class ConverterUtils {
 
-    private static final String PREFS_SUFFIX = ".xml";
+    private static final int MAX_BLOB_LENGTH = 512;
 
-    private PrefUtils() {
+    private static final String UNKNOWN_BLOB_LABEL = "{blob}";
+
+    private ConverterUtils() {
         // This class in not publicly instantiable
     }
 
-    public static List<String> getSharedPreferenceTags(Context context) {
+    public static String blobToString(byte[] blob) {
+        if (blob.length <= MAX_BLOB_LENGTH) {
+            if (fastIsAscii(blob)) {
+                try {
+                    return new String(blob, "US-ASCII");
+                } catch (UnsupportedEncodingException ignored) {
 
-        ArrayList<String> tags = new ArrayList<>();
-
-        String rootPath = context.getApplicationInfo().dataDir + "/shared_prefs";
-        File root = new File(rootPath);
-        if (root.exists()) {
-            for (File file : root.listFiles()) {
-                String fileName = file.getName();
-                if (fileName.endsWith(PREFS_SUFFIX)) {
-                    tags.add(fileName.substring(0, fileName.length() - PREFS_SUFFIX.length()));
                 }
             }
         }
-
-        Collections.sort(tags);
-
-        return tags;
+        return UNKNOWN_BLOB_LABEL;
     }
+
+    public static boolean fastIsAscii(byte[] blob) {
+        for (byte b : blob) {
+            if ((b & ~0x7f) != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

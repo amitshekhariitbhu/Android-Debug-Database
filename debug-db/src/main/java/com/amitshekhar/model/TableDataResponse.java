@@ -17,21 +17,30 @@
  *
  */
 
-package com.amitshekhar.utils;
+package com.amitshekhar.model;
+
+import java.util.List;
 
 /**
- * Created by amitshekhar on 16/11/16.
+ * Created by amitshekhar on 04/02/17.
  */
 
-public final class Constants {
+public class TableDataResponse {
 
-    private Constants() {
-        // This class in not publicly instantiable
+    public List<TableInfo> tableInfos;
+    public boolean isSuccessful;
+    public List<Object> rows;
+    public String errorMessage;
+    public boolean isEditable;
+    public boolean isSelectQuery;
+
+    public static class TableInfo {
+        public String title;
+        public boolean isPrimary;
     }
-
-    public static final String APP_SHARED_PREFERENCES = "APP_SHARED_PREFERENCES";
-    public static final String PK = "pk";
-    public static final String NAME = "name";
-    public static final String NULL = "null";
+    public static class ColumnData {
+        public String dataType;
+        public Object value;
+    }
 
 }
