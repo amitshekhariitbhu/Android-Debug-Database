@@ -13,8 +13,8 @@
 * See all the data in the shared preferences used in your application.
 * Run any sql query on the given database to update and delete your data.
 * Directly edit the database values.
-* Directly edit shared preferences
-* Delete database rows and shared preferences
+* Directly edit shared preferences.
+* Delete database rows and shared preferences.
 * Search in your data.
 * Sort data.
 
