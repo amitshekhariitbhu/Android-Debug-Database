@@ -59,7 +59,7 @@ You will see something like this :
 <img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdb.png >
 
 ### Editing values
-<img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdbedit.png >
+<img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdb_edit.png >
 
 ### Working with emulator
 - Android Default Emulator: run `adb forward tcp:8080 tcp:8080` and open http://localhost:8080
