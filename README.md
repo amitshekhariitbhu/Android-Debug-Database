@@ -17,6 +17,7 @@
 * Delete database rows and shared preferences.
 * Search in your data.
 * Sort data.
+* Download database.
 
 ### Check out another awesome library for fast and simple networking in Android.
 * [Fast Android Networking Library](https://github.com/amitshekhariitbhu/Fast-Android-Networking)
