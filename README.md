@@ -13,8 +13,11 @@
 * See all the data in the shared preferences used in your application.
 * Run any sql query on the given database to update and delete your data.
 * Directly edit the database values.
+* Directly edit shared preferences.
+* Delete database rows and shared preferences.
 * Search in your data.
 * Sort data.
+* Download database.
 
 ### Check out another awesome library for fast and simple networking in Android.
 * [Fast Android Networking Library](https://github.com/amitshekhariitbhu/Fast-Android-Networking)
@@ -22,7 +25,7 @@
 ### Using Android Debug Database Library in your application
 Add this to your app's build.gradle
 ```groovy
-debugCompile 'com.amitshekhar.android:debug-db:0.5.0'
+debugCompile 'com.amitshekhar.android:debug-db:1.0.0'
 ```
 
 Use `debugCompile` so that it will only compile in your debug build and not in your release apk.
@@ -53,7 +56,11 @@ debug {
 
 You will see something like this :
 
+### Seeing values
 <img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdb.png >
+
+### Editing values
+<img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debugdb_edit.png >
 
 ### Working with emulator
 - Android Default Emulator: run `adb forward tcp:8080 tcp:8080` and open http://localhost:8080
@@ -81,8 +88,9 @@ public static void showDebugDBAddressLogToast(Context context) {
 
 ### TODO
 * Simplify emulator issue [Issue Link](https://github.com/amitshekhariitbhu/Android-Debug-Database/issues/6)
-* Edit shared preferences directly from the browser. At present, it is only possible to edit database values.
 * And of course many more features and bug fixes.
+
+###[Check out Mindorks awesome open source projects here](https://mindorks.com/open-source-projects)
 
 ### Contact - Let's become friends
 - [Twitter](https://twitter.com/amitiitbhu)
