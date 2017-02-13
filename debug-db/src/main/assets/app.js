@@ -164,6 +164,10 @@ function inflateData(result){
             altEditor: true,     // Enable altEditor
             buttons: [
                 {
+                    text : 'Add',
+                    name : 'add' // don not change name
+                },
+                {
                     extend: 'selected', // Bind to Selected row
                     text: 'Edit',
                     name: 'edit'        // do not change name
@@ -207,6 +211,24 @@ function inflateData(result){
             //send delete table data request to server
             deleteTableData(data, callback);
        });
+
+
+
+       $(tableId).on('add-row.dt', function (e, updatedRowData, callback) {
+                   var deleteRowDataArray = JSON.parse(updatedRowData);
+
+                   console.log(deleteRowDataArray);
+
+                   //add value for each column
+                   var data = columnHeader;
+                   for(var i = 0; i < data.length; i++) {
+                       data[i].value = deleteRowDataArray[i].value;
+                       data[i].dataType = deleteRowDataArray[i].dataType;
+                   }
+
+                   //send delete table data request to server
+                   addTableData(data, callback);
+              });
 
        // hack to fix alignment issue when scrollX is enabled
        $(".dataTables_scrollHeadInner").css({"width":"100%"});
@@ -272,8 +294,6 @@ function deleteTableData(deleteData, callback) {
             }
         });
 
-        console.log(filteredUpdatedData);
-
         //build request parameters
         var requestParameters = {};
         requestParameters.dbName = selectedTableElement.attr('data-db-name');
@@ -297,6 +317,47 @@ function deleteTableData(deleteData, callback) {
                 }
             }
     })
+}
+
+function addTableData(deleteData, callback) {
+
+    var selectedTableElement = $("#table-list .list-group-item.selected");
+    var filteredUpdatedData = deleteData.map(function(columnData){
+        return {
+            title: columnData.title,
+            isPrimary: columnData.isPrimary,
+            value: columnData.value,
+            dataType: columnData.dataType
+        }
+    });
+
+    console.log(filteredUpdatedData);
+
+    //build request parameters
+    var requestParameters = {};
+    requestParameters.dbName = selectedTableElement.attr('data-db-name');
+    requestParameters.tableName = selectedTableElement.attr('data-table-name');;
+    requestParameters.addData = encodeURIComponent(JSON.stringify(filteredUpdatedData));
+
+    console.log(requestParameters);
+
+    //execute request
+    $.ajax({
+        url: "addTableData",
+        type: 'GET',
+        data: requestParameters,
+        success: function(response) {
+            response = JSON.parse(response);
+            if(response.isSuccessful){
+               console.log("Data Added successfully");
+               callback(true);
+               showSuccessInfo("Data Added Successfully");
+            } else {
+               console.log("Data Adding failed");
+               callback(false);
+            }
+        }
+    });
 }
 
 function showSuccessInfo(message){

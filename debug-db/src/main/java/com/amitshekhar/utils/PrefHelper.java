@@ -141,7 +141,7 @@ public class PrefHelper {
 
     }
 
-    public static UpdateRowResponse updateRow(Context context, String tableName, List<RowDataRequest> rowDataRequests) {
+    public static UpdateRowResponse addOrUpdateRow(Context context, String tableName, List<RowDataRequest> rowDataRequests) {
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 
         if (tableName == null) {
