@@ -190,6 +190,46 @@ public class DatabaseHelper {
         return null;
     }
 
+
+    public static UpdateRowResponse addRow(SQLiteDatabase db, String tableName,
+                                           List<RowDataRequest> rowDataRequests) {
+        UpdateRowResponse updateRowResponse = new UpdateRowResponse();
+
+        if (rowDataRequests == null || tableName == null) {
+            updateRowResponse.isSuccessful = false;
+            return updateRowResponse;
+        }
+
+        ContentValues contentValues = new ContentValues();
+
+        for (RowDataRequest rowDataRequest : rowDataRequests) {
+            if (Constants.NULL.equals(rowDataRequest.value)) {
+                rowDataRequest.value = null;
+            }
+
+            switch (rowDataRequest.dataType) {
+                case DataType.INTEGER:
+                    contentValues.put(rowDataRequest.title, Long.valueOf(rowDataRequest.value));
+                    break;
+                case DataType.REAL:
+                    contentValues.put(rowDataRequest.title, Double.valueOf(rowDataRequest.value));
+                    break;
+                case DataType.TEXT:
+                    contentValues.put(rowDataRequest.title, rowDataRequest.value);
+                    break;
+                default:
+                    contentValues.put(rowDataRequest.title, rowDataRequest.value);
+                    break;
+            }
+        }
+
+        db.insert(tableName, null, contentValues);
+        updateRowResponse.isSuccessful = true;
+        return updateRowResponse;
+
+    }
+
+
     public static UpdateRowResponse updateRow(SQLiteDatabase db, String tableName, List<RowDataRequest> rowDataRequests) {
 
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
