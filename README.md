@@ -12,6 +12,8 @@
 
 ### Android Debug Database allows you to view databases and shared preferences directly in your browser in a very simple way.
 
+<img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debug_db_banner.png >
+
 ### What can Android Debug Database do?
 * See all the databases.
 * See all the data in the shared preferences used in your application.
