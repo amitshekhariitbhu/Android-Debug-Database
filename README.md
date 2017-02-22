@@ -1,3 +1,5 @@
+<img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debug_db_banner.png >
+
 # Android Debug Database
 
 [![Mindorks](https://img.shields.io/badge/mindorks-opensource-blue.svg)](https://mindorks.com/open-source-projects)
@@ -11,8 +13,6 @@
 ## Android Debug Database is a powerful library for debugging databases and shared preferences in Android applications.
 
 ### Android Debug Database allows you to view databases and shared preferences directly in your browser in a very simple way.
-
-<img src=https://raw.githubusercontent.com/amitshekhariitbhu/Android-Debug-Database/master/assets/debug_db_banner.png >
 
 ### What can Android Debug Database do?
 * See all the databases.
