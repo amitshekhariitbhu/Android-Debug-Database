@@ -3,7 +3,10 @@
 [![Mindorks](https://img.shields.io/badge/mindorks-opensource-blue.svg)](https://mindorks.com/open-source-projects)
 [![Android Weekly](https://img.shields.io/badge/Android%20Weekly-%23233-blue.svg)](http://androidweekly.net/issues/issue-233)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Android%20Debug%20Database-blue.svg?style=flat)](http://android-arsenal.com/details/1/4667)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/amitshekhariitbhu/Fast-Android-Networking/blob/master/LICENSE)
+[![API](https://img.shields.io/badge/API-9%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=9)
+[![Download](https://api.bintray.com/packages/amitshekhariitbhu/maven/debug-db/images/download.svg) ](https://bintray.com/amitshekhariitbhu/maven/debug-db/_latestVersion)
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=102)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/amitshekhariitbhu/Android-Debug-Database/blob/master/LICENSE)
 
 ## Android Debug Database is a powerful library for debugging databases and shared preferences in Android applications.
 
