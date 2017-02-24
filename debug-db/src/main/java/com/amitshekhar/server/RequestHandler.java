@@ -222,7 +222,7 @@ public class RequestHandler {
 
             if (query != null) {
                 first = query.split(" ")[0].toLowerCase();
-                if (first.equals("select")) {
+                if (first.equals("select") || first.equals("pragma")) {
                     TableDataResponse response = DatabaseHelper.getTableData(mDatabase, query, null);
                     data = mGson.toJson(response);
                 } else {
