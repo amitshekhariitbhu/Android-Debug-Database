@@ -25,6 +25,8 @@
 * Sort data.
 * Download database.
 
+### All these features work without rooting your device -> No need of rooted device
+
 ### Check out another awesome library for fast and simple networking in Android.
 * [Fast Android Networking Library](https://github.com/amitshekhariitbhu/Fast-Android-Networking)
 
