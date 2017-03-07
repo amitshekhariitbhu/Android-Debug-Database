@@ -223,8 +223,9 @@ public class DatabaseHelper {
             }
         }
 
-        db.insert(tableName, null, contentValues);
-        updateRowResponse.isSuccessful = true;
+        long result = db.insert(tableName, null, contentValues);
+        updateRowResponse.isSuccessful = result > 0;
+
         return updateRowResponse;
 
     }
