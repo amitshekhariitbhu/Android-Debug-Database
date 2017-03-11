@@ -108,7 +108,7 @@ public class CarDBHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("select * from cars", null);
         res.moveToFirst();
 
-        while (res.isAfterLast() == false) {
+        while (!res.isAfterLast()) {
             arrayList.add(res.getString(res.getColumnIndex(CARS_COLUMN_NAME)));
             res.moveToNext();
         }
