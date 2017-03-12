@@ -284,7 +284,8 @@ public class DatabaseHelper {
     }
 
 
-    public static UpdateRowResponse deleteRow(SQLiteDatabase db, String tableName, List<RowDataRequest> rowDataRequests) {
+    public static UpdateRowResponse deleteRow(SQLiteDatabase db, String tableName,
+                                              List<RowDataRequest> rowDataRequests) {
 
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 

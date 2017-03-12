@@ -33,7 +33,7 @@ import java.lang.reflect.Method;
 public class Utils {
 
     private Utils() {
-
+        // This class is not publicly instantiable
     }
 
     public static void showDebugDBAddressLogToast(Context context) {
