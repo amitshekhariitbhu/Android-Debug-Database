@@ -72,10 +72,16 @@ public class DatabaseHelper {
             final String pragmaQuery = "PRAGMA table_info(" + tableName + ")";
             tableData.tableInfos = getTableInfo(db, pragmaQuery);
         }
-
-        tableData.isEditable = tableName != null && tableData.tableInfos != null;
-
         Cursor cursor;
+        boolean isView = false;
+        try {
+            cursor = db.rawQuery("SELECT type FROM sqlite_master WHERE name=?", new String[]{tableName});
+            if (cursor.moveToFirst()) {
+                isView = "view".equalsIgnoreCase(cursor.getString(0));
+            }
+        } catch (Exception e) {}
+        tableData.isEditable = tableName != null && tableData.tableInfos != null && !isView;
+
         try {
             cursor = db.rawQuery(selectQuery, null);
         } catch (Exception e) {
