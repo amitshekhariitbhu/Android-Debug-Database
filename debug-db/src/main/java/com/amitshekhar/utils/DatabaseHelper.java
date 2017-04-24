@@ -43,7 +43,7 @@ public class DatabaseHelper {
 
     public static Response getAllTableName(SQLiteDatabase database) {
         Response response = new Response();
-        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table' OR type='view'", null);
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 response.rows.add(c.getString(0));
@@ -72,10 +72,22 @@ public class DatabaseHelper {
             final String pragmaQuery = "PRAGMA table_info(" + tableName + ")";
             tableData.tableInfos = getTableInfo(db, pragmaQuery);
         }
+        Cursor cursor = null;
+        boolean isView = false;
+        try {
+            cursor = db.rawQuery("SELECT type FROM sqlite_master WHERE name=?", new String[]{tableName});
+            if (cursor.moveToFirst()) {
+                isView = "view".equalsIgnoreCase(cursor.getString(0));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        tableData.isEditable = tableName != null && tableData.tableInfos != null && !isView;
 
-        tableData.isEditable = tableName != null && tableData.tableInfos != null;
-
-        Cursor cursor;
         try {
             cursor = db.rawQuery(selectQuery, null);
         } catch (Exception e) {
