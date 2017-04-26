@@ -149,20 +149,9 @@ function inflateData(result){
        $("#db-data-div").remove();
        $("#parent-data-div").append('<div id="db-data-div"><table class="display nowrap" cellpadding="0" border="0" cellspacing="0" width="100%" class="table table-striped table-bordered display" id="db-data"></table></div>');
 
-       $(tableId).dataTable({
-           "data": columnData,
-           "columnDefs": columnHeader,
-           'bPaginate': true,
-           'searching': true,
-           'bFilter': true,
-           'bInfo': true,
-           "bSort" : true,
-           "scrollX": true,
-           "iDisplayLength": 10,
-           "dom": "Bfrtip",
-            select: 'single',
-            altEditor: true,     // Enable altEditor
-            buttons: [
+       var availableButtons;
+       if (result.isEditable) {
+            availableButtons = [
                 {
                     text : 'Add',
                     name : 'add' // don not change name
@@ -177,7 +166,25 @@ function inflateData(result){
                     text: 'Delete',
                     name: 'delete'
                 }
-            ]
+            ];
+       } else {
+            availableButtons = [];
+       }
+
+       $(tableId).dataTable({
+           "data": columnData,
+           "columnDefs": columnHeader,
+           'bPaginate': true,
+           'searching': true,
+           'bFilter': true,
+           'bInfo': true,
+           "bSort" : true,
+           "scrollX": true,
+           "iDisplayLength": 10,
+           "dom": "Bfrtip",
+            select: 'single',
+            altEditor: true,     // Enable altEditor
+            buttons: availableButtons
        })
 
        //attach row-updated listener

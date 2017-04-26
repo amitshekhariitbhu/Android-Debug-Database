@@ -22,6 +22,8 @@ package com.amitshekhar.utils;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
@@ -29,6 +31,7 @@ import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -43,7 +46,7 @@ public class DatabaseHelper {
 
     public static Response getAllTableName(SQLiteDatabase database) {
         Response response = new Response();
-        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table' OR type='view'", null);
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 response.rows.add(c.getString(0));
@@ -72,10 +75,27 @@ public class DatabaseHelper {
             final String pragmaQuery = "PRAGMA table_info(" + tableName + ")";
             tableData.tableInfos = getTableInfo(db, pragmaQuery);
         }
+        Cursor cursor = null;
+        boolean isView = false;
+        try {
+            cursor = db.rawQuery("SELECT type FROM sqlite_master WHERE name=?", new String[]{tableName});
+            if (cursor.moveToFirst()) {
+                isView = "view".equalsIgnoreCase(cursor.getString(0));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        tableData.isEditable = tableName != null && tableData.tableInfos != null && !isView;
 
-        tableData.isEditable = tableName != null && tableData.tableInfos != null;
 
-        Cursor cursor;
+        if (!TextUtils.isEmpty(tableName)) {
+            selectQuery = selectQuery.replace(tableName, "[" + tableName + "]");
+        }
+
         try {
             cursor = db.rawQuery(selectQuery, null);
         } catch (Exception e) {
@@ -345,7 +365,16 @@ public class DatabaseHelper {
     }
 
     private static String getTableName(String selectQuery) {
-        // TODO find tableName from query and also handle JOIN query
+        // TODO: 24/4/17 Handle JOIN Query
+        TableNameParser tableNameParser = new TableNameParser(selectQuery);
+        HashSet<String> tableName = (HashSet<String>) tableNameParser.tables();
+
+        for (String table : tableName) {
+            if (!TextUtils.isEmpty(table)) {
+                return table;
+            }
+        }
+
         return null;
     }
 

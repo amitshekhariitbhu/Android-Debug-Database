@@ -87,6 +87,7 @@ public class PrefHelper {
     public static TableDataResponse getAllPrefData(Context context, String tag) {
 
         TableDataResponse response = new TableDataResponse();
+        response.isEditable = true;
         response.isSuccessful = true;
         response.isSelectQuery = true;
 
