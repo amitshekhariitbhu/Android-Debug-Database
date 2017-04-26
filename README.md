@@ -3,6 +3,7 @@
 # Android Debug Database
 
 [![Mindorks](https://img.shields.io/badge/mindorks-opensource-blue.svg)](https://mindorks.com/open-source-projects)
+[![Mindorks Community](https://img.shields.io/badge/join-community-blue.svg)](https://mindorks.com/join-community)
 [![Android Weekly](https://img.shields.io/badge/Android%20Weekly-%23233-blue.svg)](http://androidweekly.net/issues/issue-233)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Android%20Debug%20Database-blue.svg?style=flat)](http://android-arsenal.com/details/1/4667)
 [![API](https://img.shields.io/badge/API-9%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=9)
