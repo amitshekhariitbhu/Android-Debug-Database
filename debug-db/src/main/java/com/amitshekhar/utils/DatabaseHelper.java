@@ -71,14 +71,17 @@ public class DatabaseHelper {
             tableName = getTableName(selectQuery);
         }
 
+        final String quotedTableName = getQuotedTableName(tableName);
+
         if (tableName != null) {
-            final String pragmaQuery = "PRAGMA table_info(" + tableName + ")";
+            final String pragmaQuery = "PRAGMA table_info(" + quotedTableName + ")";
             tableData.tableInfos = getTableInfo(db, pragmaQuery);
         }
         Cursor cursor = null;
         boolean isView = false;
         try {
-            cursor = db.rawQuery("SELECT type FROM sqlite_master WHERE name=?", new String[]{tableName});
+            cursor = db.rawQuery("SELECT type FROM sqlite_master WHERE name=?",
+                    new String[]{quotedTableName});
             if (cursor.moveToFirst()) {
                 isView = "view".equalsIgnoreCase(cursor.getString(0));
             }
@@ -93,7 +96,7 @@ public class DatabaseHelper {
 
 
         if (!TextUtils.isEmpty(tableName)) {
-            selectQuery = selectQuery.replace(tableName, "[" + tableName + "]");
+            selectQuery = selectQuery.replace(tableName, quotedTableName);
         }
 
         try {
@@ -165,6 +168,11 @@ public class DatabaseHelper {
 
     }
 
+
+    private static String getQuotedTableName(String tableName) {
+        return String.format("[%s]", tableName);
+    }
+
     private static List<TableDataResponse.TableInfo> getTableInfo(SQLiteDatabase db, String pragmaQuery) {
 
         Cursor cursor;
@@ -220,6 +228,8 @@ public class DatabaseHelper {
             return updateRowResponse;
         }
 
+        tableName = getQuotedTableName(tableName);
+
         ContentValues contentValues = new ContentValues();
 
         for (RowDataRequest rowDataRequest : rowDataRequests) {
@@ -259,6 +269,8 @@ public class DatabaseHelper {
             updateRowResponse.isSuccessful = false;
             return updateRowResponse;
         }
+
+        tableName = getQuotedTableName(tableName);
 
         ContentValues contentValues = new ContentValues();
 
@@ -314,6 +326,8 @@ public class DatabaseHelper {
             return updateRowResponse;
         }
 
+        tableName = getQuotedTableName(tableName);
+
 
         String whereClause = null;
         List<String> whereArgsList = new ArrayList<>();
@@ -353,6 +367,14 @@ public class DatabaseHelper {
         TableDataResponse tableDataResponse = new TableDataResponse();
         tableDataResponse.isSelectQuery = false;
         try {
+
+            String tableName = getTableName(sql);
+
+            if (!TextUtils.isEmpty(tableName)) {
+                String quotedTableName = getQuotedTableName(tableName);
+                sql = sql.replace(tableName, quotedTableName);
+            }
+
             database.execSQL(sql);
         } catch (Exception e) {
             e.printStackTrace();
