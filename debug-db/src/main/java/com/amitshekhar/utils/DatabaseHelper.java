@@ -367,11 +367,11 @@ public class DatabaseHelper {
     private static String getTableName(String selectQuery) {
         // TODO: 24/4/17 Handle JOIN Query
         TableNameParser tableNameParser = new TableNameParser(selectQuery);
-        HashSet<String> tableName = (HashSet<String>) tableNameParser.tables();
+        HashSet<String> tableNames = (HashSet<String>) tableNameParser.tables();
 
-        for (String table : tableName) {
-            if (!TextUtils.isEmpty(table)) {
-                return table;
+        for (String tableName : tableNames) {
+            if (!TextUtils.isEmpty(tableName)) {
+                return tableName;
             }
         }
 
