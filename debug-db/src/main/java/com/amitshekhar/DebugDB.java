@@ -68,5 +68,9 @@ public class DebugDB {
             clientServer = null;
         }
     }
+    
+    public static boolean isServerRunning() {
+        return clientServer != null && clientServer.isRunning();
+    }
 
 }

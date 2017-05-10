@@ -84,5 +84,7 @@ public class ClientServer implements Runnable {
         }
     }
 
-
+    public boolean isRunning() {
+        return mIsRunning;
+    }
 }
