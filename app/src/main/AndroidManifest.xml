@@ -34,6 +34,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="DatabaseFileProvider"
+            android:value="com.sample.ExternalDatabaseFileProvider" />
+
     </application>
 
 </manifest>

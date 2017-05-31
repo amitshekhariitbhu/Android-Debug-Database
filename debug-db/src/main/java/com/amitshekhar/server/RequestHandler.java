@@ -30,7 +30,7 @@ import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.utils.Constants;
-import com.amitshekhar.utils.DatabaseFileProvider;
+import com.amitshekhar.utils.InternalDatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
 import com.amitshekhar.utils.PrefHelper;
 import com.amitshekhar.utils.Utils;
@@ -160,7 +160,8 @@ public class RequestHandler {
 
     private void openDatabase(String database) {
         closeDatabase();
-        mDatabase = mContext.openOrCreateDatabase(database, 0, null);
+        File databaseFile = databaseFiles.get(database);
+        mDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), null);
         isDbOpened = true;
     }
 
@@ -173,7 +174,7 @@ public class RequestHandler {
     }
 
     private String getDBListResponse() {
-        databaseFiles = DatabaseFileProvider.getDatabaseFiles(mContext);
+        databaseFiles = InternalDatabaseFileProvider.getDatabaseFiles(mContext);
         Response response = new Response();
         if (databaseFiles != null) {
             for (HashMap.Entry<String, File> entry : databaseFiles.entrySet()) {
