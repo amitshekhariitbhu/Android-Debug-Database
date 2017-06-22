@@ -30,7 +30,7 @@ import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.utils.Constants;
-import com.amitshekhar.utils.InternalDatabaseFileProvider;
+import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
 import com.amitshekhar.utils.PrefHelper;
 import com.amitshekhar.utils.Utils;
@@ -59,7 +59,8 @@ public class RequestHandler {
     private final AssetManager mAssets;
     private boolean isDbOpened;
     private SQLiteDatabase mDatabase;
-    private HashMap<String, File> databaseFiles;
+    private HashMap<String, File> mDatabaseFiles;
+    private HashMap<String, File> mCustomDatabaseFiles;
     private String mSelectedDatabase = null;
 
     public RequestHandler(Context context) {
@@ -117,7 +118,7 @@ public class RequestHandler {
                 final String response = executeQueryAndGetResponse(route);
                 bytes = response.getBytes();
             } else if (route.startsWith("downloadDb")) {
-                bytes = Utils.getDatabase(mSelectedDatabase, databaseFiles);
+                bytes = Utils.getDatabase(mSelectedDatabase, mDatabaseFiles);
             } else {
                 bytes = Utils.loadContent(route, mAssets);
             }
@@ -153,6 +154,10 @@ public class RequestHandler {
         }
     }
 
+    public void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles){
+        mCustomDatabaseFiles = customDatabaseFiles;
+    }
+
     private void writeServerError(PrintStream output) {
         output.println("HTTP/1.0 500 Internal Server Error");
         output.flush();
@@ -160,7 +165,7 @@ public class RequestHandler {
 
     private void openDatabase(String database) {
         closeDatabase();
-        File databaseFile = databaseFiles.get(database);
+        File databaseFile = mDatabaseFiles.get(database);
         mDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), null);
         isDbOpened = true;
     }
@@ -174,10 +179,13 @@ public class RequestHandler {
     }
 
     private String getDBListResponse() {
-        databaseFiles = InternalDatabaseFileProvider.getDatabaseFiles(mContext);
+        mDatabaseFiles = DatabaseFileProvider.getDatabaseFiles(mContext);
+        if(mCustomDatabaseFiles!=null){
+            mDatabaseFiles.putAll(mCustomDatabaseFiles);
+        }
         Response response = new Response();
-        if (databaseFiles != null) {
-            for (HashMap.Entry<String, File> entry : databaseFiles.entrySet()) {
+        if (mDatabaseFiles != null) {
+            for (HashMap.Entry<String, File> entry : mDatabaseFiles.entrySet()) {
                 response.rows.add(entry.getKey());
             }
         }

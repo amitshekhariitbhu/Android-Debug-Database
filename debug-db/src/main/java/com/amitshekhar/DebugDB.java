@@ -25,6 +25,10 @@ import android.util.Log;
 import com.amitshekhar.server.ClientServer;
 import com.amitshekhar.utils.NetworkUtils;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by amitshekhar on 15/11/16.
  */
@@ -66,6 +70,12 @@ public class DebugDB {
         if (clientServer != null) {
             clientServer.stop();
             clientServer = null;
+        }
+    }
+
+    public static void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles){
+        if(clientServer!=null){
+            clientServer.setCustomDatabaseFiles(customDatabaseFiles);
         }
     }
     

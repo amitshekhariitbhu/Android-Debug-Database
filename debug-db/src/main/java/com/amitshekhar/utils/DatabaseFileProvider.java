@@ -1,37 +1,50 @@
+/*
+ *
+ *  *    Copyright (C) 2016 Amit Shekhar
+ *  *    Copyright (C) 2011 Android Open Source Project
+ *  *
+ *  *    Licensed under the Apache License, Version 2.0 (the "License");
+ *  *    you may not use this file except in compliance with the License.
+ *  *    You may obtain a copy of the License at
+ *  *
+ *  *        http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  *    Unless required by applicable law or agreed to in writing, software
+ *  *    distributed under the License is distributed on an "AS IS" BASIS,
+ *  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *    See the License for the specific language governing permissions and
+ *  *    limitations under the License.
+ *
+ */
+
 package com.amitshekhar.utils;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 
 import java.io.File;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 
-public abstract class DatabaseFileProvider {
+/**
+ * Created by amitshekhar on 06/02/17.
+ */
 
-    public static final String METADATA_TAG = "DatabaseFileProvider";
-    protected final Context context;
+public class DatabaseFileProvider {
 
-    public DatabaseFileProvider(Context context) {
-        this.context = context;
+    private DatabaseFileProvider() {
+        // This class in not publicly instantiable
     }
 
-    public static DatabaseFileProvider fromMetadata(Context context) {
-        DatabaseFileProvider databaseFileProvider = null;
+    public static HashMap<String, File> getDatabaseFiles(Context context) {
+        HashMap<String, File> databaseFiles = new HashMap<>();
         try {
-            ApplicationInfo appInfo = context.getPackageManager()
-                    .getApplicationInfo(context.getPackageName(),
-                            PackageManager.GET_META_DATA);
-            String className = appInfo.metaData.getString(METADATA_TAG);
-            if (className != null) {
-                Class<DatabaseFileProvider> databaseFileProviderClass = (Class<DatabaseFileProvider>) Class.forName(className);
-                databaseFileProvider = databaseFileProviderClass.getConstructor(Context.class).newInstance(context);
+            for (String databaseName : context.databaseList()) {
+                databaseFiles.put(databaseName, context.getDatabasePath(databaseName));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return databaseFileProvider;
+        return databaseFiles;
     }
 
-    protected abstract Map<String, File> getDatabaseFiles();
 }

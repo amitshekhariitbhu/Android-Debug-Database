@@ -23,8 +23,11 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.sample.BuildConfig;
+import com.sample.database.ExtTestDBHelper;
 
+import java.io.File;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 /**
  * Created by amitshekhar on 07/02/17.
@@ -48,4 +51,23 @@ public class Utils {
             }
         }
     }
+
+    public static void setCustomDatabaseFiles(Context context) {
+        if (BuildConfig.DEBUG) {
+            try {
+                Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
+                Class[] argTypes = new Class[]{HashMap.class};
+                Method setCustomDatabaseFiles = debugDB.getMethod("setCustomDatabaseFiles", argTypes);
+                HashMap<String, File> customDatabaseFiles = new HashMap<>();
+                // set custom database files
+                customDatabaseFiles.put(ExtTestDBHelper.DATABASE_NAME,
+                        new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
+                                "/" + ExtTestDBHelper.DATABASE_NAME));
+                setCustomDatabaseFiles.invoke(null, customDatabaseFiles);
+            } catch (Exception ignore) {
+
+            }
+        }
+    }
+
 }

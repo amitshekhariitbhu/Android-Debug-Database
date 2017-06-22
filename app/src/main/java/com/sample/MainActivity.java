@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
                 extTestDBHelper.insertTest(value);
             }
         }
+
+        Utils.setCustomDatabaseFiles(getApplicationContext());
     }
 
     public void showDebugDbAddress(View view) {
