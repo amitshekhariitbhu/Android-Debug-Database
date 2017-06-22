@@ -52,6 +52,12 @@ public class CarDBHelper extends SQLiteOpenHelper {
                 "create table cars " +
                         "(id integer primary key, name text, color text, mileage real)"
         );
+
+        db.execSQL("create table [transaction] (id integer primary key, name text)");
+
+        for (int i = 0; i < 10; i++) {
+            db.execSQL("insert into [transaction] (name) values ('hello');");
+        }
     }
 
     @Override
@@ -108,7 +114,7 @@ public class CarDBHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("select * from cars", null);
         res.moveToFirst();
 
-        while (res.isAfterLast() == false) {
+        while (!res.isAfterLast()) {
             arrayList.add(res.getString(res.getColumnIndex(CARS_COLUMN_NAME)));
             res.moveToNext();
         }

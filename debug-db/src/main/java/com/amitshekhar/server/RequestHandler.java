@@ -59,7 +59,8 @@ public class RequestHandler {
     private final AssetManager mAssets;
     private boolean isDbOpened;
     private SQLiteDatabase mDatabase;
-    private HashMap<String, File> databaseFiles;
+    private HashMap<String, File> mDatabaseFiles;
+    private HashMap<String, File> mCustomDatabaseFiles;
     private String mSelectedDatabase = null;
 
     public RequestHandler(Context context) {
@@ -104,6 +105,9 @@ public class RequestHandler {
             } else if (route.startsWith("getTableList")) {
                 final String response = getTableListResponse(route);
                 bytes = response.getBytes();
+            } else if (route.startsWith("addTableData")) {
+                final String response = addTableDataAndGetResponse(route);
+                bytes = response.getBytes();
             } else if (route.startsWith("updateTableData")) {
                 final String response = updateTableDataAndGetResponse(route);
                 bytes = response.getBytes();
@@ -114,7 +118,7 @@ public class RequestHandler {
                 final String response = executeQueryAndGetResponse(route);
                 bytes = response.getBytes();
             } else if (route.startsWith("downloadDb")) {
-                bytes = Utils.getDatabase(mSelectedDatabase, databaseFiles);
+                bytes = Utils.getDatabase(mSelectedDatabase, mDatabaseFiles);
             } else {
                 bytes = Utils.loadContent(route, mAssets);
             }
@@ -150,6 +154,10 @@ public class RequestHandler {
         }
     }
 
+    public void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles){
+        mCustomDatabaseFiles = customDatabaseFiles;
+    }
+
     private void writeServerError(PrintStream output) {
         output.println("HTTP/1.0 500 Internal Server Error");
         output.flush();
@@ -157,7 +165,8 @@ public class RequestHandler {
 
     private void openDatabase(String database) {
         closeDatabase();
-        mDatabase = mContext.openOrCreateDatabase(database, 0, null);
+        File databaseFile = mDatabaseFiles.get(database);
+        mDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), null);
         isDbOpened = true;
     }
 
@@ -170,10 +179,13 @@ public class RequestHandler {
     }
 
     private String getDBListResponse() {
-        databaseFiles = DatabaseFileProvider.getDatabaseFiles(mContext);
+        mDatabaseFiles = DatabaseFileProvider.getDatabaseFiles(mContext);
+        if(mCustomDatabaseFiles!=null){
+            mDatabaseFiles.putAll(mCustomDatabaseFiles);
+        }
         Response response = new Response();
-        if (databaseFiles != null) {
-            for (HashMap.Entry<String, File> entry : databaseFiles.entrySet()) {
+        if (mDatabaseFiles != null) {
+            for (HashMap.Entry<String, File> entry : mDatabaseFiles.entrySet()) {
                 response.rows.add(entry.getKey());
             }
         }
@@ -219,7 +231,7 @@ public class RequestHandler {
 
             if (query != null) {
                 first = query.split(" ")[0].toLowerCase();
-                if (first.equals("select")) {
+                if (first.equals("select") || first.equals("pragma")) {
                     TableDataResponse response = DatabaseHelper.getTableData(mDatabase, query, null);
                     data = mGson.toJson(response);
                 } else {
@@ -260,6 +272,29 @@ public class RequestHandler {
         return mGson.toJson(response);
     }
 
+
+    private String addTableDataAndGetResponse(String route) {
+        UpdateRowResponse response;
+        try {
+            Uri uri = Uri.parse(URLDecoder.decode(route, "UTF-8"));
+            String tableName = uri.getQueryParameter("tableName");
+            String updatedData = uri.getQueryParameter("addData");
+            List<RowDataRequest> rowDataRequests = mGson.fromJson(updatedData, new TypeToken<List<RowDataRequest>>() {
+            }.getType());
+            if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
+                response = PrefHelper.addOrUpdateRow(mContext, tableName, rowDataRequests);
+            } else {
+                response = DatabaseHelper.addRow(mDatabase, tableName, rowDataRequests);
+            }
+            return mGson.toJson(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new UpdateRowResponse();
+            response.isSuccessful = false;
+            return mGson.toJson(response);
+        }
+    }
+
     private String updateTableDataAndGetResponse(String route) {
         UpdateRowResponse response;
         try {
@@ -269,7 +304,7 @@ public class RequestHandler {
             List<RowDataRequest> rowDataRequests = mGson.fromJson(updatedData, new TypeToken<List<RowDataRequest>>() {
             }.getType());
             if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
-                response = PrefHelper.updateRow(mContext, tableName, rowDataRequests);
+                response = PrefHelper.addOrUpdateRow(mContext, tableName, rowDataRequests);
             } else {
                 response = DatabaseHelper.updateRow(mDatabase, tableName, rowDataRequests);
             }

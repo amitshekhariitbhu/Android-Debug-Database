@@ -29,6 +29,7 @@ import android.view.View;
 
 import com.sample.database.CarDBHelper;
 import com.sample.database.ContactDBHelper;
+import com.sample.database.ExtTestDBHelper;
 import com.sample.utils.Utils;
 
 import java.util.HashSet;
@@ -86,6 +87,16 @@ public class MainActivity extends AppCompatActivity {
                 carDBHelper.insertCar(name, color, mileage);
             }
         }
+
+        ExtTestDBHelper extTestDBHelper = new ExtTestDBHelper(getApplicationContext());
+        if (extTestDBHelper.count() == 0) {
+            for (int i = 0; i < 20; i++) {
+                String value = "value_" + i;
+                extTestDBHelper.insertTest(value);
+            }
+        }
+
+        Utils.setCustomDatabaseFiles(getApplicationContext());
     }
 
     public void showDebugDbAddress(View view) {

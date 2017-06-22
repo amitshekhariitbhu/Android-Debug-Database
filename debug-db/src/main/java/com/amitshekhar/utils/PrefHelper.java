@@ -87,6 +87,7 @@ public class PrefHelper {
     public static TableDataResponse getAllPrefData(Context context, String tag) {
 
         TableDataResponse response = new TableDataResponse();
+        response.isEditable = true;
         response.isSuccessful = true;
         response.isSelectQuery = true;
 
@@ -141,7 +142,8 @@ public class PrefHelper {
 
     }
 
-    public static UpdateRowResponse updateRow(Context context, String tableName, List<RowDataRequest> rowDataRequests) {
+    public static UpdateRowResponse addOrUpdateRow(Context context, String tableName,
+                                                   List<RowDataRequest> rowDataRequests) {
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 
         if (tableName == null) {
@@ -204,7 +206,8 @@ public class PrefHelper {
     }
 
 
-    public static UpdateRowResponse deleteRow(Context context, String tableName, List<RowDataRequest> rowDataRequests) {
+    public static UpdateRowResponse deleteRow(Context context, String tableName,
+                                              List<RowDataRequest> rowDataRequests) {
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 
         if (tableName == null) {

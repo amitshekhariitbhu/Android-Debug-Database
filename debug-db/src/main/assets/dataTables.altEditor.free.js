@@ -518,20 +518,60 @@
 
             for (var i = 0; i < dt.context[0].aoColumns.length; i++) {
                 columnDefs.push({
-                    title: dt.context[0].aoColumns[i].sTitle
+                    title: dt.context[0].aoColumns[i].sTitle,
+                    dataType: dt.context[0].aoColumns[i].sType,
+                    isPrimary: dt.context[0].aoColumns[i].isPrimary,
+                    value : "",
                 })
             }
 
 
-            var data = "";
+           var data = "";
 
-            data += "<form name='altEditor-form' role='form'>";
+           data += "<form class='form-horizontal' name='altEditor-form' role='form'>";
 
-            for (var j in columnDefs) {
-                data += "<div class='form-group'><div class='col-sm-3 col-md-3 col-lg-3 text-right' style='padding-top:7px;'><label for='" + columnDefs[j].title + "'>" + columnDefs[j].title + ":</label></div><div class='col-sm-9 col-md-9 col-lg-9'><input type='text'  id='" + columnDefs[j].title + "' name='" + columnDefs[j].title + "' placeholder='" + columnDefs[j].title + "' style='overflow:hidden'  class='form-control  form-control-sm' value=''></div><div style='clear:both;'></div></div>";
+           for (var j in columnDefs) {
+               var inputSectionHTML = "<div class='form-group'><label for='__INPUT_NAME__' class='col-sm-4 control-label'>__INPUT_NAME__</label>__INPUT_HTML__</div>";
 
-            }
-            data += "</form>";
+               var inputHTML = "<div class='col-sm-7'><input data-type='__INPUT_DATA_TYPE__' __INPUT_READ_ONLY_ATTRIBUTE__ type='__INPUT_TYPE__'  id='__INPUT_NAME__' name='__INPUT_NAME__' placeholder='__INPUT_NAME__' style='overflow:hidden'  class='form-control' value='__INPUT_VALUE__'></div>";
+
+               var option1Checked = "";
+               var option2Checked = "checked";
+               if (columnDefs[j].dataType == "boolean") {
+                   if(JSON.parse(columnDefs[j].value)) {
+                       option1Checked = "checked";
+                       option2Checked = "";
+                   }
+                   inputHTML = "<div class='col-sm-7'><div class='checkbox'><label><label class='radio-inline'><input data-type='__INPUT_DATA_TYPE__' __OPTION_1_CHECKED__ type='radio' name='__INPUT_NAME__' id='__INPUT_NAME__' value='1'>true</label><label class='radio-inline'><input data-type='__INPUT_DATA_TYPE__' __OPTION_2_CHECKED__ type='radio' name='__INPUT_NAME__' id='__INPUT_NAME__' value='0'>false</label></div></div>"
+               }
+               //set input type
+               var inputType = "text";
+               var inputReadOnlyAttribute = "";
+               switch (columnDefs[j].dataType) {
+                   case 'num':
+                       inputType = "number";
+                       break;
+                   case 'string':
+                       inputType = "text";
+                       break;
+               }
+               //set input to read-only if it is a primary key
+//               if (columnDefs[j].isPrimary) {
+//                   inputReadOnlyAttribute = "readonly"
+//               }
+
+               //append input html
+               inputSectionHTML = inputSectionHTML.replace(/__INPUT_HTML__/g, inputHTML);
+               inputSectionHTML = inputSectionHTML.replace(/__INPUT_READ_ONLY_ATTRIBUTE__/g, inputReadOnlyAttribute);
+               inputSectionHTML = inputSectionHTML.replace(/__INPUT_TYPE__/g, inputType);
+               inputSectionHTML = inputSectionHTML.replace(/__INPUT_DATA_TYPE__/g, columnDefs[j].dataType);
+               inputSectionHTML = inputSectionHTML.replace(/__INPUT_VALUE__/g, columnDefs[j].value);
+               inputSectionHTML = inputSectionHTML.replace(/__INPUT_NAME__/g, columnDefs[j].title);
+               inputSectionHTML = inputSectionHTML.replace(/__OPTION_1_CHECKED__/g, option1Checked);
+               inputSectionHTML = inputSectionHTML.replace(/__OPTION_2_CHECKED__/g, option2Checked);
+               data += inputSectionHTML;
+           }
+           data += "</form>";
 
 
             $('#altEditor-modal').on('show.bs.modal', function() {
@@ -553,19 +593,62 @@
             var data = [];
 
             $('form[name="altEditor-form"] input').each(function(i) {
-                data.push($(this).val());
+                var addToList = true;
+                var value = $(this).val();
+                if($(this).attr('type') == "radio" && $(this).prop('checked') == false) {
+                    addToList = false;
+                }
+                value = $(this).attr('type') == "radio" ? $(this).val() == "1" : value;
+                if (addToList){
+                    data.push({
+                        "value": value,
+                        "dataType": $(this).attr('data-type')
+                    });
+                }
             });
+            var editButtonCurrentText = $("#editRowBtn").text();
+            $("#addRowBtn").addClass('disabled');
+            $("#addRowBtn").text("Saving..");
 
-            $('#altEditor-modal .modal-body .alert').remove();
+            console.log(JSON.stringify(data));
 
-            var message = '<div class="alert alert-success" role="alert">\
-           <strong>Success!</strong> This record has been added.\
-         </div>';
+            that._emitEvent("add-row", [
+                JSON.stringify(data),
+                function(isAdded) {
 
-            $('#altEditor-modal .modal-body').append(message);
 
-            dt.row.add(data).draw(false);
+                    //set error message and other properties based on whether update is successfull or not
+                    var alertAdditionClasses = "alert-success";
+                    var alertMessage = "This record has been added";
+                    var alertHeading = "Success";
+                    if (!isAdded) {
+                        alertAdditionClasses = "alert-danger";
+                        alertMessage = "Error occurred while adding this record";
+                        alertHeading = "Error";
+                    }
 
+                    //create alert element html and append it to modal
+                    var messageHTML = '\
+                        <div class="alert __ALERT_ADDITION_CLASSES__" role="alert">\
+                            <strong>__ALERT_HEADING__!</strong>\
+                            __ALERT_MESSAGE__.\
+                        </div>\
+                    ';
+                    messageHTML = messageHTML.replace(/__ALERT_ADDITION_CLASSES__/g, alertAdditionClasses);
+                    messageHTML = messageHTML.replace(/__ALERT_HEADING__/g, alertHeading);
+                    messageHTML = messageHTML.replace(/__ALERT_MESSAGE__/g, alertMessage);
+                    $('#altEditor-modal .modal-body').append(messageHTML);
+
+                    //update datatable, if update is successfull
+                    if (isAdded) {
+                        dt.row().data(data);
+                        //remove existing alert elements
+                        $('#altEditor-modal').modal('hide');
+                    }
+                    $("#addRowBtn").removeClass('disabled');
+                    $("#addRowBtn").text(editButtonCurrentText);
+                }
+            ]);
         },
 
         _getExecutionLocationFolder: function() {

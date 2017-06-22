@@ -22,6 +22,8 @@ package com.amitshekhar.utils;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
@@ -29,6 +31,7 @@ import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -43,7 +46,7 @@ public class DatabaseHelper {
 
     public static Response getAllTableName(SQLiteDatabase database) {
         Response response = new Response();
-        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table' OR type='view'", null);
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 response.rows.add(c.getString(0));
@@ -68,14 +71,34 @@ public class DatabaseHelper {
             tableName = getTableName(selectQuery);
         }
 
+        final String quotedTableName = getQuotedTableName(tableName);
+
         if (tableName != null) {
-            final String pragmaQuery = "PRAGMA table_info(" + tableName + ")";
+            final String pragmaQuery = "PRAGMA table_info(" + quotedTableName + ")";
             tableData.tableInfos = getTableInfo(db, pragmaQuery);
         }
+        Cursor cursor = null;
+        boolean isView = false;
+        try {
+            cursor = db.rawQuery("SELECT type FROM sqlite_master WHERE name=?",
+                    new String[]{quotedTableName});
+            if (cursor.moveToFirst()) {
+                isView = "view".equalsIgnoreCase(cursor.getString(0));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        tableData.isEditable = tableName != null && tableData.tableInfos != null && !isView;
 
-        tableData.isEditable = tableName != null && tableData.tableInfos != null;
 
-        Cursor cursor;
+        if (!TextUtils.isEmpty(tableName)) {
+            selectQuery = selectQuery.replace(tableName, quotedTableName);
+        }
+
         try {
             cursor = db.rawQuery(selectQuery, null);
         } catch (Exception e) {
@@ -145,6 +168,11 @@ public class DatabaseHelper {
 
     }
 
+
+    private static String getQuotedTableName(String tableName) {
+        return String.format("[%s]", tableName);
+    }
+
     private static List<TableDataResponse.TableInfo> getTableInfo(SQLiteDatabase db, String pragmaQuery) {
 
         Cursor cursor;
@@ -190,6 +218,49 @@ public class DatabaseHelper {
         return null;
     }
 
+
+    public static UpdateRowResponse addRow(SQLiteDatabase db, String tableName,
+                                           List<RowDataRequest> rowDataRequests) {
+        UpdateRowResponse updateRowResponse = new UpdateRowResponse();
+
+        if (rowDataRequests == null || tableName == null) {
+            updateRowResponse.isSuccessful = false;
+            return updateRowResponse;
+        }
+
+        tableName = getQuotedTableName(tableName);
+
+        ContentValues contentValues = new ContentValues();
+
+        for (RowDataRequest rowDataRequest : rowDataRequests) {
+            if (Constants.NULL.equals(rowDataRequest.value)) {
+                rowDataRequest.value = null;
+            }
+
+            switch (rowDataRequest.dataType) {
+                case DataType.INTEGER:
+                    contentValues.put(rowDataRequest.title, Long.valueOf(rowDataRequest.value));
+                    break;
+                case DataType.REAL:
+                    contentValues.put(rowDataRequest.title, Double.valueOf(rowDataRequest.value));
+                    break;
+                case DataType.TEXT:
+                    contentValues.put(rowDataRequest.title, rowDataRequest.value);
+                    break;
+                default:
+                    contentValues.put(rowDataRequest.title, rowDataRequest.value);
+                    break;
+            }
+        }
+
+        long result = db.insert(tableName, null, contentValues);
+        updateRowResponse.isSuccessful = result > 0;
+
+        return updateRowResponse;
+
+    }
+
+
     public static UpdateRowResponse updateRow(SQLiteDatabase db, String tableName, List<RowDataRequest> rowDataRequests) {
 
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
@@ -198,6 +269,8 @@ public class DatabaseHelper {
             updateRowResponse.isSuccessful = false;
             return updateRowResponse;
         }
+
+        tableName = getQuotedTableName(tableName);
 
         ContentValues contentValues = new ContentValues();
 
@@ -243,7 +316,8 @@ public class DatabaseHelper {
     }
 
 
-    public static UpdateRowResponse deleteRow(SQLiteDatabase db, String tableName, List<RowDataRequest> rowDataRequests) {
+    public static UpdateRowResponse deleteRow(SQLiteDatabase db, String tableName,
+                                              List<RowDataRequest> rowDataRequests) {
 
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 
@@ -251,6 +325,8 @@ public class DatabaseHelper {
             updateRowResponse.isSuccessful = false;
             return updateRowResponse;
         }
+
+        tableName = getQuotedTableName(tableName);
 
 
         String whereClause = null;
@@ -291,6 +367,14 @@ public class DatabaseHelper {
         TableDataResponse tableDataResponse = new TableDataResponse();
         tableDataResponse.isSelectQuery = false;
         try {
+
+            String tableName = getTableName(sql);
+
+            if (!TextUtils.isEmpty(tableName)) {
+                String quotedTableName = getQuotedTableName(tableName);
+                sql = sql.replace(tableName, quotedTableName);
+            }
+
             database.execSQL(sql);
         } catch (Exception e) {
             e.printStackTrace();
@@ -303,7 +387,16 @@ public class DatabaseHelper {
     }
 
     private static String getTableName(String selectQuery) {
-        // TODO find tableName from query and also handle JOIN query
+        // TODO: 24/4/17 Handle JOIN Query
+        TableNameParser tableNameParser = new TableNameParser(selectQuery);
+        HashSet<String> tableNames = (HashSet<String>) tableNameParser.tables();
+
+        for (String tableName : tableNames) {
+            if (!TextUtils.isEmpty(tableName)) {
+                return tableName;
+            }
+        }
+
         return null;
     }
 

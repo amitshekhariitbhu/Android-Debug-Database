@@ -27,10 +27,13 @@ package com.amitshekhar.server;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientServer implements Runnable {
 
@@ -82,6 +85,10 @@ public class ClientServer implements Runnable {
         } catch (Exception ignore) {
 
         }
+    }
+
+    public void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles){
+            mRequestHandler.setCustomDatabaseFiles(customDatabaseFiles);
     }
 
     public boolean isRunning() {

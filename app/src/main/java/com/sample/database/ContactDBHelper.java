@@ -116,7 +116,7 @@ public class ContactDBHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("select * from contacts", null);
         res.moveToFirst();
 
-        while (res.isAfterLast() == false) {
+        while (!res.isAfterLast()) {
             arrayList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_NAME)));
             res.moveToNext();
         }
