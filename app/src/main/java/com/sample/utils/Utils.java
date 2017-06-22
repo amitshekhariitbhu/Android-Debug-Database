@@ -59,7 +59,7 @@ public class Utils {
                 Class[] argTypes = new Class[]{HashMap.class};
                 Method setCustomDatabaseFiles = debugDB.getMethod("setCustomDatabaseFiles", argTypes);
                 HashMap<String, File> customDatabaseFiles = new HashMap<>();
-                // set custom database files
+                // set your custom database files
                 customDatabaseFiles.put(ExtTestDBHelper.DATABASE_NAME,
                         new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
                                 "/" + ExtTestDBHelper.DATABASE_NAME));

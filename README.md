@@ -75,7 +75,7 @@ You will see something like this :
 - Android Default Emulator: run `adb forward tcp:8080 tcp:8080` and open http://localhost:8080
 - Genymotion Emulator: Enable bridge from configure virtual device (option available in genymotion)
 
-### Getting address With toast, in case you missed the address log in logcat
+### Getting address with toast, in case you missed the address log in logcat
 As this library is auto-initialize, if you want to get the address log, add the following method and call
 ```java
 public static void showDebugDBAddressLogToast(Context context) {
@@ -89,6 +89,28 @@ public static void showDebugDBAddressLogToast(Context context) {
 
      }
   }
+}
+```
+
+### Adding custom database files
+As this library is auto-initialize, if you want to add custom database files, add the following method and call
+```java
+public static void setCustomDatabaseFiles(Context context) {
+    if (BuildConfig.DEBUG) {
+        try {
+            Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
+            Class[] argTypes = new Class[]{HashMap.class};
+            Method setCustomDatabaseFiles = debugDB.getMethod("setCustomDatabaseFiles", argTypes);
+            HashMap<String, File> customDatabaseFiles = new HashMap<>();
+            // set your custom database files
+            customDatabaseFiles.put(ExtTestDBHelper.DATABASE_NAME,
+                    new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
+                            "/" + ExtTestDBHelper.DATABASE_NAME));
+            setCustomDatabaseFiles.invoke(null, customDatabaseFiles);
+        } catch (Exception ignore) {
+
+        }
+    }
 }
 ```
 
