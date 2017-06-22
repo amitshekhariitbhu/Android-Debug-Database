@@ -279,6 +279,7 @@ function updateTableData(updatedData, callback) {
             if(response.isSuccessful){
                console.log("Data updated successfully");
                callback(true);
+               getData(requestParameters.tableName);
                showSuccessInfo("Data Updated Successfully");
             } else {
                console.log("Data updated failed");
@@ -317,6 +318,7 @@ function deleteTableData(deleteData, callback) {
                 if(response.isSuccessful){
                    console.log("Data deleted successfully");
                    callback(true);
+                   getData(requestParameters.tableName);
                    showSuccessInfo("Data Deleted Successfully");
                 } else {
                    console.log("Data delete failed");
@@ -358,6 +360,7 @@ function addTableData(deleteData, callback) {
             if(response.isSuccessful){
                console.log("Data Added successfully");
                callback(true);
+               getData(requestParameters.tableName);
                showSuccessInfo("Data Added Successfully");
             } else {
                console.log("Data Adding failed");
