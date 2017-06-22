@@ -20,7 +20,9 @@
 * See all the data in the shared preferences used in your application.
 * Run any sql query on the given database to update and delete your data.
 * Directly edit the database values.
-* Directly edit shared preferences.
+* Directly edit the shared preferences.
+* Directly add a row in the database.
+* Directly add a key-value in the shared preferences.
 * Delete database rows and shared preferences.
 * Search in your data.
 * Sort data.
@@ -34,7 +36,7 @@
 ### Using Android Debug Database Library in your application
 Add this to your app's build.gradle
 ```groovy
-debugCompile 'com.amitshekhar.android:debug-db:1.0.0'
+debugCompile 'com.amitshekhar.android:debug-db:1.0.1'
 ```
 
 Use `debugCompile` so that it will only compile in your debug build and not in your release apk.
