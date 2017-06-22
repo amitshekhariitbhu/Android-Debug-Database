@@ -79,16 +79,16 @@ You will see something like this :
 As this library is auto-initialize, if you want to get the address log, add the following method and call
 ```java
 public static void showDebugDBAddressLogToast(Context context) {
-  if (BuildConfig.DEBUG) {
-     try {
-          Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
-          Method getAddressLog = debugDB.getMethod("getAddressLog");
-          Object value = getAddressLog.invoke(null);
-          Toast.makeText(context, (String) value, Toast.LENGTH_LONG).show();
-     } catch (Exception ignore) {
+    if (BuildConfig.DEBUG) {
+       try {
+            Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
+            Method getAddressLog = debugDB.getMethod("getAddressLog");
+            Object value = getAddressLog.invoke(null);
+            Toast.makeText(context, (String) value, Toast.LENGTH_LONG).show();
+       } catch (Exception ignore) {
 
-     }
-  }
+       }
+    }
 }
 ```
 
