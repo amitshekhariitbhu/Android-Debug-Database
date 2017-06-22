@@ -285,7 +285,7 @@ public class DatabaseHelper {
                 if (whereClause == null) {
                     whereClause = rowDataRequest.title + "=? ";
                 } else {
-                    whereClause = "and " + rowDataRequest.title + "=? ";
+                    whereClause = whereClause + "and " + rowDataRequest.title + "=? ";
                 }
                 whereArgsList.add(rowDataRequest.value);
             } else {
@@ -340,7 +340,7 @@ public class DatabaseHelper {
                 if (whereClause == null) {
                     whereClause = rowDataRequest.title + "=? ";
                 } else {
-                    whereClause = "and " + rowDataRequest.title + "=? ";
+                    whereClause = whereClause + "and " + rowDataRequest.title + "=? ";
                 }
                 whereArgsList.add(rowDataRequest.value);
             }

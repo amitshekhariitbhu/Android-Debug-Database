@@ -99,7 +99,7 @@ public static void showDebugDBAddressLogToast(Context context) {
 * Simplify emulator issue [Issue Link](https://github.com/amitshekhariitbhu/Android-Debug-Database/issues/6)
 * And of course many more features and bug fixes.
 
-###[Check out Mindorks awesome open source projects here](https://mindorks.com/open-source-projects)
+### [Check out Mindorks awesome open source projects here](https://mindorks.com/open-source-projects)
 
 ### Contact - Let's become friends
 - [Twitter](https://twitter.com/amitiitbhu)
