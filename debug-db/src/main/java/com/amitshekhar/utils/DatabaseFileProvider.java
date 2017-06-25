@@ -20,6 +20,7 @@
 package com.amitshekhar.utils;
 
 import android.content.Context;
+import android.util.Pair;
 
 import java.io.File;
 import java.util.HashMap;
@@ -35,11 +36,11 @@ public class DatabaseFileProvider {
         // This class in not publicly instantiable
     }
 
-    public static HashMap<String, File> getDatabaseFiles(Context context) {
-        HashMap<String, File> databaseFiles = new HashMap<>();
+    public static HashMap<String, Pair<File, String>> getDatabaseFiles(Context context) {
+        HashMap<String, Pair<File, String>> databaseFiles = new HashMap<>();
         try {
             for (String databaseName : context.databaseList()) {
-                databaseFiles.put(databaseName, context.getDatabasePath(databaseName));
+                databaseFiles.put(databaseName, new Pair<>(context.getDatabasePath(databaseName), ""));
             }
         } catch (Exception e) {
             e.printStackTrace();

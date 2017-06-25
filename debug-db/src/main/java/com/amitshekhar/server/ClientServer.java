@@ -26,6 +26,7 @@ package com.amitshekhar.server;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,7 +88,7 @@ public class ClientServer implements Runnable {
         }
     }
 
-    public void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles){
+    public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles){
             mRequestHandler.setCustomDatabaseFiles(customDatabaseFiles);
     }
 

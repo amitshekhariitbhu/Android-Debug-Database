@@ -21,6 +21,7 @@ package com.amitshekhar;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 
 import com.amitshekhar.server.ClientServer;
 import com.amitshekhar.utils.NetworkUtils;
@@ -73,7 +74,7 @@ public class DebugDB {
         }
     }
 
-    public static void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles){
+    public static void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles){
         if(clientServer!=null){
             clientServer.setCustomDatabaseFiles(customDatabaseFiles);
         }

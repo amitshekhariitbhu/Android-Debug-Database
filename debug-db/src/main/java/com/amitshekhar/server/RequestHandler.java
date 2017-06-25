@@ -21,9 +21,10 @@ package com.amitshekhar.server;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.database.sqlite.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
@@ -59,8 +60,8 @@ public class RequestHandler {
     private final AssetManager mAssets;
     private boolean isDbOpened;
     private SQLiteDatabase mDatabase;
-    private HashMap<String, File> mDatabaseFiles;
-    private HashMap<String, File> mCustomDatabaseFiles;
+    private HashMap<String, Pair<File, String>> mDatabaseFiles;
+    private HashMap<String, Pair<File, String>> mCustomDatabaseFiles;
     private String mSelectedDatabase = null;
 
     public RequestHandler(Context context) {
@@ -154,7 +155,7 @@ public class RequestHandler {
         }
     }
 
-    public void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles){
+    public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles){
         mCustomDatabaseFiles = customDatabaseFiles;
     }
 
@@ -165,8 +166,12 @@ public class RequestHandler {
 
     private void openDatabase(String database) {
         closeDatabase();
-        File databaseFile = mDatabaseFiles.get(database);
-        mDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), null);
+        File databaseFile = mDatabaseFiles.get(database).first;
+        String password = mDatabaseFiles.get(database).second;
+
+        SQLiteDatabase.loadLibs(mContext);
+
+        mDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), password, null);
         isDbOpened = true;
     }
 
@@ -185,7 +190,7 @@ public class RequestHandler {
         }
         Response response = new Response();
         if (mDatabaseFiles != null) {
-            for (HashMap.Entry<String, File> entry : mDatabaseFiles.entrySet()) {
+            for (HashMap.Entry<String, Pair<File, String>> entry : mDatabaseFiles.entrySet()) {
                 response.rows.add(entry.getKey());
             }
         }
