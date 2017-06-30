@@ -78,7 +78,7 @@ You will see something like this :
 - Genymotion Emulator: Enable bridge from configure virtual device (option available in genymotion)
 
 ### Getting address with toast, in case you missed the address log in logcat
-As this library is auto-initialize, if you want to get the address log, add the following method and call
+As this library is auto-initialize, if you want to get the address log, add the following method and call (we have to do like this to avoid build error in release build as this library will not be included in the release build)
 ```java
 public static void showDebugDBAddressLogToast(Context context) {
     if (BuildConfig.DEBUG) {
