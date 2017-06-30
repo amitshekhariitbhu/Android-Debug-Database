@@ -39,7 +39,7 @@ Add this to your app's build.gradle
 debugCompile 'com.amitshekhar.android:debug-db:1.0.1'
 ```
 
-Use `debugCompile` so that it will only compile in your debug build and not in your release apk.
+Use `debugCompile` so that it will only compile in your debug build and not in your release build.
 
 That’s all, just start the application, you will see in the logcat an entry like follows :
 
