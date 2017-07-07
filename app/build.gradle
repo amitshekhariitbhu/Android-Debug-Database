@@ -33,7 +33,7 @@ android {
     buildTypes {
         debug {
             resValue("string", "PORT_NUMBER", "8081")
-            resValue("string", "DB_PASSWORD_CONTACT", "1234567890")
+            resValue("string", "DB_PASSWORD_PERSON", "a_password")
         }
         release {
             minifyEnabled false
@@ -50,4 +50,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.0'
     testCompile 'junit:junit:4.12'
     debugCompile project(':debug-db')
+
+    debugCompile 'net.zetetic:android-database-sqlcipher:3.5.7@aar'
 }
