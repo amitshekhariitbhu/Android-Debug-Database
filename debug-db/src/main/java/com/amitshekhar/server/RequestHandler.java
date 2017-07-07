@@ -191,10 +191,11 @@ public class RequestHandler {
         Response response = new Response();
         if (mDatabaseFiles != null) {
             for (HashMap.Entry<String, Pair<File, String>> entry : mDatabaseFiles.entrySet()) {
-                response.rows.add(entry.getKey());
+                String[] dbEntry = { entry.getKey(), entry.getValue().second != "" ? "true" : "false" };
+                response.rows.add(dbEntry);
             }
         }
-        response.rows.add(Constants.APP_SHARED_PREFERENCES);
+        response.rows.add(new String[] { Constants.APP_SHARED_PREFERENCES, "false" });
         response.isSuccessful = true;
         return mGson.toJson(response);
     }
