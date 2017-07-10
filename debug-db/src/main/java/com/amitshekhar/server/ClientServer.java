@@ -84,7 +84,7 @@ public class ClientServer implements Runnable {
         } catch (IOException e) {
             Log.e(TAG, "Web server error.", e);
         } catch (Exception ignore) {
-
+            Log.e(TAG, "Exception.", ignore);
         }
     }
 
