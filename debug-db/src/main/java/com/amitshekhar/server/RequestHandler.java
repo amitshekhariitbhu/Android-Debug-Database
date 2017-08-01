@@ -236,13 +236,25 @@ public class RequestHandler {
             }
 
             if (query != null) {
-                first = query.split(" ")[0].toLowerCase();
-                if (first.equals("select") || first.equals("pragma")) {
-                    TableDataResponse response = DatabaseHelper.getTableData(mDatabase, query, null);
-                    data = mGson.toJson(response);
-                } else {
-                    TableDataResponse response = DatabaseHelper.exec(mDatabase, query);
-                    data = mGson.toJson(response);
+                String[] statements = query.split(";");
+
+                for (int i=0; i<statements.length; i++) {
+
+                    String aQuery = statements[i].trim();
+                    first = aQuery.split(" ")[0].toLowerCase();
+                    if (first.equals("select") || first.equals("pragma")) {
+                        TableDataResponse response = DatabaseHelper.getTableData(mDatabase, aQuery, null);
+                        data = mGson.toJson(response);
+                        if (!response.isSuccessful) {
+                            break;
+                        }
+                    } else {
+                        TableDataResponse response = DatabaseHelper.exec(mDatabase, aQuery);
+                        data = mGson.toJson(response);
+                        if (!response.isSuccessful) {
+                            break;
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
