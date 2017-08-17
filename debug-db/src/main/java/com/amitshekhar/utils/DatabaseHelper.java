@@ -46,7 +46,7 @@ public class DatabaseHelper {
 
     public static Response getAllTableName(SQLiteDatabase database) {
         Response response = new Response();
-        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table' OR type='view'", null);
+        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table' OR type='view' ORDER BY name", null);
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 response.rows.add(c.getString(0));
