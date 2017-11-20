@@ -149,5 +149,6 @@ public static void setCustomDatabaseFiles(Context context) {
    limitations under the License.
 ```
 
-### Contributing to Android Debug Database
-Just make pull request. You're in!
+### Contributing to PRDownloader
+All pull requests are welcome, make sure to follow the [contribution guidelines](CONTRIBUTING.md)
+when you submit pull request.
