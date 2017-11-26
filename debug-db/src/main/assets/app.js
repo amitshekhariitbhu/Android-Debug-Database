@@ -96,7 +96,7 @@ function openDatabaseAndGetTableList(db) {
         $('#selected-db-info').removeClass('disabled');
         $('#selected-db-info').addClass('active');
         isDatabaseSelected = true;
-        $("#selected-db-info").text("Export Selected Database : "+db);
+        $("#selected-db-info").text("Click here to Download Database : "+db);
     }
 
 
@@ -106,7 +106,7 @@ function openDatabaseAndGetTableList(db) {
            var tableList = result.rows;
            var dbVersion = result.dbVersion;
            if("APP_SHARED_PREFERENCES" != db) {
-              $("#selected-db-info").text("Export Selected Database : "+db +" Version : "+dbVersion);
+              $("#selected-db-info").text("Click here to Download Database : "+db +" Version : "+dbVersion);
            }
            $('#table-list').empty()
            for(var count = 0; count < tableList.length; count++){
