@@ -19,10 +19,10 @@
 
 package com.sample.database;
 
-import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+
 import net.sqlcipher.DatabaseUtils;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteOpenHelper;
@@ -110,7 +110,7 @@ public class PersonDBHelper extends SQLiteOpenHelper {
         while (!res.isAfterLast()) {
             arrayList.add(
                     res.getString(res.getColumnIndex(PERSON_COLUMN_FIRST_NAME)) + " " +
-                    res.getString(res.getColumnIndex(PERSON_COLUMN_LAST_NAME)));
+                            res.getString(res.getColumnIndex(PERSON_COLUMN_LAST_NAME)));
             res.moveToNext();
         }
         res.close();
@@ -128,8 +128,7 @@ public class PersonDBHelper extends SQLiteOpenHelper {
             } else {
                 return 0;
             }
-        }
-        finally {
+        } finally {
             cursor.close();
             db.close();
         }

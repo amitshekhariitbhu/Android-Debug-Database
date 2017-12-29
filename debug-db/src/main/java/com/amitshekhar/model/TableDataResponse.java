@@ -38,6 +38,7 @@ public class TableDataResponse {
         public String title;
         public boolean isPrimary;
     }
+
     public static class ColumnData {
         public String dataType;
         public Object value;

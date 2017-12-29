@@ -28,7 +28,6 @@ import com.amitshekhar.utils.NetworkUtils;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by amitshekhar on 15/11/16.
@@ -74,12 +73,12 @@ public class DebugDB {
         }
     }
 
-    public static void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles){
-        if(clientServer!=null){
+    public static void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles) {
+        if (clientServer != null) {
             clientServer.setCustomDatabaseFiles(customDatabaseFiles);
         }
     }
-    
+
     public static boolean isServerRunning() {
         return clientServer != null && clientServer.isRunning();
     }
