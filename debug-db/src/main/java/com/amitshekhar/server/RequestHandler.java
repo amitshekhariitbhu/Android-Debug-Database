@@ -191,7 +191,7 @@ public class RequestHandler {
         Response response = new Response();
         if (mDatabaseFiles != null) {
             for (HashMap.Entry<String, Pair<File, String>> entry : mDatabaseFiles.entrySet()) {
-                String[] dbEntry = { entry.getKey(), entry.getValue().second != "" ? "true" : "false" };
+                String[] dbEntry = { entry.getKey(), !entry.getValue().second.equals("") ? "true" : "false" };
                 response.rows.add(dbEntry);
             }
         }
