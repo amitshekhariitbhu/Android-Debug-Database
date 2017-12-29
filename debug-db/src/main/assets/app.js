@@ -81,6 +81,7 @@ function getDBList() {
 
 }
 
+var lastTableName = getHashValue('table');
 function openDatabaseAndGetTableList(db) {
 
     if("APP_SHARED_PREFERENCES" == db) {
@@ -110,10 +111,14 @@ function openDatabaseAndGetTableList(db) {
            }
            $('#table-list').empty()
            for(var count = 0; count < tableList.length; count++){
-             var tableName = tableList[count];
-             $("#table-list").append("<a href='#' data-db-name='"+db+"' data-table-name='"+tableName+"' class='list-group-item' onClick='getData(\""+ tableName + "\");'>" +tableName + "</a>");
-           }
+                var tableName = tableList[count];
+				$("#table-list").append("<a href='#table=" + tableName + "' data-db-name='" + db + "' data-table-name='" + tableName
+					+ "' class='list-group-item' onClick='getData(\"" + tableName + "\");'>" + tableName + "</a>");
+			}
 
+			if (lastTableName !== null) {
+				$('a[data-table-name=' + lastTableName + ']').trigger('click');
+			}
    }});
 
 }
@@ -388,4 +393,9 @@ function showErrorInfo(message){
     setTimeout(function(){
         snackbarElement.removeClass("show");
     }, 3000);
+}
+
+function getHashValue(key) {
+	var matches = location.hash.match(new RegExp(key + '=([^&]*)'));
+	return matches ? matches[1] : null;
 }
