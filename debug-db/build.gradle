@@ -49,6 +49,7 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
     compile 'com.google.code.gson:gson:2.8.0'
+    compile 'net.zetetic:android-database-sqlcipher:3.5.7@aar'
 }
 
 //apply from: 'debug-db-upload.gradle'

@@ -68,8 +68,11 @@ function getDBList() {
            $('#db-list').empty();
            var isSelectionDone = false;
            for(var count = 0; count < dbList.length; count++){
-             if(dbList[count].indexOf("journal") == -1){
-                $("#db-list").append("<a href='#' id=" +dbList[count] + " class='list-group-item' onClick='openDatabaseAndGetTableList(\""+ dbList[count] + "\");'>" +dbList[count] + "</a>");
+             var dbName = dbList[count][0];
+             var isEncrypted = dbList[count][1];
+             var dbAttribute = isEncrypted == "true" ? ' <span class="glyphicon glyphicon-lock" aria-hidden="true" style="color:blue"></span>' : "";
+             if(dbName.indexOf("journal") == -1){
+                $("#db-list").append("<a href='#' id=" + dbName + " class='list-group-item' onClick='openDatabaseAndGetTableList(\""+ dbName + "\");'>" + dbName + dbAttribute + "</a>");
                 if(!isSelectionDone){
                     isSelectionDone = true;
                       $('#db-list').find('a').trigger('click');
