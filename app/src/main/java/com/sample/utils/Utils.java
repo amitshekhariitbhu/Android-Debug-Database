@@ -20,6 +20,7 @@
 package com.sample.utils;
 
 import android.content.Context;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.sample.BuildConfig;
@@ -58,11 +59,11 @@ public class Utils {
                 Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
                 Class[] argTypes = new Class[]{HashMap.class};
                 Method setCustomDatabaseFiles = debugDB.getMethod("setCustomDatabaseFiles", argTypes);
-                HashMap<String, File> customDatabaseFiles = new HashMap<>();
+                HashMap<String, Pair<File, String>> customDatabaseFiles = new HashMap<>();
                 // set your custom database files
                 customDatabaseFiles.put(ExtTestDBHelper.DATABASE_NAME,
-                        new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
-                                "/" + ExtTestDBHelper.DATABASE_NAME));
+                        new Pair<>(new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
+                                "/" + ExtTestDBHelper.DATABASE_NAME), ""));
                 setCustomDatabaseFiles.invoke(null, customDatabaseFiles);
             } catch (Exception ignore) {
 

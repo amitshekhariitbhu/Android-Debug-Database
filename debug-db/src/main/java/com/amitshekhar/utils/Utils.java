@@ -22,6 +22,7 @@ package com.amitshekhar.utils;
 import android.content.res.AssetManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -82,14 +83,14 @@ public class Utils {
         }
     }
 
-    public static byte[] getDatabase(String selectedDatabase, HashMap<String, File> databaseFiles) {
+    public static byte[] getDatabase(String selectedDatabase, HashMap<String, Pair<File, String>> databaseFiles) {
         if (TextUtils.isEmpty(selectedDatabase)) {
             return null;
         }
 
         byte[] byteArray = new byte[0];
         try {
-            File file = databaseFiles.get(selectedDatabase);
+            File file = databaseFiles.get(selectedDatabase).first;
 
             byteArray = null;
             try {
