@@ -30,6 +30,7 @@ import android.view.View;
 import com.sample.database.CarDBHelper;
 import com.sample.database.ContactDBHelper;
 import com.sample.database.ExtTestDBHelper;
+import com.sample.database.PersonDBHelper;
 import com.sample.utils.Utils;
 
 import java.util.HashSet;
@@ -93,6 +94,17 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < 20; i++) {
                 String value = "value_" + i;
                 extTestDBHelper.insertTest(value);
+            }
+        }
+
+        // Create Person encrypted database
+        PersonDBHelper personDBHelper = new PersonDBHelper(getApplicationContext());
+        if (personDBHelper.count() == 0) {
+            for (int i = 0; i < 100; i++) {
+                String firstName = PersonDBHelper.PERSON_COLUMN_FIRST_NAME + "_" + i;
+                String lastName = PersonDBHelper.PERSON_COLUMN_LAST_NAME + "_" + i;
+                String address = PersonDBHelper.PERSON_COLUMN_ADDRESS + "_" + i;
+                personDBHelper.insertPerson(firstName, lastName, address);
             }
         }
 

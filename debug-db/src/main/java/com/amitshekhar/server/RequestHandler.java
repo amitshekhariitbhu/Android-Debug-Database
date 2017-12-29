@@ -21,9 +21,10 @@ package com.amitshekhar.server;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.database.sqlite.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
@@ -59,8 +60,8 @@ public class RequestHandler {
     private final AssetManager mAssets;
     private boolean isDbOpened;
     private SQLiteDatabase mDatabase;
-    private HashMap<String, File> mDatabaseFiles;
-    private HashMap<String, File> mCustomDatabaseFiles;
+    private HashMap<String, Pair<File, String>> mDatabaseFiles;
+    private HashMap<String, Pair<File, String>> mCustomDatabaseFiles;
     private String mSelectedDatabase = null;
 
     public RequestHandler(Context context) {
@@ -154,7 +155,7 @@ public class RequestHandler {
         }
     }
 
-    public void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles){
+    public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles){
         mCustomDatabaseFiles = customDatabaseFiles;
     }
 
@@ -165,8 +166,12 @@ public class RequestHandler {
 
     private void openDatabase(String database) {
         closeDatabase();
-        File databaseFile = mDatabaseFiles.get(database);
-        mDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), null);
+        File databaseFile = mDatabaseFiles.get(database).first;
+        String password = mDatabaseFiles.get(database).second;
+
+        SQLiteDatabase.loadLibs(mContext);
+
+        mDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), password, null);
         isDbOpened = true;
     }
 
@@ -185,11 +190,12 @@ public class RequestHandler {
         }
         Response response = new Response();
         if (mDatabaseFiles != null) {
-            for (HashMap.Entry<String, File> entry : mDatabaseFiles.entrySet()) {
-                response.rows.add(entry.getKey());
+            for (HashMap.Entry<String, Pair<File, String>> entry : mDatabaseFiles.entrySet()) {
+                String[] dbEntry = { entry.getKey(), entry.getValue().second != "" ? "true" : "false" };
+                response.rows.add(dbEntry);
             }
         }
-        response.rows.add(Constants.APP_SHARED_PREFERENCES);
+        response.rows.add(new String[] { Constants.APP_SHARED_PREFERENCES, "false" });
         response.isSuccessful = true;
         return mGson.toJson(response);
     }
@@ -230,13 +236,25 @@ public class RequestHandler {
             }
 
             if (query != null) {
-                first = query.split(" ")[0].toLowerCase();
-                if (first.equals("select") || first.equals("pragma")) {
-                    TableDataResponse response = DatabaseHelper.getTableData(mDatabase, query, null);
-                    data = mGson.toJson(response);
-                } else {
-                    TableDataResponse response = DatabaseHelper.exec(mDatabase, query);
-                    data = mGson.toJson(response);
+                String[] statements = query.split(";");
+
+                for (int i=0; i<statements.length; i++) {
+
+                    String aQuery = statements[i].trim();
+                    first = aQuery.split(" ")[0].toLowerCase();
+                    if (first.equals("select") || first.equals("pragma")) {
+                        TableDataResponse response = DatabaseHelper.getTableData(mDatabase, aQuery, null);
+                        data = mGson.toJson(response);
+                        if (!response.isSuccessful) {
+                            break;
+                        }
+                    } else {
+                        TableDataResponse response = DatabaseHelper.exec(mDatabase, aQuery);
+                        data = mGson.toJson(response);
+                        if (!response.isSuccessful) {
+                            break;
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
