@@ -21,7 +21,6 @@ package com.amitshekhar.server;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import net.sqlcipher.database.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -38,6 +37,8 @@ import com.amitshekhar.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import net.sqlcipher.database.SQLiteDatabase;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -155,7 +156,7 @@ public class RequestHandler {
         }
     }
 
-    public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles){
+    public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles) {
         mCustomDatabaseFiles = customDatabaseFiles;
     }
 
@@ -185,17 +186,17 @@ public class RequestHandler {
 
     private String getDBListResponse() {
         mDatabaseFiles = DatabaseFileProvider.getDatabaseFiles(mContext);
-        if(mCustomDatabaseFiles!=null){
+        if (mCustomDatabaseFiles != null) {
             mDatabaseFiles.putAll(mCustomDatabaseFiles);
         }
         Response response = new Response();
         if (mDatabaseFiles != null) {
             for (HashMap.Entry<String, Pair<File, String>> entry : mDatabaseFiles.entrySet()) {
-                String[] dbEntry = { entry.getKey(), entry.getValue().second != "" ? "true" : "false" };
+                String[] dbEntry = {entry.getKey(), !entry.getValue().second.equals("") ? "true" : "false"};
                 response.rows.add(dbEntry);
             }
         }
-        response.rows.add(new String[] { Constants.APP_SHARED_PREFERENCES, "false" });
+        response.rows.add(new String[]{Constants.APP_SHARED_PREFERENCES, "false"});
         response.isSuccessful = true;
         return mGson.toJson(response);
     }
@@ -238,7 +239,7 @@ public class RequestHandler {
             if (query != null) {
                 String[] statements = query.split(";");
 
-                for (int i=0; i<statements.length; i++) {
+                for (int i = 0; i < statements.length; i++) {
 
                     String aQuery = statements[i].trim();
                     first = aQuery.split(" ")[0].toLowerCase();
