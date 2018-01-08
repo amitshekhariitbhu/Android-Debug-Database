@@ -20,15 +20,11 @@
 package com.amitshekhar.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.Pair;
-
-import com.amitshekhar.R;
 
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by amitshekhar on 06/02/17.

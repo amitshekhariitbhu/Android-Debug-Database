@@ -34,7 +34,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ClientServer implements Runnable {
 
@@ -88,8 +87,8 @@ public class ClientServer implements Runnable {
         }
     }
 
-    public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles){
-            mRequestHandler.setCustomDatabaseFiles(customDatabaseFiles);
+    public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles) {
+        mRequestHandler.setCustomDatabaseFiles(customDatabaseFiles);
     }
 
     public boolean isRunning() {
