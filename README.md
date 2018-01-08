@@ -36,7 +36,7 @@
 ### Using Android Debug Database Library in your application
 Add this to your app's build.gradle
 ```groovy
-debugCompile 'com.amitshekhar.android:debug-db:1.0.1'
+debugCompile 'com.amitshekhar.android:debug-db:1.0.2'
 ```
 
 Use `debugCompile` so that it will only compile in your debug build and not in your release build.
