@@ -78,7 +78,7 @@ public class Utils {
                 Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
                 Class[] argTypes = new Class[]{HashMap.class};
                 HashMap<String, SupportSQLiteDatabase> inMemoryDatabases = new HashMap<>();
-                // set your inMemory database
+                // set your inMemory databases
                 inMemoryDatabases.put("InMemoryOne.db", database[0]);
                 Method setRoomInMemoryDatabase = debugDB.getMethod("setInMemoryRoomDatabases", argTypes);
                 setRoomInMemoryDatabase.invoke(null, inMemoryDatabases);
