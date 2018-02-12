@@ -24,6 +24,7 @@ package com.amitshekhar.server;
  */
 
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
@@ -40,12 +41,9 @@ public class ClientServer implements Runnable {
     private static final String TAG = "ClientServer";
 
     private final int mPort;
-
-    private boolean mIsRunning;
-
-    private ServerSocket mServerSocket;
-
     private final RequestHandler mRequestHandler;
+    private boolean mIsRunning;
+    private ServerSocket mServerSocket;
 
     public ClientServer(Context context, int port) {
         mRequestHandler = new RequestHandler(context);
@@ -89,6 +87,10 @@ public class ClientServer implements Runnable {
 
     public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles) {
         mRequestHandler.setCustomDatabaseFiles(customDatabaseFiles);
+    }
+
+    public void setInMemoryRoomDatabases(HashMap<String, SupportSQLiteDatabase> databases) {
+        mRequestHandler.setInMemoryRoomDatabases(databases);
     }
 
     public boolean isRunning() {

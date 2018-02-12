@@ -1,5 +1,6 @@
 package com.sample.database.room;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 
@@ -15,7 +16,7 @@ public class UserDBHelper {
     private final AppDatabase inMemoryAppDatabase;
 
     public UserDBHelper(Context context) {
-        appDatabase = Room.databaseBuilder(context, AppDatabase.class, "User-Database")
+        appDatabase = Room.databaseBuilder(context, AppDatabase.class, "User.db")
                 .allowMainThreadQueries()
                 .build();
         inMemoryAppDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
@@ -39,4 +40,7 @@ public class UserDBHelper {
         return inMemoryAppDatabase.userDao().loadAll().size();
     }
 
+    public SupportSQLiteDatabase getInMemoryDatabase() {
+        return inMemoryAppDatabase.getOpenHelper().getWritableDatabase();
+    }
 }

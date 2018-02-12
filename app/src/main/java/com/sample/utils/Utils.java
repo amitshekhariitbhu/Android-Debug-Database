@@ -19,6 +19,7 @@
 
 package com.sample.utils;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.util.Pair;
 import android.widget.Toast;
@@ -65,6 +66,22 @@ public class Utils {
                         new Pair<>(new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
                                 "/" + ExtTestDBHelper.DATABASE_NAME), ""));
                 setCustomDatabaseFiles.invoke(null, customDatabaseFiles);
+            } catch (Exception ignore) {
+
+            }
+        }
+    }
+
+    public static void setInMemoryRoomDatabases(SupportSQLiteDatabase... database) {
+        if (BuildConfig.DEBUG) {
+            try {
+                Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
+                Class[] argTypes = new Class[]{HashMap.class};
+                HashMap<String, SupportSQLiteDatabase> inMemoryDatabases = new HashMap<>();
+                // set your inMemory database
+                inMemoryDatabases.put("InMemoryOne.db", database[0]);
+                Method setRoomInMemoryDatabase = debugDB.getMethod("setInMemoryRoomDatabases", argTypes);
+                setRoomInMemoryDatabase.invoke(null, inMemoryDatabases);
             } catch (Exception ignore) {
 
             }
