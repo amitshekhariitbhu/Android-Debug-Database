@@ -29,6 +29,8 @@ import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
+import com.amitshekhar.sqlite.DebugSQLiteDB;
+import com.amitshekhar.sqlite.SQLiteDB;
 import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
@@ -60,7 +62,7 @@ public class RequestHandler {
     private final Gson mGson;
     private final AssetManager mAssets;
     private boolean isDbOpened;
-    private SQLiteDatabase mDatabase;
+    private SQLiteDB sqLiteDB;
     private HashMap<String, Pair<File, String>> mDatabaseFiles;
     private HashMap<String, Pair<File, String>> mCustomDatabaseFiles;
     private String mSelectedDatabase = null;
@@ -172,15 +174,15 @@ public class RequestHandler {
 
         SQLiteDatabase.loadLibs(mContext);
 
-        mDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), password, null);
+        sqLiteDB = new DebugSQLiteDB(SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), password, null));
         isDbOpened = true;
     }
 
     private void closeDatabase() {
-        if (mDatabase != null && mDatabase.isOpen()) {
-            mDatabase.close();
+        if (sqLiteDB != null && sqLiteDB.isOpen()) {
+            sqLiteDB.close();
         }
-        mDatabase = null;
+        sqLiteDB = null;
         isDbOpened = false;
     }
 
@@ -213,7 +215,7 @@ public class RequestHandler {
 
         if (isDbOpened) {
             String sql = "SELECT * FROM " + tableName;
-            response = DatabaseHelper.getTableData(mDatabase, sql, tableName);
+            response = DatabaseHelper.getTableData(sqLiteDB, sql, tableName);
         } else {
             response = PrefHelper.getAllPrefData(mContext, tableName);
         }
@@ -244,13 +246,13 @@ public class RequestHandler {
                     String aQuery = statements[i].trim();
                     first = aQuery.split(" ")[0].toLowerCase();
                     if (first.equals("select") || first.equals("pragma")) {
-                        TableDataResponse response = DatabaseHelper.getTableData(mDatabase, aQuery, null);
+                        TableDataResponse response = DatabaseHelper.getTableData(sqLiteDB, aQuery, null);
                         data = mGson.toJson(response);
                         if (!response.isSuccessful) {
                             break;
                         }
                     } else {
-                        TableDataResponse response = DatabaseHelper.exec(mDatabase, aQuery);
+                        TableDataResponse response = DatabaseHelper.exec(sqLiteDB, aQuery);
                         data = mGson.toJson(response);
                         if (!response.isSuccessful) {
                             break;
@@ -285,7 +287,7 @@ public class RequestHandler {
             mSelectedDatabase = Constants.APP_SHARED_PREFERENCES;
         } else {
             openDatabase(database);
-            response = DatabaseHelper.getAllTableName(mDatabase);
+            response = DatabaseHelper.getAllTableName(sqLiteDB);
             mSelectedDatabase = database;
         }
         return mGson.toJson(response);
@@ -303,7 +305,7 @@ public class RequestHandler {
             if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
                 response = PrefHelper.addOrUpdateRow(mContext, tableName, rowDataRequests);
             } else {
-                response = DatabaseHelper.addRow(mDatabase, tableName, rowDataRequests);
+                response = DatabaseHelper.addRow(sqLiteDB, tableName, rowDataRequests);
             }
             return mGson.toJson(response);
         } catch (Exception e) {
@@ -325,7 +327,7 @@ public class RequestHandler {
             if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
                 response = PrefHelper.addOrUpdateRow(mContext, tableName, rowDataRequests);
             } else {
-                response = DatabaseHelper.updateRow(mDatabase, tableName, rowDataRequests);
+                response = DatabaseHelper.updateRow(sqLiteDB, tableName, rowDataRequests);
             }
             return mGson.toJson(response);
         } catch (Exception e) {
@@ -348,7 +350,7 @@ public class RequestHandler {
             if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
                 response = PrefHelper.deleteRow(mContext, tableName, rowDataRequests);
             } else {
-                response = DatabaseHelper.deleteRow(mDatabase, tableName, rowDataRequests);
+                response = DatabaseHelper.deleteRow(sqLiteDB, tableName, rowDataRequests);
             }
             return mGson.toJson(response);
         } catch (Exception e) {
