@@ -20,15 +20,14 @@
 package com.amitshekhar.utils;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.text.TextUtils;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
-
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
+import com.amitshekhar.sqlite.SQLiteDB;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,7 +43,7 @@ public class DatabaseHelper {
         // This class in not publicly instantiable
     }
 
-    public static Response getAllTableName(SQLiteDatabase database) {
+    public static Response getAllTableName(SQLiteDB database) {
         Response response = new Response();
         Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table' OR type='view' ORDER BY name COLLATE NOCASE", null);
         if (c.moveToFirst()) {
@@ -63,7 +62,7 @@ public class DatabaseHelper {
         return response;
     }
 
-    public static TableDataResponse getTableData(SQLiteDatabase db, String selectQuery, String tableName) {
+    public static TableDataResponse getTableData(SQLiteDB db, String selectQuery, String tableName) {
 
         TableDataResponse tableData = new TableDataResponse();
         tableData.isSelectQuery = true;
@@ -173,7 +172,7 @@ public class DatabaseHelper {
         return String.format("[%s]", tableName);
     }
 
-    private static List<TableDataResponse.TableInfo> getTableInfo(SQLiteDatabase db, String pragmaQuery) {
+    private static List<TableDataResponse.TableInfo> getTableInfo(SQLiteDB db, String pragmaQuery) {
 
         Cursor cursor;
         try {
@@ -219,7 +218,7 @@ public class DatabaseHelper {
     }
 
 
-    public static UpdateRowResponse addRow(SQLiteDatabase db, String tableName,
+    public static UpdateRowResponse addRow(SQLiteDB db, String tableName,
                                            List<RowDataRequest> rowDataRequests) {
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 
@@ -261,7 +260,7 @@ public class DatabaseHelper {
     }
 
 
-    public static UpdateRowResponse updateRow(SQLiteDatabase db, String tableName, List<RowDataRequest> rowDataRequests) {
+    public static UpdateRowResponse updateRow(SQLiteDB db, String tableName, List<RowDataRequest> rowDataRequests) {
 
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
 
@@ -316,7 +315,7 @@ public class DatabaseHelper {
     }
 
 
-    public static UpdateRowResponse deleteRow(SQLiteDatabase db, String tableName,
+    public static UpdateRowResponse deleteRow(SQLiteDB db, String tableName,
                                               List<RowDataRequest> rowDataRequests) {
 
         UpdateRowResponse updateRowResponse = new UpdateRowResponse();
@@ -363,7 +362,7 @@ public class DatabaseHelper {
     }
 
 
-    public static TableDataResponse exec(SQLiteDatabase database, String sql) {
+    public static TableDataResponse exec(SQLiteDB database, String sql) {
         TableDataResponse tableDataResponse = new TableDataResponse();
         tableDataResponse.isSelectQuery = false;
         try {
@@ -387,7 +386,7 @@ public class DatabaseHelper {
     }
 
     private static String getTableName(String selectQuery) {
-        // TODO: 24/4/17 Handle JOIN Query
+        // TODO: Handle JOIN Query
         TableNameParser tableNameParser = new TableNameParser(selectQuery);
         HashSet<String> tableNames = (HashSet<String>) tableNameParser.tables();
 
