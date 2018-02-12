@@ -138,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Utils.setCustomDatabaseFiles(getApplicationContext());
+        Utils.setInMemoryRoomDatabases(userDBHelper.getInMemoryDatabase());
     }
 
     public void showDebugDbAddress(View view) {

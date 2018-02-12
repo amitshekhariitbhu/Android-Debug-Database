@@ -19,6 +19,7 @@
 
 package com.amitshekhar.server;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
@@ -30,6 +31,7 @@ import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.sqlite.DebugSQLiteDB;
+import com.amitshekhar.sqlite.InMemoryDebugSQLiteDB;
 import com.amitshekhar.sqlite.SQLiteDB;
 import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DatabaseFileProvider;
@@ -66,6 +68,7 @@ public class RequestHandler {
     private HashMap<String, Pair<File, String>> mDatabaseFiles;
     private HashMap<String, Pair<File, String>> mCustomDatabaseFiles;
     private String mSelectedDatabase = null;
+    private HashMap<String, SupportSQLiteDatabase> mRoomInMemoryDatabases = new HashMap<>();
 
     public RequestHandler(Context context) {
         mContext = context;
@@ -162,6 +165,10 @@ public class RequestHandler {
         mCustomDatabaseFiles = customDatabaseFiles;
     }
 
+    public void setInMemoryRoomDatabases(HashMap<String, SupportSQLiteDatabase> databases) {
+        mRoomInMemoryDatabases = databases;
+    }
+
     private void writeServerError(PrintStream output) {
         output.println("HTTP/1.0 500 Internal Server Error");
         output.flush();
@@ -169,12 +176,14 @@ public class RequestHandler {
 
     private void openDatabase(String database) {
         closeDatabase();
-        File databaseFile = mDatabaseFiles.get(database).first;
-        String password = mDatabaseFiles.get(database).second;
-
-        SQLiteDatabase.loadLibs(mContext);
-
-        sqLiteDB = new DebugSQLiteDB(SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), password, null));
+        if (mRoomInMemoryDatabases.containsKey(database)) {
+            sqLiteDB = new InMemoryDebugSQLiteDB(mRoomInMemoryDatabases.get(database));
+        } else {
+            File databaseFile = mDatabaseFiles.get(database).first;
+            String password = mDatabaseFiles.get(database).second;
+            SQLiteDatabase.loadLibs(mContext);
+            sqLiteDB = new DebugSQLiteDB(SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), password, null));
+        }
         isDbOpened = true;
     }
 
@@ -195,6 +204,12 @@ public class RequestHandler {
         if (mDatabaseFiles != null) {
             for (HashMap.Entry<String, Pair<File, String>> entry : mDatabaseFiles.entrySet()) {
                 String[] dbEntry = {entry.getKey(), !entry.getValue().second.equals("") ? "true" : "false"};
+                response.rows.add(dbEntry);
+            }
+        }
+        if (mRoomInMemoryDatabases != null) {
+            for (HashMap.Entry<String, SupportSQLiteDatabase> entry : mRoomInMemoryDatabases.entrySet()) {
+                String[] dbEntry = {entry.getKey(), "false"};
                 response.rows.add(dbEntry);
             }
         }
