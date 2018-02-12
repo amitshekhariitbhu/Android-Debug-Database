@@ -18,7 +18,9 @@ public class UserDBHelper {
         appDatabase = Room.databaseBuilder(context, AppDatabase.class, "User-Database")
                 .allowMainThreadQueries()
                 .build();
-        inMemoryAppDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
+        inMemoryAppDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
+                .allowMainThreadQueries()
+                .build();
     }
 
     public void insertUser(List<User> userList) {
