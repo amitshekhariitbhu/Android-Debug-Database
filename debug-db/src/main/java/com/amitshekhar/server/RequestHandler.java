@@ -19,6 +19,7 @@
 
 package com.amitshekhar.server;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
@@ -29,6 +30,9 @@ import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
+import com.amitshekhar.sqlite.DebugSQLiteDB;
+import com.amitshekhar.sqlite.InMemoryDebugSQLiteDB;
+import com.amitshekhar.sqlite.SQLiteDB;
 import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
@@ -60,10 +64,11 @@ public class RequestHandler {
     private final Gson mGson;
     private final AssetManager mAssets;
     private boolean isDbOpened;
-    private SQLiteDatabase mDatabase;
+    private SQLiteDB sqLiteDB;
     private HashMap<String, Pair<File, String>> mDatabaseFiles;
     private HashMap<String, Pair<File, String>> mCustomDatabaseFiles;
     private String mSelectedDatabase = null;
+    private HashMap<String, SupportSQLiteDatabase> mRoomInMemoryDatabases = new HashMap<>();
 
     public RequestHandler(Context context) {
         mContext = context;
@@ -160,6 +165,10 @@ public class RequestHandler {
         mCustomDatabaseFiles = customDatabaseFiles;
     }
 
+    public void setInMemoryRoomDatabases(HashMap<String, SupportSQLiteDatabase> databases) {
+        mRoomInMemoryDatabases = databases;
+    }
+
     private void writeServerError(PrintStream output) {
         output.println("HTTP/1.0 500 Internal Server Error");
         output.flush();
@@ -167,20 +176,22 @@ public class RequestHandler {
 
     private void openDatabase(String database) {
         closeDatabase();
-        File databaseFile = mDatabaseFiles.get(database).first;
-        String password = mDatabaseFiles.get(database).second;
-
-        SQLiteDatabase.loadLibs(mContext);
-
-        mDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), password, null);
+        if (mRoomInMemoryDatabases.containsKey(database)) {
+            sqLiteDB = new InMemoryDebugSQLiteDB(mRoomInMemoryDatabases.get(database));
+        } else {
+            File databaseFile = mDatabaseFiles.get(database).first;
+            String password = mDatabaseFiles.get(database).second;
+            SQLiteDatabase.loadLibs(mContext);
+            sqLiteDB = new DebugSQLiteDB(SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), password, null));
+        }
         isDbOpened = true;
     }
 
     private void closeDatabase() {
-        if (mDatabase != null && mDatabase.isOpen()) {
-            mDatabase.close();
+        if (sqLiteDB != null && sqLiteDB.isOpen()) {
+            sqLiteDB.close();
         }
-        mDatabase = null;
+        sqLiteDB = null;
         isDbOpened = false;
     }
 
@@ -192,11 +203,17 @@ public class RequestHandler {
         Response response = new Response();
         if (mDatabaseFiles != null) {
             for (HashMap.Entry<String, Pair<File, String>> entry : mDatabaseFiles.entrySet()) {
-                String[] dbEntry = {entry.getKey(), !entry.getValue().second.equals("") ? "true" : "false"};
+                String[] dbEntry = {entry.getKey(), !entry.getValue().second.equals("") ? "true" : "false", "true"};
                 response.rows.add(dbEntry);
             }
         }
-        response.rows.add(new String[]{Constants.APP_SHARED_PREFERENCES, "false"});
+        if (mRoomInMemoryDatabases != null) {
+            for (HashMap.Entry<String, SupportSQLiteDatabase> entry : mRoomInMemoryDatabases.entrySet()) {
+                String[] dbEntry = {entry.getKey(), "false", "false"};
+                response.rows.add(dbEntry);
+            }
+        }
+        response.rows.add(new String[]{Constants.APP_SHARED_PREFERENCES, "false", "false"});
         response.isSuccessful = true;
         return mGson.toJson(response);
     }
@@ -213,7 +230,7 @@ public class RequestHandler {
 
         if (isDbOpened) {
             String sql = "SELECT * FROM " + tableName;
-            response = DatabaseHelper.getTableData(mDatabase, sql, tableName);
+            response = DatabaseHelper.getTableData(sqLiteDB, sql, tableName);
         } else {
             response = PrefHelper.getAllPrefData(mContext, tableName);
         }
@@ -244,13 +261,13 @@ public class RequestHandler {
                     String aQuery = statements[i].trim();
                     first = aQuery.split(" ")[0].toLowerCase();
                     if (first.equals("select") || first.equals("pragma")) {
-                        TableDataResponse response = DatabaseHelper.getTableData(mDatabase, aQuery, null);
+                        TableDataResponse response = DatabaseHelper.getTableData(sqLiteDB, aQuery, null);
                         data = mGson.toJson(response);
                         if (!response.isSuccessful) {
                             break;
                         }
                     } else {
-                        TableDataResponse response = DatabaseHelper.exec(mDatabase, aQuery);
+                        TableDataResponse response = DatabaseHelper.exec(sqLiteDB, aQuery);
                         data = mGson.toJson(response);
                         if (!response.isSuccessful) {
                             break;
@@ -285,7 +302,7 @@ public class RequestHandler {
             mSelectedDatabase = Constants.APP_SHARED_PREFERENCES;
         } else {
             openDatabase(database);
-            response = DatabaseHelper.getAllTableName(mDatabase);
+            response = DatabaseHelper.getAllTableName(sqLiteDB);
             mSelectedDatabase = database;
         }
         return mGson.toJson(response);
@@ -303,7 +320,7 @@ public class RequestHandler {
             if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
                 response = PrefHelper.addOrUpdateRow(mContext, tableName, rowDataRequests);
             } else {
-                response = DatabaseHelper.addRow(mDatabase, tableName, rowDataRequests);
+                response = DatabaseHelper.addRow(sqLiteDB, tableName, rowDataRequests);
             }
             return mGson.toJson(response);
         } catch (Exception e) {
@@ -325,7 +342,7 @@ public class RequestHandler {
             if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
                 response = PrefHelper.addOrUpdateRow(mContext, tableName, rowDataRequests);
             } else {
-                response = DatabaseHelper.updateRow(mDatabase, tableName, rowDataRequests);
+                response = DatabaseHelper.updateRow(sqLiteDB, tableName, rowDataRequests);
             }
             return mGson.toJson(response);
         } catch (Exception e) {
@@ -348,7 +365,7 @@ public class RequestHandler {
             if (Constants.APP_SHARED_PREFERENCES.equals(mSelectedDatabase)) {
                 response = PrefHelper.deleteRow(mContext, tableName, rowDataRequests);
             } else {
-                response = DatabaseHelper.deleteRow(mDatabase, tableName, rowDataRequests);
+                response = DatabaseHelper.deleteRow(sqLiteDB, tableName, rowDataRequests);
             }
             return mGson.toJson(response);
         } catch (Exception e) {

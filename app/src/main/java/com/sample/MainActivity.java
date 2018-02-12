@@ -125,7 +125,20 @@ public class MainActivity extends AppCompatActivity {
             userDBHelper.insertUser(userList);
         }
 
+        // Room inMemory database
+        if (userDBHelper.countInMemory() == 0) {
+            List<User> userList = new ArrayList<>();
+            for (int i = 0; i < 20; i++) {
+                User user = new User();
+                user.id = (long) (i + 1);
+                user.name = "in_memory_user_" + i;
+                userList.add(user);
+            }
+            userDBHelper.insertUserInMemory(userList);
+        }
+
         Utils.setCustomDatabaseFiles(getApplicationContext());
+        Utils.setInMemoryRoomDatabases(userDBHelper.getInMemoryDatabase());
     }
 
     public void showDebugDbAddress(View view) {

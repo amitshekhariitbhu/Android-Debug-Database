@@ -36,7 +36,7 @@
 ### Using Android Debug Database Library in your application
 Add this to your app's build.gradle
 ```groovy
-debugCompile 'com.amitshekhar.android:debug-db:1.0.2'
+debugCompile 'com.amitshekhar.android:debug-db:1.0.3'
 ```
 
 Use `debugCompile` so that it will only compile in your debug build and not in your release build.
@@ -95,7 +95,7 @@ public static void showDebugDBAddressLogToast(Context context) {
 ```
 
 ### Adding custom database files
-As this library is auto-initialize, if you want to add custom database files, add the following method and call
+As this library is auto-initialize, if you want to debug custom database files, add the following method and call
 ```java
 public static void setCustomDatabaseFiles(Context context) {
     if (BuildConfig.DEBUG) {
@@ -109,6 +109,26 @@ public static void setCustomDatabaseFiles(Context context) {
                     new Pair<>(new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
                                                     "/" + ExtTestDBHelper.DATABASE_NAME), ""));
             setCustomDatabaseFiles.invoke(null, customDatabaseFiles);
+        } catch (Exception ignore) {
+
+        }
+    }
+}
+```
+
+### Adding InMemory Room databases
+As this library is auto-initialize, if you want to debug inMemory Room databases, add the following method and call
+```java
+public static void setInMemoryRoomDatabases(SupportSQLiteDatabase... database) {
+    if (BuildConfig.DEBUG) {
+        try {
+            Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
+            Class[] argTypes = new Class[]{HashMap.class};
+            HashMap<String, SupportSQLiteDatabase> inMemoryDatabases = new HashMap<>();
+            // set your inMemory databases
+            inMemoryDatabases.put("InMemoryOne.db", database[0]);
+            Method setRoomInMemoryDatabase = debugDB.getMethod("setInMemoryRoomDatabases", argTypes);
+            setRoomInMemoryDatabase.invoke(null, inMemoryDatabases);
         } catch (Exception ignore) {
 
         }
