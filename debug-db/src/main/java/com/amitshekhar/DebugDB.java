@@ -19,6 +19,7 @@
 
 package com.amitshekhar;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
@@ -76,6 +77,12 @@ public class DebugDB {
     public static void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles) {
         if (clientServer != null) {
             clientServer.setCustomDatabaseFiles(customDatabaseFiles);
+        }
+    }
+
+    public static void setInMemoryRoomDatabases(HashMap<String, SupportSQLiteDatabase> databases) {
+        if (clientServer != null) {
+            clientServer.setInMemoryRoomDatabases(databases);
         }
     }
 

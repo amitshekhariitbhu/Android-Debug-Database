@@ -84,7 +84,7 @@ public class Utils {
     }
 
     public static byte[] getDatabase(String selectedDatabase, HashMap<String, Pair<File, String>> databaseFiles) {
-        if (TextUtils.isEmpty(selectedDatabase)) {
+        if (TextUtils.isEmpty(selectedDatabase) || !databaseFiles.containsKey(selectedDatabase)) {
             return null;
         }
 

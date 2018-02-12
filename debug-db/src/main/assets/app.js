@@ -70,12 +70,13 @@ function getDBList() {
            for(var count = 0; count < dbList.length; count++){
              var dbName = dbList[count][0];
              var isEncrypted = dbList[count][1];
+             var isDownloadable = dbList[count][2];
              var dbAttribute = isEncrypted == "true" ? ' <span class="glyphicon glyphicon-lock" aria-hidden="true" style="color:blue"></span>' : "";
              if(dbName.indexOf("journal") == -1){
-                $("#db-list").append("<a href='#' id=" + dbName + " class='list-group-item' onClick='openDatabaseAndGetTableList(\""+ dbName + "\");'>" + dbName + dbAttribute + "</a>");
+                $("#db-list").append("<a href='#' id=" + dbName + " class='list-group-item' onClick='openDatabaseAndGetTableList(\""+ dbName + "\", \""+ isDownloadable + "\");'>" + dbName + dbAttribute + "</a>");
                 if(!isSelectionDone){
                     isSelectionDone = true;
-                      $('#db-list').find('a').trigger('click');
+                    $('#db-list').find('a').trigger('click');
                 }
              }
            }
@@ -85,7 +86,7 @@ function getDBList() {
 }
 
 var lastTableName = getHashValue('table');
-function openDatabaseAndGetTableList(db) {
+function openDatabaseAndGetTableList(db, isDownloadable) {
 
     if("APP_SHARED_PREFERENCES" == db) {
         $('#run-query').removeClass('active');
@@ -97,10 +98,16 @@ function openDatabaseAndGetTableList(db) {
     } else {
         $('#run-query').removeClass('disabled');
         $('#run-query').addClass('active');
-        $('#selected-db-info').removeClass('disabled');
-        $('#selected-db-info').addClass('active');
+        if("true" == isDownloadable) {
+            $('#selected-db-info').removeClass('disabled');
+            $('#selected-db-info').addClass('active');
+            $("#selected-db-info").text("Export Selected Database : "+db);
+        } else {
+            $('#selected-db-info').removeClass('active');
+            $('#selected-db-info').addClass('disabled');
+            $("#selected-db-info").text("Selected Database : "+db);
+        }
         isDatabaseSelected = true;
-        $("#selected-db-info").text("Export Selected Database : "+db);
     }
 
 
@@ -110,7 +117,11 @@ function openDatabaseAndGetTableList(db) {
            var tableList = result.rows;
            var dbVersion = result.dbVersion;
            if("APP_SHARED_PREFERENCES" != db) {
-              $("#selected-db-info").text("Export Selected Database : "+db +" Version : "+dbVersion);
+              if("true" == isDownloadable) {
+                $("#selected-db-info").text("Export Selected Database : "+db +" Version : "+dbVersion);
+              } else {
+                $("#selected-db-info").text("Selected Database : "+db +" Version : "+dbVersion);
+              }
            }
            $('#table-list').empty()
            for(var count = 0; count < tableList.length; count++){
