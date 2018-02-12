@@ -203,17 +203,17 @@ public class RequestHandler {
         Response response = new Response();
         if (mDatabaseFiles != null) {
             for (HashMap.Entry<String, Pair<File, String>> entry : mDatabaseFiles.entrySet()) {
-                String[] dbEntry = {entry.getKey(), !entry.getValue().second.equals("") ? "true" : "false"};
+                String[] dbEntry = {entry.getKey(), !entry.getValue().second.equals("") ? "true" : "false", "true"};
                 response.rows.add(dbEntry);
             }
         }
         if (mRoomInMemoryDatabases != null) {
             for (HashMap.Entry<String, SupportSQLiteDatabase> entry : mRoomInMemoryDatabases.entrySet()) {
-                String[] dbEntry = {entry.getKey(), "false"};
+                String[] dbEntry = {entry.getKey(), "false", "false"};
                 response.rows.add(dbEntry);
             }
         }
-        response.rows.add(new String[]{Constants.APP_SHARED_PREFERENCES, "false"});
+        response.rows.add(new String[]{Constants.APP_SHARED_PREFERENCES, "false", "false"});
         response.isSuccessful = true;
         return mGson.toJson(response);
     }
