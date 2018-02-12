@@ -31,9 +31,13 @@ import com.sample.database.CarDBHelper;
 import com.sample.database.ContactDBHelper;
 import com.sample.database.ExtTestDBHelper;
 import com.sample.database.PersonDBHelper;
+import com.sample.database.room.User;
+import com.sample.database.room.UserDBHelper;
 import com.sample.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -106,6 +110,19 @@ public class MainActivity extends AppCompatActivity {
                 String address = PersonDBHelper.PERSON_COLUMN_ADDRESS + "_" + i;
                 personDBHelper.insertPerson(firstName, lastName, address);
             }
+        }
+
+        // Room database
+        UserDBHelper userDBHelper = new UserDBHelper(getApplicationContext());
+        if (userDBHelper.count() == 0) {
+            List<User> userList = new ArrayList<>();
+            for (int i = 0; i < 20; i++) {
+                User user = new User();
+                user.id = (long) (i + 1);
+                user.name = "user_" + i;
+                userList.add(user);
+            }
+            userDBHelper.insertUser(userList);
         }
 
         Utils.setCustomDatabaseFiles(getApplicationContext());
