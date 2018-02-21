@@ -27,6 +27,7 @@
 * Search in your data.
 * Sort data.
 * Download database.
+* Debug Room inMemory database.
 
 ### All these features work without rooting your device -> No need of rooted device
 
