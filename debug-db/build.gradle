@@ -51,6 +51,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'net.zetetic:android-database-sqlcipher:3.5.7@aar'
     compile "android.arch.persistence.room:runtime:1.0.0"
+    compile 'com.android.support:appcompat-v7:27.0.0'
+
 }
 
 //apply from: 'debug-db-upload.gradle'
