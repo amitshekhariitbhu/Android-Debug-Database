@@ -20,6 +20,8 @@
 package com.amitshekhar.utils;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import java.io.File;
@@ -42,13 +44,19 @@ public class DatabaseFileProvider {
         HashMap<String, Pair<File, String>> databaseFiles = new HashMap<>();
         try {
             for (String databaseName : context.databaseList()) {
-                String password = getDbPasswordFromStringResources(context, databaseName);
-                databaseFiles.put(databaseName, new Pair<>(context.getDatabasePath(databaseName), password));
+                if(isValid(databaseName)) {
+                    String password = getDbPasswordFromStringResources(context, databaseName);
+                    databaseFiles.put(databaseName, new Pair<>(context.getDatabasePath(databaseName), password));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return databaseFiles;
+    }
+
+    private static boolean isValid(@Nullable String name) {
+        return !TextUtils.isEmpty(name) && !name.endsWith("-journal") && !name.endsWith("-wal") && !name.endsWith("-shm");
     }
 
     private static String getDbPasswordFromStringResources(Context context, String name) {
