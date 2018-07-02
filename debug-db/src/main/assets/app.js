@@ -82,6 +82,21 @@ function downloadDb() {
     }
 }
 
+function deleteDb() {
+    if (isDatabaseSelected) {
+        $.ajax({url: "deleteDb", success: function(result){
+            result = JSON.parse(result);
+            if(result.isSuccessful){
+               console.log("Database deleted successfully");
+               showSuccessInfo("Database Deleted Successfully");
+               getDBList();
+            } else {
+               console.log("Database delete failed");
+               showErrorInfo("Database Delete Failed");
+            }
+        }});
+    }
+}
 
 function getDBList() {
 
@@ -115,21 +130,26 @@ function openDatabaseAndGetTableList(db, isDownloadable) {
     if("APP_SHARED_PREFERENCES" == db) {
         $('#run-query').removeClass('active');
         $('#run-query').addClass('disabled');
-        $('#selected-db-info').removeClass('active');
-        $('#selected-db-info').addClass('disabled');
+        $('#selected-db-download').removeClass('active');
+        $('#selected-db-delete').removeClass('active');
+        $('#selected-db-download').addClass('disabled');
+        $('#selected-db-delete').addClass('disabled');
         isDatabaseSelected = false;
         $("#selected-db-info").text("SharedPreferences");
     } else {
         $('#run-query').removeClass('disabled');
         $('#run-query').addClass('active');
+        $("#selected-db-info").text("Selected Database : "+db);
         if("true" == isDownloadable) {
-            $('#selected-db-info').removeClass('disabled');
-            $('#selected-db-info').addClass('active');
-            $("#selected-db-info").text("Export Selected Database : "+db);
+            $('#selected-db-download').addClass('active');
+            $('#selected-db-delete').addClass('active');
+            $('#selected-db-download').removeClass('disabled');
+            $('#selected-db-delete').removeClass('disabled');
         } else {
-            $('#selected-db-info').removeClass('active');
-            $('#selected-db-info').addClass('disabled');
-            $("#selected-db-info").text("Selected Database : "+db);
+            $('#selected-db-download').removeClass('active');
+            $('#selected-db-delete').removeClass('active');
+            $('#selected-db-download').addClass('disabled');
+            $('#selected-db-delete').addClass('disabled');
         }
         isDatabaseSelected = true;
     }
@@ -141,11 +161,7 @@ function openDatabaseAndGetTableList(db, isDownloadable) {
            var tableList = result.rows;
            var dbVersion = result.dbVersion;
            if("APP_SHARED_PREFERENCES" != db) {
-              if("true" == isDownloadable) {
-                $("#selected-db-info").text("Export Selected Database : "+db +" Version : "+dbVersion);
-              } else {
                 $("#selected-db-info").text("Selected Database : "+db +" Version : "+dbVersion);
-              }
            }
            $('#table-list').empty()
            for(var count = 0; count < tableList.length; count++){
