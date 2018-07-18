@@ -56,3 +56,8 @@
     from {bottom: 30px; opacity: 1;}
     to {bottom: 0; opacity: 0;}
 }
+
+textarea.form-control#query {
+    resize: vertical;
+    min-height: 100px;
+}
