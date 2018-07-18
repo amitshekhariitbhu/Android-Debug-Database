@@ -230,7 +230,7 @@ public class RequestHandler {
 
         if (isDbOpened) {
             String sql = "SELECT * FROM " + tableName;
-            response = DatabaseHelper.getTableData(sqLiteDB, sql, tableName);
+            response = DatabaseHelper.getTableData(sqLiteDB, sql, new String[]{tableName});
         } else {
             response = PrefHelper.getAllPrefData(mContext, tableName);
         }

@@ -22,6 +22,7 @@ package com.amitshekhar.utils;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
@@ -30,6 +31,8 @@ import com.amitshekhar.model.UpdateRowResponse;
 import com.amitshekhar.sqlite.SQLiteDB;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -62,109 +65,118 @@ public class DatabaseHelper {
         return response;
     }
 
-    public static TableDataResponse getTableData(SQLiteDB db, String selectQuery, String tableName) {
+    public static TableDataResponse getTableData(SQLiteDB db, String selectQuery, String[] tableNames) {
 
         TableDataResponse tableData = new TableDataResponse();
         tableData.isSelectQuery = true;
-        if (tableName == null) {
-            tableName = getTableName(selectQuery);
+        if (tableNames == null) {
+            tableNames = getTableNames(selectQuery);
         }
-
-        final String quotedTableName = getQuotedTableName(tableName);
-
-        if (tableName != null) {
-            final String pragmaQuery = "PRAGMA table_info(" + quotedTableName + ")";
-            tableData.tableInfos = getTableInfo(db, pragmaQuery);
-        }
+    
         Cursor cursor = null;
-        boolean isView = false;
-        try {
-            cursor = db.rawQuery("SELECT type FROM sqlite_master WHERE name=?",
-                    new String[]{quotedTableName});
-            if (cursor.moveToFirst()) {
-                isView = "view".equalsIgnoreCase(cursor.getString(0));
+        for( int j = 0; j < tableNames.length; j++ )
+        {
+            String quotedTableName = getQuotedTableName( tableNames[j] );
+    
+            if( tableNames == null )
+            {
+                final String pragmaQuery = "PRAGMA table_info(" + quotedTableName + ")";
+                tableData.tableInfos = getTableInfo( db, pragmaQuery );
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        tableData.isEditable = tableName != null && tableData.tableInfos != null && !isView;
-
-
-        if (!TextUtils.isEmpty(tableName)) {
-            selectQuery = selectQuery.replace(tableName, quotedTableName);
-        }
-
-        try {
-            cursor = db.rawQuery(selectQuery, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            tableData.isSuccessful = false;
-            tableData.errorMessage = e.getMessage();
-            return tableData;
-        }
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-
-            // setting tableInfo when tableName is not known and making
-            // it non-editable also by making isPrimary true for all
-            if (tableData.tableInfos == null) {
-                tableData.tableInfos = new ArrayList<>();
-                for (int i = 0; i < cursor.getColumnCount(); i++) {
-                    TableDataResponse.TableInfo tableInfo = new TableDataResponse.TableInfo();
-                    tableInfo.title = cursor.getColumnName(i);
-                    tableInfo.isPrimary = true;
-                    tableData.tableInfos.add(tableInfo);
+            
+            boolean isView = false;
+            try
+            {
+                cursor = db.rawQuery( "SELECT type FROM sqlite_master WHERE name=?",
+                        new String[]{ quotedTableName } );
+                if( cursor.moveToFirst() )
+                {
+                    isView = "view".equalsIgnoreCase( cursor.getString( 0 ) );
                 }
             }
-
-            tableData.isSuccessful = true;
-            tableData.rows = new ArrayList<>();
-            if (cursor.getCount() > 0) {
-
-                do {
-                    List<TableDataResponse.ColumnData> row = new ArrayList<>();
-                    for (int i = 0; i < cursor.getColumnCount(); i++) {
-                        TableDataResponse.ColumnData columnData = new TableDataResponse.ColumnData();
-                        switch (cursor.getType(i)) {
-                            case Cursor.FIELD_TYPE_BLOB:
-                                columnData.dataType = DataType.TEXT;
-                                columnData.value = ConverterUtils.blobToString(cursor.getBlob(i));
-                                break;
-                            case Cursor.FIELD_TYPE_FLOAT:
-                                columnData.dataType = DataType.REAL;
-                                columnData.value = cursor.getDouble(i);
-                                break;
-                            case Cursor.FIELD_TYPE_INTEGER:
-                                columnData.dataType = DataType.INTEGER;
-                                columnData.value = cursor.getLong(i);
-                                break;
-                            case Cursor.FIELD_TYPE_STRING:
-                                columnData.dataType = DataType.TEXT;
-                                columnData.value = cursor.getString(i);
-                                break;
-                            default:
-                                columnData.dataType = DataType.TEXT;
-                                columnData.value = cursor.getString(i);
-                        }
-                        row.add(columnData);
-                    }
-                    tableData.rows.add(row);
-
-                } while (cursor.moveToNext());
+            catch( Exception e )
+            {
+                e.printStackTrace();
             }
-            cursor.close();
-            return tableData;
-        } else {
-            tableData.isSuccessful = false;
-            tableData.errorMessage = "Cursor is null";
-            return tableData;
+            finally
+            {
+                if( cursor != null )
+                {
+                    cursor.close();
+                }
+            }
+            tableData.isEditable = tableNames != null && tableData.tableInfos != null && !isView;
+    
+            // selectQuery = selectQuery.replace( tableNames[j], quotedTableName );
         }
-
+	
+		try {
+			Log.v( "DATABASE", selectQuery );
+			cursor = db.rawQuery(selectQuery, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			tableData.isSuccessful = false;
+			tableData.errorMessage = e.getMessage();
+			return tableData;
+		}
+	
+		if (cursor != null) {
+			cursor.moveToFirst();
+		
+			// setting tableInfo when tableName is not known and making
+			// it non-editable also by making isPrimary true for all
+			if (tableData.tableInfos == null) {
+				tableData.tableInfos = new ArrayList<>();
+				for (int i = 0; i < cursor.getColumnCount(); i++) {
+					TableDataResponse.TableInfo tableInfo = new TableDataResponse.TableInfo();
+					tableInfo.title = cursor.getColumnName(i);
+					tableInfo.isPrimary = true;
+					tableData.tableInfos.add(tableInfo);
+				}
+			}
+		
+			tableData.isSuccessful = true;
+			tableData.rows = new ArrayList<>();
+			if (cursor.getCount() > 0) {
+			
+				do {
+					List<TableDataResponse.ColumnData> row = new ArrayList<>();
+					for (int i = 0; i < cursor.getColumnCount(); i++) {
+						TableDataResponse.ColumnData columnData = new TableDataResponse.ColumnData();
+						switch (cursor.getType(i)) {
+							case Cursor.FIELD_TYPE_BLOB:
+								columnData.dataType = DataType.TEXT;
+								columnData.value = ConverterUtils.blobToString(cursor.getBlob(i));
+								break;
+							case Cursor.FIELD_TYPE_FLOAT:
+								columnData.dataType = DataType.REAL;
+								columnData.value = cursor.getDouble(i);
+								break;
+							case Cursor.FIELD_TYPE_INTEGER:
+								columnData.dataType = DataType.INTEGER;
+								columnData.value = cursor.getLong(i);
+								break;
+							case Cursor.FIELD_TYPE_STRING:
+								columnData.dataType = DataType.TEXT;
+								columnData.value = cursor.getString(i);
+								break;
+							default:
+								columnData.dataType = DataType.TEXT;
+								columnData.value = cursor.getString(i);
+						}
+						row.add(columnData);
+					}
+					tableData.rows.add(row);
+				
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			return tableData;
+		} else {
+			tableData.isSuccessful = false;
+			tableData.errorMessage = "Cursor is null";
+			return tableData;
+		}
     }
 
 
@@ -183,7 +195,6 @@ public class DatabaseHelper {
         }
 
         if (cursor != null) {
-
             List<TableDataResponse.TableInfo> tableInfoList = new ArrayList<>();
 
             cursor.moveToFirst();
@@ -367,11 +378,14 @@ public class DatabaseHelper {
         tableDataResponse.isSelectQuery = false;
         try {
 
-            String tableName = getTableName(sql);
+            String[] tableNames = getTableNames(sql);
 
-            if (!TextUtils.isEmpty(tableName)) {
-                String quotedTableName = getQuotedTableName(tableName);
-                sql = sql.replace(tableName, quotedTableName);
+            if (tableNames == null) {
+                for( int i = 0; i < tableNames.length; i++ )
+                {
+                    String quotedTableName = getQuotedTableName( tableNames[i] );
+                    sql = sql.replace( tableNames[i], quotedTableName );
+                }
             }
 
             database.execSQL(sql);
@@ -385,18 +399,32 @@ public class DatabaseHelper {
         return tableDataResponse;
     }
 
-    private static String getTableName(String selectQuery) {
+    private static String[] getTableNames( String selectQuery) {
         // TODO: Handle JOIN Query
         TableNameParser tableNameParser = new TableNameParser(selectQuery);
         HashSet<String> tableNames = (HashSet<String>) tableNameParser.tables();
 
+        ArrayList<String> list = new ArrayList<>();
         for (String tableName : tableNames) {
             if (!TextUtils.isEmpty(tableName)) {
-                return tableName;
+                list.add( tableName );
             }
         }
 
-        return null;
+        if( list.size() > 0 )
+        {
+            /*Collections.sort( list, new java.util.Comparator<String>() {
+                @Override
+                public int compare(String s1, String s2) {
+                    // TODO: Argument validation (nullity, length)
+                    return s2.length() - s1.length();// comparision
+                }
+            } );*/
+            
+            return list.toArray( new String[list.size()] );
+        }
+        else
+            return null;
     }
 
 }
