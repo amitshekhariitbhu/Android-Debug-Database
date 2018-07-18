@@ -72,44 +72,41 @@ public class DatabaseHelper {
         if (tableNames == null) {
             tableNames = getTableNames(selectQuery);
         }
-    
-        Cursor cursor = null;
-        for( int j = 0; j < tableNames.length; j++ )
-        {
-            String quotedTableName = getQuotedTableName( tableNames[j] );
-    
-            if( tableNames == null )
-            {
-                final String pragmaQuery = "PRAGMA table_info(" + quotedTableName + ")";
-                tableData.tableInfos = getTableInfo( db, pragmaQuery );
-            }
-            
-            boolean isView = false;
-            try
-            {
-                cursor = db.rawQuery( "SELECT type FROM sqlite_master WHERE name=?",
-                        new String[]{ quotedTableName } );
-                if( cursor.moveToFirst() )
-                {
-                    isView = "view".equalsIgnoreCase( cursor.getString( 0 ) );
-                }
-            }
-            catch( Exception e )
-            {
-                e.printStackTrace();
-            }
-            finally
-            {
-                if( cursor != null )
-                {
-                    cursor.close();
-                }
-            }
-            tableData.isEditable = tableNames != null && tableData.tableInfos != null && !isView;
-    
-            // selectQuery = selectQuery.replace( tableNames[j], quotedTableName );
-        }
 	
+        String tableName = null;
+        if( tableNames != null && tableNames.length == 1 )
+		{
+			tableName = tableNames[0];
+		}
+		
+		final String quotedTableName = getQuotedTableName(tableName);
+        
+		if (tableName != null) {
+			final String pragmaQuery = "PRAGMA table_info(" + quotedTableName + ")";
+			tableData.tableInfos = getTableInfo(db, pragmaQuery);
+		}
+		Cursor cursor = null;
+		boolean isView = false;
+		try {
+			cursor = db.rawQuery("SELECT type FROM sqlite_master WHERE name=?",
+					new String[]{quotedTableName});
+			if (cursor.moveToFirst()) {
+				isView = "view".equalsIgnoreCase(cursor.getString(0));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+		tableData.isEditable = tableName != null && tableData.tableInfos != null && !isView;
+	
+	
+		if (!TextUtils.isEmpty(tableName)) {
+			selectQuery = selectQuery.replace(tableName, quotedTableName);
+		}
+        
 		try {
 			Log.v( "DATABASE", selectQuery );
 			cursor = db.rawQuery(selectQuery, null);
@@ -413,13 +410,13 @@ public class DatabaseHelper {
 
         if( list.size() > 0 )
         {
-            /*Collections.sort( list, new java.util.Comparator<String>() {
+            Collections.sort( list, new java.util.Comparator<String>() {
                 @Override
                 public int compare(String s1, String s2) {
                     // TODO: Argument validation (nullity, length)
                     return s2.length() - s1.length();// comparision
                 }
-            } );*/
+            } );
             
             return list.toArray( new String[list.size()] );
         }
