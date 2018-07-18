@@ -60,4 +60,5 @@
 textarea.form-control#query {
     resize: vertical;
     min-height: 100px;
+    font-family: monospace;
 }
