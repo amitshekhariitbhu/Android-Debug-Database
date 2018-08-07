@@ -3,6 +3,7 @@ package com.amitshekhar.sqlite;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.util.Log;
 
 import net.sqlcipher.database.SQLiteDatabase;
 

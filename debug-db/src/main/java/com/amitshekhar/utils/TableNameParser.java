@@ -18,6 +18,8 @@
  */
 package com.amitshekhar.utils;
 
+import android.util.Log;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -74,6 +76,7 @@ public final class TableNameParser {
         String normalized = normalized(nocomments);
         String cleansed = clean(normalized);
         String[] tokens = cleansed.split(REGEX_SPACE);
+        
         int index = 0;
 
         String firstToken = tokens[index];
@@ -87,6 +90,8 @@ public final class TableNameParser {
 
                 if (isFromToken(currentToken)) {
                     processFromToken(tokens, index);
+                } else if (isJoinToken(currentToken)) {
+                    processJoinToken( tokens, index );
                 } else if (shouldProcess(currentToken)) {
                     String nextToken = tokens[index++];
                     considerInclusion(nextToken);
@@ -192,6 +197,10 @@ public final class TableNameParser {
     private boolean isFromToken(final String currentToken) {
         return KEYWORD_FROM.equals(currentToken.toLowerCase());
     }
+    
+    private boolean isJoinToken(final String currentToken) {
+        return KEYWORD_JOIN.equals(currentToken.toLowerCase());
+    }
 
     private void processFromToken(final String[] tokens, int index) {
         String currentToken = tokens[index++];
@@ -202,6 +211,22 @@ public final class TableNameParser {
             nextToken = tokens[index++];
         }
 
+        if (shouldProcessMultipleTables(nextToken)) {
+            processNonAliasedMultiTables(tokens, index, nextToken);
+        } else {
+            processAliasedMultiTables(tokens, index, currentToken);
+        }
+    }
+    
+    private void processJoinToken(final String[] tokens, int index) {
+        String currentToken = tokens[index++];
+        considerInclusion(currentToken);
+        
+        String nextToken = null;
+        if (moreTokens(tokens, index)) {
+            nextToken = tokens[index++];
+        }
+        
         if (shouldProcessMultipleTables(nextToken)) {
             processNonAliasedMultiTables(tokens, index, nextToken);
         } else {
