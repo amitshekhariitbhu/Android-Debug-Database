@@ -38,14 +38,13 @@ android {
 }
 
 dependencies {
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    testImplementation 'junit:junit:4.12'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'net.zetetic:android-database-sqlcipher:3.5.7@aar'
     implementation 'android.arch.persistence.room:runtime:1.1.1'
     implementation 'com.android.support:appcompat-v7:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
 //apply from: 'debug-db-upload.gradle'
