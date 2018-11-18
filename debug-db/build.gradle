@@ -39,7 +39,7 @@ android {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'net.zetetic:android-database-sqlcipher:3.5.7@aar'
+    implementation 'net.zetetic:android-database-sqlcipher:3.5.9'
     implementation 'android.arch.persistence.room:runtime:1.1.1'
     implementation 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.12'
