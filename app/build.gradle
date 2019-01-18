@@ -43,14 +43,14 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:27.0.0'
-    testCompile 'junit:junit:4.12'
-    compile 'net.zetetic:android-database-sqlcipher:3.5.7@aar'
-    compile "android.arch.persistence.room:runtime:1.0.0"
+    implementation 'com.android.support:appcompat-v7:27.0.0'
+    testImplementation 'junit:junit:4.12'
+    implementation 'net.zetetic:android-database-sqlcipher:3.5.7@aar'
+    implementation "android.arch.persistence.room:runtime:1.0.0"
     annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
-    debugCompile project(':debug-db')
+    debugImplementation project(':debug-db')
 }
