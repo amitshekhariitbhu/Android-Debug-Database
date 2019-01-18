@@ -210,6 +210,9 @@ public class RequestHandler {
             } else if (route.startsWith("query")) {
                 final String response = executeQueryAndGetResponse(route);
                 bytes = response.getBytes();
+            } else if (route.startsWith("deleteDb")) {
+                final String response = deleteSelectedDatabaseAndGetResponse();
+                bytes = response.getBytes();
             } else if (route.startsWith("downloadDb")) {
                 bytes = Utils.getDatabase(mSelectedDatabase, mDatabaseFiles);
             } else {
@@ -593,4 +596,30 @@ public class RequestHandler {
         }
     }
 
+    private String deleteSelectedDatabaseAndGetResponse() {
+        UpdateRowResponse response = new UpdateRowResponse();
+
+        if(mSelectedDatabase == null || !mDatabaseFiles.containsKey(mSelectedDatabase)){
+            response.isSuccessful = false;
+            return mGson.toJson(response);
+        }
+
+        try {
+            closeDatabase();
+
+            File dbFile = mDatabaseFiles.get(mSelectedDatabase).first;
+            response.isSuccessful = dbFile.delete();
+
+            if(response.isSuccessful){
+                mDatabaseFiles.remove(mSelectedDatabase);
+                mCustomDatabaseFiles.remove(mSelectedDatabase);
+            }
+
+            return mGson.toJson(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.isSuccessful = false;
+            return mGson.toJson(response);
+        }
+    }
 }

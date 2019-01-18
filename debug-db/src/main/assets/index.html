@@ -121,9 +121,13 @@
                 <label for="query">Query</label>
                 <input class="form-control" id="query">
             </div>
-            <button id="selected-db-info" type="button" onclick="downloadDb()" class="btn btn-info">
-                Welcome
+            <button id="selected-db-download" type="button" onclick="downloadDb()" class="btn btn-info">
+                Download
             </button>
+            <button id="selected-db-delete" type="button" onclick="deleteDb()" class="btn btn-info">
+                Delete
+            </button>
+            <label id="selected-db-info" class="panel-info">Welcome</label>
             <button id="run-query" type="submit" onclick="queryFunction()"
                     class="btn btn-primary pull-right disabled">Run
                 Query
