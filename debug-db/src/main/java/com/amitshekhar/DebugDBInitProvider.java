@@ -48,6 +48,7 @@ public class DebugDBInitProvider extends ContentProvider {
                     Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                 //ask for permission
                 Intent intent = new Intent(getContext(), RequestPermissionsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getContext().startActivity(intent);
             }
         }
