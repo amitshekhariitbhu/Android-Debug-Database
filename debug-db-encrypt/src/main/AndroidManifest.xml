@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.amitshekhar.debug.encrypt">
+
+    <application>
+        <provider
+            android:name=".DebugDBEncryptInitProvider"
+            android:authorities="${applicationId}.DebugDBEncryptInitProvider"
+            android:enabled="true"
+            android:exported="false" />
+    </application>
+
+</manifest>
