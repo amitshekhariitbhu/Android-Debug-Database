@@ -153,7 +153,7 @@ public static void setInMemoryRoomDatabases(SupportSQLiteDatabase... database) {
 
 ### License
 ```
-   Copyright (C) 2016 Amit Shekhar
+   Copyright (C) 2019 Amit Shekhar
    Copyright (C) 2011 Android Open Source Project
 
    Licensed under the Apache License, Version 2.0 (the "License");
