@@ -21,32 +21,8 @@ $( document ).ready(function() {
         $(this).addClass('selected');
     });
 
-    $('#fileTree').fileTree({ root: '/', script: 'fileTree', folderEvent: 'click', expandSpeed: 750, collapseSpeed: 750, multiFolder: false }, function(file) {
-        console.log(file);
-        $.ajax({url: "getFileData?fileName="+file, success: function(result){
-            $("#file-data").empty();
-            $("#file-data").append("<pre>" + hexdump(result) + "</pre>");
-        }});
-    });
+
 });
-function hexdump(buffer, blockSize) {
-    blockSize = blockSize || 16;
-    var lines = [];
-    var hex = "0123456789ABCDEF";
-    for (var b = 0; b < buffer.length; b += blockSize) {
-        var block = buffer.slice(b, Math.min(b + blockSize, buffer.length));
-        var addr = ("0000" + b.toString(16)).slice(-4);
-        var codes = block.split('').map(function (ch) {
-            var code = ch.charCodeAt(0);
-            return " " + hex[(0xF0 & code) >> 4] + hex[0x0F & code];
-        }).join("");
-        codes += "&nbsp;&nbsp;&nbsp;".repeat(blockSize - block.length);
-        var chars = block.replace(/[\x00-\x1F\x20]/g, '.');
-        chars +=  " ".repeat(blockSize - block.length);
-        lines.push(addr + "&nbsp;&nbsp;" + codes + "&nbsp;&nbsp;" + chars);
-    }
-    return lines.join("<br/>");
-}
 
 var isDatabaseSelected = true;
 

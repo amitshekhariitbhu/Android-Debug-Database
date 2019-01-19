@@ -19,17 +19,12 @@
 
 package com.amitshekhar;
 
-import android.Manifest;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.support.v4.content.ContextCompat;
 
 /**
  * Created by amitshekhar on 16/11/16.
@@ -43,15 +38,6 @@ public class DebugDBInitProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this.getContext(),
-                    Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                //ask for permission
-                Intent intent = new Intent(getContext(), RequestPermissionsActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getContext().startActivity(intent);
-            }
-        }
         DebugDB.initialize(getContext());
         return true;
     }
