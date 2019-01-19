@@ -23,11 +23,8 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Pair;
-import android.webkit.MimeTypeMap;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
@@ -48,20 +45,12 @@ import com.google.gson.reflect.TypeToken;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -71,7 +60,6 @@ import java.util.List;
 
 public class RequestHandler {
 
-    private static final long MAX_FILE_BYTES = 1024;
     private final Context mContext;
     private final Gson mGson;
     private final AssetManager mAssets;
@@ -82,52 +70,10 @@ public class RequestHandler {
     private String mSelectedDatabase = null;
     private HashMap<String, SupportSQLiteDatabase> mRoomInMemoryDatabases = new HashMap<>();
 
-    private final String emulatedRootDir;
-
     public RequestHandler(Context context) {
         mContext = context;
         mAssets = context.getResources().getAssets();
         mGson = new GsonBuilder().serializeNulls().create();
-
-        String[] types = {Environment.DIRECTORY_MUSIC,
-                Environment.DIRECTORY_PODCASTS,
-                Environment.DIRECTORY_RINGTONES,
-                Environment.DIRECTORY_ALARMS,
-                Environment.DIRECTORY_NOTIFICATIONS,
-                Environment.DIRECTORY_PICTURES,
-                Environment.DIRECTORY_MOVIES,
-                Environment.DIRECTORY_DOWNLOADS,
-                Environment.DIRECTORY_DOCUMENTS,
-                Environment.DIRECTORY_DCIM};
-        StringBuffer ss = new StringBuffer();
-        ss.append("<ul class=\"jqueryFileTree\" style=\"display: none;\">");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            for (String type : types) {
-                appendToFileTree(ss, context.getExternalFilesDirs(type), "getExternalFilesDirs(" + type + ")");
-            }
-            appendToFileTree(ss, context.getExternalCacheDirs(), "getExternalCacheDirs");
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            appendToFileTree(ss, context.getExternalMediaDirs(), "getExternalMediaDirs");
-            appendToFileTree(ss, context.getCodeCacheDir(), "getCodeCacheDir");
-            appendToFileTree(ss, context.getNoBackupFilesDir(), "getNoBackupFilesDir");
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            appendToFileTree(ss, context.getDataDir(), "getDataDir");
-        }
-        for (String type : types) {
-            appendToFileTree(ss, Environment.getExternalStoragePublicDirectory(type), "Environment.getExternalStoragePublicDirectory( " + type + " )");
-        }
-        appendToFileTree(ss, Environment.getDataDirectory(), "Environment.getDataDirectory");
-        appendToFileTree(ss, Environment.getExternalStorageDirectory(), "Environment.getExternalStorageDirectory");
-        appendToFileTree(ss, Environment.getRootDirectory(), "Environment.getRootDirectory");
-        appendToFileTree(ss, Environment.getDownloadCacheDirectory(), "Environment.getDownloadCacheDirectory");
-        appendToFileTree(ss, context.getFilesDir(), "getFilesDir");
-        appendToFileTree(ss, context.getCacheDir(), "getCacheDir");
-        appendToFileTree(ss, context.getExternalCacheDir(), "getExternalCacheDir");
-        appendToFileTree(ss, context.getObbDir(), "getObbDir");
-        ss.append("</ul>");
-        emulatedRootDir = ss.toString();
     }
 
     public void handle(Socket socket) throws IOException {
@@ -135,7 +81,6 @@ public class RequestHandler {
         PrintStream output = null;
         try {
             String route = null;
-            String body = null;
 
             // Read HTTP headers and parse out the route.
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -145,32 +90,6 @@ public class RequestHandler {
                     int start = line.indexOf('/') + 1;
                     int end = line.indexOf(' ', start);
                     route = line.substring(start, end);
-                    break;
-                } else if (line.startsWith("POST /")) {
-                    int start = line.indexOf('/') + 1;
-                    int end = line.indexOf(' ', start);
-                    route = line.substring(start, end);
-
-                    Integer contentLength = null;
-                    while (!TextUtils.isEmpty(line = reader.readLine())) {
-                        if (line.toUpperCase().startsWith("CONTENT-LENGTH")) {
-                            int clStart = line.indexOf(":") + 1;
-                            String cl = line.substring(clStart);
-                            contentLength = Integer.parseInt(cl.trim());
-                        }
-                        if (line.equals("\r\n")) {
-                            break;
-                        }
-                    }
-                    if (contentLength != null) {
-                        char[] content = new char[contentLength];
-                        if (reader.read(content) == contentLength) {
-                            body = String.valueOf(content);
-                        }
-                    } else {
-                        // TODO: read till the end if necesary.
-                        body = reader.readLine();
-                    }
                     break;
                 }
             }
@@ -184,12 +103,7 @@ public class RequestHandler {
 
             byte[] bytes;
 
-            if (route.startsWith("fileTree")) {
-                final String response = getFileListResponse(route, body);
-                bytes = response.getBytes();
-            } else if (route.startsWith("getFileData")) {
-                bytes = getFileContent(route);
-            } else if (route.startsWith("getDbList")) {
+            if (route.startsWith("getDbList")) {
                 final String response = getDBListResponse();
                 bytes = response.getBytes();
             } else if (route.startsWith("getAllDataFromTheTable")) {
@@ -236,8 +150,6 @@ public class RequestHandler {
             output.println();
             output.write(bytes);
             output.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             try {
                 if (null != output) {
@@ -284,135 +196,6 @@ public class RequestHandler {
         }
         sqLiteDB = null;
         isDbOpened = false;
-    }
-
-    private byte[] getFileContent(String route) {
-        String query = null;
-        if (route.contains("?fileName=")) {
-            query = route.substring(route.indexOf("=") + 1, route.length());
-        }
-        try {
-            query = URLDecoder.decode(query, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        if (query == null) {
-            return new byte[0];
-        }
-        File f = new File(query);
-        ByteArrayOutputStream ous = null;
-        InputStream ios = null;
-        long readed = 0;
-        try {
-            int bufSize = (MAX_FILE_BYTES < 4096) ? (int) MAX_FILE_BYTES : 4096;
-            byte[] buffer = new byte[bufSize];
-            ous = new ByteArrayOutputStream();
-            ios = new FileInputStream(f);
-            int read = 0;
-            while ((read = ios.read(buffer)) != -1) {
-                readed += read;
-                if (readed > MAX_FILE_BYTES) {
-                    break;
-                }
-                ous.write(buffer, 0, read);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (ous != null)
-                    ous.close();
-            } catch (IOException e) {
-            }
-            try {
-                if (ios != null)
-                    ios.close();
-            } catch (IOException e) {
-            }
-        }
-        if (ous != null) {
-            return ous.toByteArray();
-        }
-        return new byte[0];
-    }
-
-    private String getFileListResponse(String route, String body) {
-        String query = null;
-        if (route.contains("?dir=")) {
-            query = route.substring(route.indexOf("=") + 1, route.length());
-        } else if (body != null && body.contains("dir=")) {
-            query = body.substring(body.indexOf("=") + 1, body.length());
-        }
-        if (query != null) {
-            try {
-                query = URLDecoder.decode(query, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-        if (query.equals("/")) {
-            return emulatedRootDir;
-        }
-
-        StringBuffer ss = new StringBuffer();
-        ss.append("<ul class=\"jqueryFileTree\" style=\"display: none;\">");
-        try {
-            File dir = new File(query);
-            if (dir.exists()) {
-                File[] fileList = dir.listFiles();
-                if (fileList != null) {
-                    for (File entry : fileList) {
-                        appendToFileTree(ss, entry);
-                    }
-                }
-
-            } else {
-                ss.append("Directory not found : " + query);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            ss.append("Could not load directory: " + query);
-        } finally {
-            ss.append("</ul>");
-        }
-        return ss.toString();
-    }
-
-    private void appendToFileTree(StringBuffer ss, File[] fs, String extra) {
-        if (fs == null) {
-            return;
-        }
-        for (File entry : fs) {
-            appendToFileTree(ss, entry, extra);
-        }
-    }
-
-    private void appendToFileTree(StringBuffer ss, File entry) {
-        appendToFileTree(ss, entry, null);
-
-    }
-
-    private void appendToFileTree(StringBuffer ss, File entry, String rootDirExtra) {
-        String ff = entry.getAbsolutePath();
-        String f;
-        if (entry.isDirectory()) {
-            // An empty root directory.
-            if (rootDirExtra != null && (entry.list() == null || entry.list().length == 0)) {
-                return;
-            }
-            ss.append("<li class=\"directory collapsed\"><a href=\"#\" rel=\"" + ff + "/\">");
-            f = entry.getName();
-        } else {
-            String extension = MimeTypeMap.getFileExtensionFromUrl(ff);
-            ss.append("<li class=\"file ext_" + extension + "\"><a href=\"#\" rel=\"" + ff + "\">");
-            f = entry.getName() + " ( " + entry.length() + " ) ";
-        }
-        if (rootDirExtra != null) {
-            ss.append(rootDirExtra + " ");
-        }
-        ss.append(f + "</a></li>");
     }
 
     private String getDBListResponse() {
@@ -599,7 +382,7 @@ public class RequestHandler {
     private String deleteSelectedDatabaseAndGetResponse() {
         UpdateRowResponse response = new UpdateRowResponse();
 
-        if(mSelectedDatabase == null || !mDatabaseFiles.containsKey(mSelectedDatabase)){
+        if (mSelectedDatabase == null || !mDatabaseFiles.containsKey(mSelectedDatabase)) {
             response.isSuccessful = false;
             return mGson.toJson(response);
         }
@@ -610,7 +393,7 @@ public class RequestHandler {
             File dbFile = mDatabaseFiles.get(mSelectedDatabase).first;
             response.isSuccessful = dbFile.delete();
 
-            if(response.isSuccessful){
+            if (response.isSuccessful) {
                 mDatabaseFiles.remove(mSelectedDatabase);
                 mCustomDatabaseFiles.remove(mSelectedDatabase);
             }
