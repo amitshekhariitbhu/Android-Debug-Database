@@ -25,6 +25,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.amitshekhar.server.ClientServer;
+import com.amitshekhar.sqlite.DBFactory;
 import com.amitshekhar.utils.NetworkUtils;
 
 import java.io.File;
@@ -45,7 +46,7 @@ public class DebugDB {
         // This class in not publicly instantiable
     }
 
-    public static void initialize(Context context) {
+    public static void initialize(Context context, DBFactory dbFactory) {
         int portNumber;
 
         try {
@@ -56,7 +57,7 @@ public class DebugDB {
             Log.i(TAG, "Using Default port : " + DEFAULT_PORT);
         }
 
-        clientServer = new ClientServer(context, portNumber);
+        clientServer = new ClientServer(context, portNumber, dbFactory);
         clientServer.start();
         addressLog = NetworkUtils.getAddressLog(context, portNumber);
         Log.d(TAG, addressLog);

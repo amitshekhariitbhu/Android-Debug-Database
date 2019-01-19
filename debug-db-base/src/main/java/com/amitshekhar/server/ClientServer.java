@@ -23,11 +23,12 @@ package com.amitshekhar.server;
  * Created by amitshekhar on 15/11/16.
  */
 
-
 import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
+
+import com.amitshekhar.sqlite.DBFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,8 +46,8 @@ public class ClientServer implements Runnable {
     private boolean mIsRunning;
     private ServerSocket mServerSocket;
 
-    public ClientServer(Context context, int port) {
-        mRequestHandler = new RequestHandler(context);
+    public ClientServer(Context context, int port, DBFactory dbFactory) {
+        mRequestHandler = new RequestHandler(context, dbFactory);
         mPort = port;
     }
 

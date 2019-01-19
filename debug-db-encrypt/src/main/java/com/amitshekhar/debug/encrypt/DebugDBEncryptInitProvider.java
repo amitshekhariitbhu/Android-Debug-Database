@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.amitshekhar.DebugDB;
+import com.amitshekhar.debug.encrypt.sqlite.DebugDBEncryptFactory;
 
 public class DebugDBEncryptInitProvider extends ContentProvider {
 
@@ -17,7 +18,7 @@ public class DebugDBEncryptInitProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        DebugDB.initialize(getContext());
+        DebugDB.initialize(getContext(), new DebugDBEncryptFactory());
         return true;
     }
 
