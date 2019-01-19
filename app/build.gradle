@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    debugImplementation project(':debug-db')
+    debugImplementation project(':debug-db-encrypt')
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'net.zetetic:android-database-sqlcipher:3.5.9'
     implementation 'android.arch.persistence.room:runtime:1.1.1'
