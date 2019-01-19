@@ -17,7 +17,7 @@
  *
  */
 
-package com.amitshekhar;
+package com.amitshekhar.debug;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -25,6 +25,8 @@ import android.content.Context;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
+
+import com.amitshekhar.DebugDB;
 
 /**
  * Created by amitshekhar on 16/11/16.
@@ -73,7 +75,7 @@ public class DebugDBInitProvider extends ContentProvider {
             throw new NullPointerException("DebugDBInitProvider ProviderInfo cannot be null.");
         }
         // So if the authorities equal the library internal ones, the developer forgot to set his applicationId
-        if ("com.amitshekhar.DebugDBInitProvider".equals(providerInfo.authority)) {
+        if ("com.amitshekhar.debug.DebugDBInitProvider".equals(providerInfo.authority)) {
             throw new IllegalStateException("Incorrect provider authority in manifest. Most likely due to a "
                     + "missing applicationId variable in application\'s build.gradle.");
         }
