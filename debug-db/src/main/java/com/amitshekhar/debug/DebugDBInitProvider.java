@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.amitshekhar.DebugDB;
+import com.amitshekhar.debug.sqlite.DebugDBFactory;
 
 /**
  * Created by amitshekhar on 16/11/16.
@@ -40,7 +41,7 @@ public class DebugDBInitProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        DebugDB.initialize(getContext());
+        DebugDB.initialize(getContext(), new DebugDBFactory());
         return true;
     }
 

@@ -30,7 +30,7 @@ import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
 import com.amitshekhar.model.UpdateRowResponse;
-import com.amitshekhar.sqlite.DebugSQLiteDB;
+import com.amitshekhar.sqlite.DBFactory;
 import com.amitshekhar.sqlite.InMemoryDebugSQLiteDB;
 import com.amitshekhar.sqlite.SQLiteDB;
 import com.amitshekhar.utils.Constants;
@@ -41,8 +41,6 @@ import com.amitshekhar.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
-import net.sqlcipher.database.SQLiteDatabase;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -63,6 +61,7 @@ public class RequestHandler {
     private final Context mContext;
     private final Gson mGson;
     private final AssetManager mAssets;
+    private final DBFactory mDbFactory;
     private boolean isDbOpened;
     private SQLiteDB sqLiteDB;
     private HashMap<String, Pair<File, String>> mDatabaseFiles;
@@ -70,10 +69,11 @@ public class RequestHandler {
     private String mSelectedDatabase = null;
     private HashMap<String, SupportSQLiteDatabase> mRoomInMemoryDatabases = new HashMap<>();
 
-    public RequestHandler(Context context) {
+    public RequestHandler(Context context, DBFactory dbFactory) {
         mContext = context;
         mAssets = context.getResources().getAssets();
         mGson = new GsonBuilder().serializeNulls().create();
+        mDbFactory = dbFactory;
     }
 
     public void handle(Socket socket) throws IOException {
@@ -184,8 +184,7 @@ public class RequestHandler {
         } else {
             File databaseFile = mDatabaseFiles.get(database).first;
             String password = mDatabaseFiles.get(database).second;
-            SQLiteDatabase.loadLibs(mContext);
-            sqLiteDB = new DebugSQLiteDB(SQLiteDatabase.openOrCreateDatabase(databaseFile.getAbsolutePath(), password, null));
+            sqLiteDB = mDbFactory.create(mContext, databaseFile.getAbsolutePath(), password);
         }
         isDbOpened = true;
     }
