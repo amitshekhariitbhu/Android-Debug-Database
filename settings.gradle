@@ -17,4 +17,4 @@
  *
  */
 
-include ':app', ':debug-db-base', ':debug-db', ':debug-db-encrypt'
+include ':sample-app', ':debug-db-base', ':debug-db', ':debug-db-encrypt', ':sample-app-encrypt'
