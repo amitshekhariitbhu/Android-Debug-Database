@@ -1,6 +1,6 @@
 /*
  *
- *  *    Copyright (C) 2016 Amit Shekhar
+ *  *    Copyright (C) 2019 Amit Shekhar
  *  *    Copyright (C) 2011 Android Open Source Project
  *  *
  *  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,4 +17,4 @@
  *
  */
 
-include ':app', ':debug-db'
+include ':sample-app', ':debug-db-base', ':debug-db', ':debug-db-encrypt', ':sample-app-encrypt'

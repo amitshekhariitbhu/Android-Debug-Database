@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--
+  ~ /*
+  ~  *    Copyright (C) 2019 Amit Shekhar
+  ~  *    Copyright (C) 2011 Android Open Source Project
+  ~  *
+  ~  *    Licensed under the Apache License, Version 2.0 (the "License");
+  ~  *    you may not use this file except in compliance with the License.
+  ~  *    You may obtain a copy of the License at
+  ~  *
+  ~  *        http://www.apache.org/licenses/LICENSE-2.0
+  ~  *
+  ~  *    Unless required by applicable law or agreed to in writing, software
+  ~  *    distributed under the License is distributed on an "AS IS" BASIS,
+  ~  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  *    See the License for the specific language governing permissions and
+  ~  *    limitations under the License.
+  ~  */
+  -->
+
+<html lang="en">
+<head>
+    <title>Android Debug Database</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='shortcut icon' href='favicon.ico' type='image/x-icon'>
+
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="jquery.dataTables.min.js"></script>
+    <script src="dataTables.altEditor.free.js"></script>
+    <script src="dataTables.buttons.min.js"></script>
+    <script src="dataTables.select.min.js"></script>
+    <script src="dataTables.responsive.min.js"></script>
+
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link href="custom.css" rel="stylesheet">
+    <link href="jquery.dataTables.min.css" rel="stylesheet">
+    <link href="buttons.dataTables.min.css" rel="stylesheet">
+    <link href="select.dataTables.min.css" rel="stylesheet">
+    <link href="responsive.dataTables.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Android Debug Database</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="https://github.com/amitshekhariitbhu/Android-Debug-Database"
+                       target="_blank">GitHub</a>
+                </li>
+                <li>
+                    <a href="https://twitter.com/amitiitbhu"
+                       target="_blank">Twitter</a>
+                </li>
+                <li>
+                    <a href="https://blog.mindorks.com/"
+                       target="_blank">Mindorks Blog</a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Other Projects<b
+                            class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="https://github.com/amitshekhariitbhu/Fast-Android-Networking"
+                               target="_blank">Fast Android Networking</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/MindorksOpenSource/android-mvp-architecture"
+                               target="_blank">Android MVP Architecture</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/amitshekhariitbhu/RxJava2-Android-Samples"
+                               target="_blank">RxJava2 Android Samples</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/amitshekhariitbhu/GlideBitmapPool"
+                               target="_blank">Glide Bitmap Pool</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/amitshekhariitbhu/awesome-android-complete-reference"
+                               target="_blank">Awesome Android Complete Reference</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/amitshekhariitbhu/FlatBuffer"
+                               target="_blank">FlatBuffers vs JSON</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+<div class="container padding-fifty">
+
+    <div class="row padding-twenty">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label for="query">Query</label>
+                <input class="form-control" id="query">
+            </div>
+            <button id="selected-db-download" type="button" onclick="downloadDb()"
+                    class="btn btn-info">
+                Download
+            </button>
+            <button id="selected-db-delete" type="button" onclick="deleteDb()" class="btn btn-info">
+                Delete
+            </button>
+            <label id="selected-db-info" class="panel-info">Welcome</label>
+            <button id="run-query" type="submit" onclick="queryFunction()"
+                    class="btn btn-primary pull-right disabled">Run
+                Query
+            </button>
+        </div>
+    </div>
+
+
+    <div class="row padding-twenty">
+
+        <div class="col-sm-2">
+            <div class="panel panel-info">
+                <div class="panel-heading">Databases</div>
+            </div>
+            <div id="db-list" class="list-group">
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+            <div class="panel panel-info">
+                <div class="panel-heading">Tables</div>
+            </div>
+            <div id="table-list" class="list-group">
+            </div>
+        </div>
+
+        <div id="parent-data-div" class="col-sm-8">
+            <div class="panel panel-info">
+                <div class="panel-heading">Data</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="snackbar">Data Updated Successfully</div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

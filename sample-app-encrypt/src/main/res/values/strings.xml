@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Sample App Encrypt</string>
+    <string name="show_debug_db_address">Show Debug Db Address</string>
+</resources>
