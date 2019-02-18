@@ -1,6 +1,6 @@
 /*
  *
- *  *    Copyright (C) 2016 Amit Shekhar
+ *  *    Copyright (C) 2019 Amit Shekhar
  *  *    Copyright (C) 2011 Android Open Source Project
  *  *
  *  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ def siteUrl = 'https://github.com/amitshekhariitbhu/Android-Debug-Database'
 def gitUrl = 'https://github.com/amitshekhariitbhu/Android-Debug-Database.git'
 
 group = "com.amitshekhar.android"
-version = '1.0.4'
+version = '1.0.5'
 
 install {
     repositories.mavenInstaller {
@@ -67,6 +67,7 @@ task sourcesJar(type: Jar) {
 
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
+    failOnError false
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     classpath += configurations.compile
 }
