@@ -40,13 +40,13 @@
 Add this to your app's build.gradle
 
 ```groovy
-debugImplementation 'com.amitshekhar.android:debug-db:1.0.5'
+debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 ```
 
 Using the Android Debug Database with encrypted database
 
 ```groovy
-debugImplementation 'com.amitshekhar.android:debug-db-encrypt:1.0.5'
+debugImplementation 'com.amitshekhar.android:debug-db-encrypt:1.0.6'
 ```
 
 Use `debugImplementation` so that it will only compile in your debug build and not in your release build.
