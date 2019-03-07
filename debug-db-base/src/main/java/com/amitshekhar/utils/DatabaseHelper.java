@@ -124,6 +124,25 @@ public class DatabaseHelper {
 
             tableData.isSuccessful = true;
             tableData.rows = new ArrayList<>();
+
+            String[] columnNames = cursor.getColumnNames();
+
+            List<TableDataResponse.TableInfo> tableInfoListModified = new ArrayList<>();
+
+            for (String columnName : columnNames) {
+                for (TableDataResponse.TableInfo tableInfo : tableData.tableInfos) {
+                    if (columnName.equals(tableInfo.title)) {
+                        tableInfoListModified.add(tableInfo);
+                        break;
+                    }
+                }
+            }
+
+            if (tableData.tableInfos.size() != tableInfoListModified.size()) {
+                tableData.tableInfos = tableInfoListModified;
+                tableData.isEditable = false;
+            }
+
             if (cursor.getCount() > 0) {
 
                 do {
