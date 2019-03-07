@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 1.0.6 *(2019-03-07)*
+----------------------------
+
+* Fix: Fix query error
+* Fix: Fix DebugDb class not found error
+
+
 Version 1.0.5 *(2019-02-18)*
 ----------------------------
 
