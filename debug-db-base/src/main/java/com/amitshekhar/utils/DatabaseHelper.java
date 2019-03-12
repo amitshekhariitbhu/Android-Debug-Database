@@ -95,7 +95,8 @@ public class DatabaseHelper {
 
 
         if (!TextUtils.isEmpty(tableName)) {
-            selectQuery = selectQuery.replace(tableName, quotedTableName);
+            selectQuery = selectQuery.replaceFirst("(?i)from\\s+" + tableName + "\\s+",
+                "from " + quotedTableName + " ");
         }
 
         try {
@@ -390,7 +391,10 @@ public class DatabaseHelper {
 
             if (!TextUtils.isEmpty(tableName)) {
                 String quotedTableName = getQuotedTableName(tableName);
-                sql = sql.replace(tableName, quotedTableName);
+                sql = sql.replaceFirst("(?i)from\\s+" + tableName + "\\s+",
+                    "from " + quotedTableName + " ");
+                sql = sql.replaceFirst("(?i)^\\s*update\\s+" + tableName + "\\s+",
+                    "update " + quotedTableName + " ");
             }
 
             database.execSQL(sql);
