@@ -116,6 +116,9 @@
         <div class="col-sm-12">
             <div class="form-group">
                 <label for="query">Query</label>
+                <button type="button" onclick="fillQuery(this.id)" id="select_query" style="color:#00E838" class="btn btn-link"><i>&lt;Select&gt;</i></button>
+                <button type="button" onclick="fillQuery(this.id)" id="update_query" style="color:#00E838" class="btn btn-link"><i>&lt;Update&gt;</i></button>
+                <button type="button" onclick="fillQuery(this.id)" id="delete_query" style="color:#00E838" class="btn btn-link"><i>&lt;Delete&gt;</i></button>
                 <input class="form-control" id="query">
             </div>
             <button id="selected-db-download" type="button" onclick="downloadDb()"
