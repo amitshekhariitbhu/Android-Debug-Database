@@ -31,6 +31,8 @@ import com.amitshekhar.utils.NetworkUtils;
 import java.io.File;
 import java.util.HashMap;
 
+import static com.amitshekhar.server.ClientServer.INVALID_PORT;
+
 /**
  * Created by amitshekhar on 15/11/16.
  */
@@ -46,21 +48,14 @@ public class DebugDB {
         // This class in not publicly instantiable
     }
 
-    public static void initialize(Context context, DBFactory dbFactory) {
-        int portNumber;
-
-        try {
-            portNumber = Integer.valueOf(context.getString(R.string.PORT_NUMBER));
-        } catch (NumberFormatException ex) {
-            Log.e(TAG, "PORT_NUMBER should be integer", ex);
-            portNumber = DEFAULT_PORT;
-            Log.i(TAG, "Using Default port : " + DEFAULT_PORT);
-        }
-
-        clientServer = new ClientServer(context, portNumber, dbFactory);
+    public static void initialize(final Context context, DBFactory dbFactory) {
+        clientServer = new ClientServer(context, dbFactory, new ClientServer.OnReadyListener() {
+            @Override public void onReady(int port) {
+                addressLog = NetworkUtils.getAddressLog(context, port);
+                Log.d(TAG, addressLog);
+            }
+        });
         clientServer.start();
-        addressLog = NetworkUtils.getAddressLog(context, portNumber);
-        Log.d(TAG, addressLog);
     }
 
     public static String getAddressLog() {
@@ -88,7 +83,7 @@ public class DebugDB {
     }
 
     public static boolean isServerRunning() {
-        return clientServer != null && clientServer.isRunning();
+        return clientServer != null && clientServer.isRunning() && clientServer.getPort() != INVALID_PORT;
     }
 
 }

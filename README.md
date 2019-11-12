@@ -53,25 +53,19 @@ Use `debugImplementation` so that it will only compile in your debug build and n
 
 That’s all, just start the application, you will see in the logcat an entry like follows :
 
-* D/DebugDB: Open http://XXX.XXX.X.XXX:8080 in your browser
+* D/DebugDB: Open http://XXX.XXX.X.XXX:<port>> in your browser
 
 * You can also always get the debug address url from your code by calling the method `DebugDB.getAddressLog();`
+
+The library will attempt to use 8080 for the port, and if it is unavailable, it will use a random open port.
 
 Now open the provided link in your browser.
 
 Important:
 
 * Your Android phone and laptop should be connected to the same Network (Wifi or LAN).
-* If you are using it over usb, run `adb forward tcp:8080 tcp:8080`
+* If you are using it over usb, run `adb forward tcp:<port>> tcp:<port>>`
 
-Note      : If you want use different port other than 8080.
-            In the app build.gradle file under buildTypes do the following change
-
-```groovy
-debug {
-    resValue("string", "PORT_NUMBER", "8081")
-}
-```
 
 You will see something like this :
 
@@ -85,7 +79,7 @@ You will see something like this :
 
 ### Working with emulator
 
-* Android Default Emulator: Run the command in the terminal - `adb forward tcp:8080 tcp:8080` and open http://localhost:8080
+* Android Default Emulator: Run the command in the terminal - `adb forward tcp:<port>> tcp:<port>>` and open http://localhost:<port>>
 * Genymotion Emulator: Enable bridge from configure virtual device (option available in genymotion)
 
 ### Getting address with toast, in case you missed the address log in logcat

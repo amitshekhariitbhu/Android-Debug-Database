@@ -13,7 +13,6 @@ android {
     }
     buildTypes {
         debug {
-            resValue("string", "PORT_NUMBER", "8080")
             resValue("string", "DB_PASSWORD_PERSON", "a_password")
         }
         release {

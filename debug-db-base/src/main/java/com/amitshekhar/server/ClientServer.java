@@ -38,17 +38,29 @@ import java.net.SocketException;
 import java.util.HashMap;
 
 public class ClientServer implements Runnable {
+    public interface OnReadyListener {
+        void onReady(int port);
+    }
 
     private static final String TAG = "ClientServer";
+    public static final int INVALID_PORT = -1;
+    private static final int RANDOM_AVAILABLE_PORT = 0;
+    private static final int PREFERRED_PORT = 8080;
 
-    private final int mPort;
+    private int mPort = INVALID_PORT;
     private final RequestHandler mRequestHandler;
     private boolean mIsRunning;
     private ServerSocket mServerSocket;
 
-    public ClientServer(Context context, int port, DBFactory dbFactory) {
+    private final OnReadyListener listener;
+
+    public ClientServer(Context context, DBFactory dbFactory, OnReadyListener listener) {
         mRequestHandler = new RequestHandler(context, dbFactory);
-        mPort = port;
+        this.listener = listener;
+    }
+
+    public int getPort() {
+        return mPort;
     }
 
     public void start() {
@@ -71,7 +83,15 @@ public class ClientServer implements Runnable {
     @Override
     public void run() {
         try {
-            mServerSocket = new ServerSocket(mPort);
+            try {
+                mServerSocket = new ServerSocket(PREFERRED_PORT);
+            }
+            catch(IOException ignore) {
+                mServerSocket = new ServerSocket(RANDOM_AVAILABLE_PORT);
+            }
+
+            mPort = mServerSocket.getLocalPort();
+            listener.onReady(mPort);
             while (mIsRunning) {
                 Socket socket = mServerSocket.accept();
                 mRequestHandler.handle(socket);
