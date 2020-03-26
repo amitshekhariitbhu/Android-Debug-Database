@@ -31,9 +31,10 @@
 
 ### All these features work without rooting your device -> No need of rooted device
 
-### Check out another awesome library for fast and simple networking in Android
+### Check out our other Open Source Projects
 
 * [Fast Android Networking Library](https://github.com/amitshekhariitbhu/Fast-Android-Networking)
+* [Learn to build a ride-sharing Android app like Uber, Lyft](https://github.com/MindorksOpenSource/ridesharing-uber-lyft-app)
 
 ### Using Android Debug Database Library in your application
 
