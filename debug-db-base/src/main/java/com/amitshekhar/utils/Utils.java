@@ -21,7 +21,6 @@ package com.amitshekhar.utils;
 
 import android.content.res.AssetManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
 import java.io.ByteArrayOutputStream;
@@ -30,7 +29,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by amitshekhar on 06/02/17.
@@ -89,24 +93,34 @@ public class Utils {
         }
 
         byte[] byteArray = new byte[0];
-        try {
-            File file = databaseFiles.get(selectedDatabase).first;
-
-            byteArray = null;
-            try {
-                InputStream inputStream = new FileInputStream(file);
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                byte[] b = new byte[(int) file.length()];
-                int bytesRead;
-
-                while ((bytesRead = inputStream.read(b)) != -1) {
-                    bos.write(b, 0, bytesRead);
-                }
-
-                byteArray = bos.toByteArray();
-            } catch (IOException e) {
-                Log.e(TAG, "getDatabase: ", e);
+        List<File> dbFiles = new ArrayList<>();
+        for (Map.Entry<String, Pair<File, String>> entry : databaseFiles.entrySet()) {
+            if (entry.getKey().startsWith(selectedDatabase)) {
+                dbFiles.add(entry.getValue().first);
             }
+        }
+
+        final int BUFFER = 2048;
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(bos);
+            for (File file : dbFiles) {
+                byte[] buffer = new byte[BUFFER];
+                FileInputStream fis = new FileInputStream(file);
+                ZipEntry zipEntry = new ZipEntry(file.getName());
+                zipEntry.setTime(file.lastModified());
+                zos.putNextEntry(zipEntry);
+
+                int length;
+                while ((length = fis.read(buffer)) != -1) {
+                    zos.write(buffer, 0, length);
+                }
+                fis.close();
+                zos.closeEntry();
+            }
+            zos.finish();
+            zos.close();
+            byteArray = bos.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
         }

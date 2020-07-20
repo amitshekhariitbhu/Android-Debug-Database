@@ -143,7 +143,7 @@ public class RequestHandler {
             output.println("Content-Type: " + Utils.detectMimeType(route));
 
             if (route.startsWith("downloadDb")) {
-                output.println("Content-Disposition: attachment; filename=" + mSelectedDatabase);
+                output.println("Content-Disposition: attachment; filename=" + mSelectedDatabase + ".zip");
             } else {
                 output.println("Content-Length: " + bytes.length);
             }
