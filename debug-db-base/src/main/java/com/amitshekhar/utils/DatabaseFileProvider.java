@@ -56,7 +56,8 @@ public class DatabaseFileProvider {
         if (nameWithoutExt.endsWith(".db")) {
             nameWithoutExt = nameWithoutExt.substring(0, nameWithoutExt.lastIndexOf('.'));
         }
-        String resourceName = MessageFormat.format(DB_PASSWORD_RESOURCE, nameWithoutExt.toUpperCase());
+        String resourceName = MessageFormat.format(DB_PASSWORD_RESOURCE, nameWithoutExt.toUpperCase())
+                .replace('-', '_');
         String password = "";
 
         int resourceId = context.getResources().getIdentifier(resourceName, "string", context.getPackageName());
