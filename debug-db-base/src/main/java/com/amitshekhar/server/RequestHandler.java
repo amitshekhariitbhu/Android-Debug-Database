@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Pair;
 
 import com.amitshekhar.model.Response;
@@ -37,6 +38,7 @@ import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
 import com.amitshekhar.utils.PrefHelper;
+import com.amitshekhar.utils.ResourceManager;
 import com.amitshekhar.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,6 +51,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -69,11 +72,49 @@ public class RequestHandler {
     private String mSelectedDatabase = null;
     private HashMap<String, SupportSQLiteDatabase> mRoomInMemoryDatabases = new HashMap<>();
 
+    private String basicAuthAdminPW;
+
     public RequestHandler(Context context, DBFactory dbFactory) {
         mContext = context;
         mAssets = context.getResources().getAssets();
         mGson = new GsonBuilder().serializeNulls().create();
         mDbFactory = dbFactory;
+
+        basicAuthAdminPW = ResourceManager.getResourceString(context, "BASIC_AUTH_ADMIN_PW");
+    }
+
+    public boolean checkHeader(PrintStream output, List<String> lines) {
+
+        boolean foundAuthHeader = false;
+        String header = "";
+
+        for (String line : lines) {
+            if (line.startsWith("Authorization")) {
+                foundAuthHeader = true;
+                header = line.replace("Authorization: Basic", "").trim();
+                break;
+            }
+        }
+
+        if (foundAuthHeader) {
+            final byte[] bytes = Base64.decode(header, Base64.DEFAULT);
+            final String text = new String(bytes);
+
+            final String[] parts = text.split(":");
+            final String name = parts[0];
+            final String password = parts[1];
+
+            if (name.equals("admin") && password.equals("test")) {
+                return true;
+            } else {
+                writeAuthRequest(output);
+                return false;
+            }
+        } else {
+            writeAuthRequest(output);
+            return false;
+        }
+
     }
 
     public void handle(Socket socket) throws IOException {
@@ -84,18 +125,29 @@ public class RequestHandler {
 
             // Read HTTP headers and parse out the route.
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            List<String> lines = new ArrayList<>();
+
             String line;
             while (!TextUtils.isEmpty(line = reader.readLine())) {
-                if (line.startsWith("GET /")) {
-                    int start = line.indexOf('/') + 1;
-                    int end = line.indexOf(' ', start);
-                    route = line.substring(start, end);
+                lines.add(line);
+            }
+
+            for (String l : lines) {
+                if (l.startsWith("GET /")) {
+                    int start = l.indexOf('/') + 1;
+                    int end = l.indexOf(' ', start);
+                    route = l.substring(start, end);
                     break;
                 }
             }
 
             // Output stream that we send the response to
             output = new PrintStream(socket.getOutputStream());
+
+            if (basicAuthAdminPW != null && !checkHeader(output, lines)) {
+                return;
+            }
 
             if (route == null || route.isEmpty()) {
                 route = "index.html";
@@ -174,6 +226,12 @@ public class RequestHandler {
 
     private void writeServerError(PrintStream output) {
         output.println("HTTP/1.0 500 Internal Server Error");
+        output.flush();
+    }
+
+    private void writeAuthRequest(PrintStream output) {
+        output.println("HTTP/1.0 401 Unauthorized");
+        output.println("WWW-Authenticate: Basic realm=\"Debug database admin pw\"");
         output.flush();
     }
 
