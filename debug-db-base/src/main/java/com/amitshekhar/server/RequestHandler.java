@@ -38,7 +38,7 @@ import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
 import com.amitshekhar.utils.PrefHelper;
-import com.amitshekhar.utils.ResourceManager;
+import com.amitshekhar.utils.Settings;
 import com.amitshekhar.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -80,7 +80,7 @@ public class RequestHandler {
         mGson = new GsonBuilder().serializeNulls().create();
         mDbFactory = dbFactory;
 
-        basicAuthAdminPW = ResourceManager.getResourceString(context, "BASIC_AUTH_ADMIN_PW");
+        basicAuthAdminPW = Settings.BASIC_AUTH_ADMIN_PW;
     }
 
     public boolean checkHeader(PrintStream output, List<String> lines) {
