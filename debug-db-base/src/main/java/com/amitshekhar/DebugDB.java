@@ -27,7 +27,6 @@ import android.util.Pair;
 import com.amitshekhar.server.ClientServer;
 import com.amitshekhar.sqlite.DBFactory;
 import com.amitshekhar.utils.NetworkUtils;
-import com.amitshekhar.utils.Settings;
 
 import java.io.File;
 import java.util.HashMap;

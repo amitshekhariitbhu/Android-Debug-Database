@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Pair;
 
+import com.amitshekhar.R;
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
@@ -38,7 +39,6 @@ import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
 import com.amitshekhar.utils.PrefHelper;
-import com.amitshekhar.utils.ResourceManager;
 import com.amitshekhar.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -72,7 +72,7 @@ public class RequestHandler {
     private String mSelectedDatabase = null;
     private HashMap<String, SupportSQLiteDatabase> mRoomInMemoryDatabases = new HashMap<>();
 
-    private String basicAuthAdminPW;
+    private final String basicAuthAdminPW;
 
     public RequestHandler(Context context, DBFactory dbFactory) {
         mContext = context;
@@ -80,10 +80,7 @@ public class RequestHandler {
         mGson = new GsonBuilder().serializeNulls().create();
         mDbFactory = dbFactory;
 
-        basicAuthAdminPW = ResourceManager.getResourceString(context, "BASIC_AUTH_ADMIN_PW");
-        if (basicAuthAdminPW == null) {
-            basicAuthAdminPW = "";
-        }
+        basicAuthAdminPW = context.getString(R.string.BASIC_AUTH_ADMIN_PW);
     }
 
     public boolean checkHeader(PrintStream output, List<String> lines) {
@@ -107,7 +104,7 @@ public class RequestHandler {
             final String name = parts[0];
             final String password = parts[1];
 
-            if (name.equals("admin") && password.equals("test")) {
+            if (name.equals("admin") && password.equals(basicAuthAdminPW)) {
                 return true;
             } else {
                 writeAuthRequest(output);
