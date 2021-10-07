@@ -56,6 +56,7 @@ public class DebugDB {
             portNumber = DEFAULT_PORT;
             Log.i(TAG, "Using Default port : " + DEFAULT_PORT);
         }
+
         clientServer = new ClientServer(context, portNumber, dbFactory);
         clientServer.start();
         addressLog = NetworkUtils.getAddressLog(context, portNumber);
