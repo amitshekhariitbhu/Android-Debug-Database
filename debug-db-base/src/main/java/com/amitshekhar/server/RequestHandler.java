@@ -38,7 +38,7 @@ import com.amitshekhar.utils.Constants;
 import com.amitshekhar.utils.DatabaseFileProvider;
 import com.amitshekhar.utils.DatabaseHelper;
 import com.amitshekhar.utils.PrefHelper;
-import com.amitshekhar.utils.Settings;
+import com.amitshekhar.utils.ResourceManager;
 import com.amitshekhar.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -80,7 +80,10 @@ public class RequestHandler {
         mGson = new GsonBuilder().serializeNulls().create();
         mDbFactory = dbFactory;
 
-        basicAuthAdminPW = Settings.BASIC_AUTH_ADMIN_PW;
+        basicAuthAdminPW = ResourceManager.getResourceString(context, "BASIC_AUTH_ADMIN_PW");
+        if (basicAuthAdminPW == null) {
+            basicAuthAdminPW = "";
+        }
     }
 
     public boolean checkHeader(PrintStream output, List<String> lines) {
@@ -145,7 +148,7 @@ public class RequestHandler {
             // Output stream that we send the response to
             output = new PrintStream(socket.getOutputStream());
 
-            if (basicAuthAdminPW != null && !checkHeader(output, lines)) {
+            if (!basicAuthAdminPW.isEmpty() && !checkHeader(output, lines)) {
                 return;
             }
 
