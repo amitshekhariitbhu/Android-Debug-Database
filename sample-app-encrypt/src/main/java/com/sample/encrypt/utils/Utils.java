@@ -19,7 +19,7 @@
 
 package com.sample.encrypt.utils;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.util.Pair;
 import android.widget.Toast;

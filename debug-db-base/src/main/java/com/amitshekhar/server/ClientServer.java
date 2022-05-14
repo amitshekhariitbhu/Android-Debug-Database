@@ -23,7 +23,7 @@ package com.amitshekhar.server;
  * Created by amitshekhar on 15/11/16.
  */
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.util.Log;
 import android.util.Pair;

@@ -19,7 +19,7 @@
 
 package com.amitshekhar.server;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;

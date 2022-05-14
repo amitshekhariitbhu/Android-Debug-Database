@@ -1,7 +1,7 @@
 package com.sample.database.room;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.room.Room;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.room.Room;
 import android.content.Context;
 
 import java.util.List;

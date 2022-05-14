@@ -1,6 +1,6 @@
 package com.amitshekhar.sqlite;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
