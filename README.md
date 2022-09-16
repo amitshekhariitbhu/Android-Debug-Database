@@ -29,6 +29,8 @@
 * Download database.
 * Debug Room inMemory database.
 
+## [My Personal Blog - amitshekhar.me](https://amitshekhar.me/blog) - High-quality content to learn Android concepts.
+
 ### All these features work without rooting your device -> No need of rooted device
 
 ### Check out our other Open Source Projects
