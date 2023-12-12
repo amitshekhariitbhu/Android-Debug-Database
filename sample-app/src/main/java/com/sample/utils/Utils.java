@@ -19,10 +19,11 @@
 
 package com.sample.utils;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.util.Pair;
 import android.widget.Toast;
+
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.sample.BuildConfig;
 import com.sample.database.ExtTestDBHelper;
