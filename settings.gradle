@@ -16,5 +16,23 @@
  *  *    limitations under the License.
  *
  */
-
-include ':sample-app', ':debug-db-base', ':debug-db', ':debug-db-encrypt', ':sample-app-encrypt'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "Android-Debug-Database"
+include ':sample-app'
+include ':debug-db-base'
+include ':debug-db'
+include ':debug-db-encrypt'
+include ':sample-app-encrypt'

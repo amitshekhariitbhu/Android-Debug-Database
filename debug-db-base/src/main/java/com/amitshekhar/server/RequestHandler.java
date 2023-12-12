@@ -19,12 +19,13 @@
 
 package com.amitshekhar.server;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
+
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
