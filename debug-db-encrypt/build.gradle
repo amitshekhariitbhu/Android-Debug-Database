@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply from: '../maven.gradle'
 
 android {
     compileSdk rootProject.ext.compileSdk
