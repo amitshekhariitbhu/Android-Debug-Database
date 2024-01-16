@@ -19,10 +19,11 @@
 
 package com.sample.utils;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.util.Pair;
 import android.widget.Toast;
+
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.sample.BuildConfig;
 import com.sample.database.ExtTestDBHelper;
@@ -62,9 +63,7 @@ public class Utils {
                 Method setCustomDatabaseFiles = debugDB.getMethod("setCustomDatabaseFiles", argTypes);
                 HashMap<String, Pair<File, String>> customDatabaseFiles = new HashMap<>();
                 // set your custom database files
-                customDatabaseFiles.put(ExtTestDBHelper.DATABASE_NAME,
-                        new Pair<>(new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
-                                "/" + ExtTestDBHelper.DATABASE_NAME), ""));
+                customDatabaseFiles.put(ExtTestDBHelper.DATABASE_NAME, new Pair<>(new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME + "/" + ExtTestDBHelper.DATABASE_NAME), ""));
                 setCustomDatabaseFiles.invoke(null, customDatabaseFiles);
             } catch (Exception ignore) {
 

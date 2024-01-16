@@ -19,10 +19,12 @@
 
 package com.amitshekhar;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
+
 import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.amitshekhar.server.ClientServer;
 import com.amitshekhar.sqlite.DBFactory;

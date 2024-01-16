@@ -1,8 +1,10 @@
 package com.sample.encrypt.database.room;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.room.Room;
+
 import android.content.Context;
+
+import androidx.room.Room;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.List;
 
@@ -16,12 +18,8 @@ public class UserDBHelper {
     private final AppDatabase inMemoryAppDatabase;
 
     public UserDBHelper(Context context) {
-        appDatabase = Room.databaseBuilder(context, AppDatabase.class, "User.db")
-                .allowMainThreadQueries()
-                .build();
-        inMemoryAppDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
-                .allowMainThreadQueries()
-                .build();
+        appDatabase = Room.databaseBuilder(context, AppDatabase.class, "User.db").allowMainThreadQueries().build();
+        inMemoryAppDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).allowMainThreadQueries().build();
     }
 
     public void insertUser(List<User> userList) {
