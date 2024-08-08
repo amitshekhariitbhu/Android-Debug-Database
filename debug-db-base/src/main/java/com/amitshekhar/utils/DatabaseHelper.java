@@ -307,6 +307,7 @@ public class DatabaseHelper {
                 }
                 whereArgsList.add(rowDataRequest.value);
             } else {
+                rowDataRequest.title = "`" + rowDataRequest.title + "`";
                 switch (rowDataRequest.dataType) {
                     case DataType.INTEGER:
                         contentValues.put(rowDataRequest.title, Long.valueOf(rowDataRequest.value));
