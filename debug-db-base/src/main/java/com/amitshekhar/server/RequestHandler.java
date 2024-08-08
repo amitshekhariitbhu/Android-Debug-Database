@@ -24,8 +24,10 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Pair;
 
+import com.amitshekhar.R;
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
@@ -49,6 +51,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -69,11 +72,54 @@ public class RequestHandler {
     private String mSelectedDatabase = null;
     private HashMap<String, SupportSQLiteDatabase> mRoomInMemoryDatabases = new HashMap<>();
 
+    private final String basicAuthAdminPW;
+
     public RequestHandler(Context context, DBFactory dbFactory) {
         mContext = context;
         mAssets = context.getResources().getAssets();
         mGson = new GsonBuilder().serializeNulls().create();
         mDbFactory = dbFactory;
+
+        basicAuthAdminPW = context.getString(R.string.BASIC_AUTH_ADMIN_PW);
+    }
+
+    public boolean checkAuthorizationHeader(PrintStream output, List<String> lines) {
+
+        boolean foundAuthHeader = false;
+        String header = "";
+
+        // search for "Authorization" in headers
+        for (String line : lines) {
+            if (line.startsWith("Authorization")) {
+                foundAuthHeader = true;
+                header = line.replace("Authorization: Basic", "").trim();
+                break;
+            }
+        }
+
+        // check credentials of auth header is set
+        if (foundAuthHeader) {
+            final byte[] bytes = Base64.decode(header, Base64.DEFAULT);
+            final String text = new String(bytes);
+
+            final String[] parts = text.split(":");
+            final String name = parts[0];
+            final String password = parts[1];
+
+            if (name.equals("admin") && password.equals(basicAuthAdminPW)) {
+                // correct credentials => return true to continue calling method
+                return true;
+            } else {
+                // respond with 401 if credentials are wrong
+                writeUnauthorizedError(output);
+                return false;
+            }
+        } else {
+            // respond with 401 if auth header not found
+            writeUnauthorizedError(output);
+            return false;
+        }
+
     }
 
     public void handle(Socket socket) throws IOException {
@@ -84,18 +130,30 @@ public class RequestHandler {
 
             // Read HTTP headers and parse out the route.
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            List<String> lines = new ArrayList<>();
+
             String line;
             while (!TextUtils.isEmpty(line = reader.readLine())) {
-                if (line.startsWith("GET /")) {
-                    int start = line.indexOf('/') + 1;
-                    int end = line.indexOf(' ', start);
-                    route = line.substring(start, end);
+                lines.add(line);
+            }
+
+            for (String l : lines) {
+                if (l.startsWith("GET /")) {
+                    int start = l.indexOf('/') + 1;
+                    int end = l.indexOf(' ', start);
+                    route = l.substring(start, end);
                     break;
                 }
             }
 
             // Output stream that we send the response to
             output = new PrintStream(socket.getOutputStream());
+
+            // Stop here if basicAuthAdminPW is set and
+            if (!basicAuthAdminPW.isEmpty() && !checkAuthorizationHeader(output, lines)) {
+                return;
+            }
 
             if (route == null || route.isEmpty()) {
                 route = "index.html";
@@ -174,6 +232,12 @@ public class RequestHandler {
 
     private void writeServerError(PrintStream output) {
         output.println("HTTP/1.0 500 Internal Server Error");
+        output.flush();
+    }
+
+    private void writeUnauthorizedError(PrintStream output) {
+        output.println("HTTP/1.0 401 Unauthorized");
+        output.println("WWW-Authenticate: Basic realm=\"Debug database admin pw\"");
         output.flush();
     }
 
