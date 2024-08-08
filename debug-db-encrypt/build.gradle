@@ -1,13 +1,14 @@
 apply plugin: 'com.android.library'
+apply from: '../maven.gradle'
 
 android {
-    compileSdkVersion 28
+    compileSdk rootProject.ext.compileSdk
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 28
+        minSdk rootProject.ext.minSdk
+        targetSdk rootProject.ext.targetSdk
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -20,9 +21,9 @@ android {
 dependencies {
     api project(':debug-db-base')
     implementation 'net.zetetic:android-database-sqlcipher:3.5.9'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
 //apply from: 'debug-db-encrypt-upload.gradle'

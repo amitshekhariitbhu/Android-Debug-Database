@@ -1,0 +1,58 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+Properties localProperties = new Properties()
+localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.release
+                groupId "com.amitshekhar.android"
+                artifactId project.ARTIFACT_ID
+                version '1.0.6'
+                artifact generateSourcesJar
+                pom {
+                    name = 'Android-Debug-Database'
+                    description = 'A library for debugging android databases and shared preferences - Make Debugging Great Again'
+                    url = 'https://github.com/amitshekhariitbhu/Android-Debug-Database'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'https://github.com/amitshekhariitbhu/Android-Debug-Database/raw/master/LICENSE'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'amitshekhar'
+                            name = 'amitshekhar'
+                            email = 'amit.shekhar.iitbhu@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'https://github.com/amitshekhariitbhu/Android-Debug-Databasee.git'
+                        developerConnection = 'https://github.com/amitshekhariitbhu/Android-Debug-Database.git'
+                        url = 'https://github.com/amitshekhariitbhu/Android-Debug-Database'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                credentials {
+                    username localProperties.getProperty('sonatype.name')
+                    password localProperties.getProperty('sonatype.password')
+                }
+            }
+        }
+    }
+}
+signing {
+    sign publishing.publications
+}

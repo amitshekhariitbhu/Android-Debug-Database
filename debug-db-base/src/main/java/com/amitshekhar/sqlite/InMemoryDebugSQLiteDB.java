@@ -1,9 +1,10 @@
 package com.amitshekhar.sqlite;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
+
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 /**
  * Created by anandgaurav on 12/02/18.
