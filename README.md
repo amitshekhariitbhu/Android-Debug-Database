@@ -38,17 +38,38 @@ You can connect with me on:
 
 ### Using Android Debug Database Library in your application
 
-Add this to your app's build.gradle
-
+Add this in your `settings.gradle`:
 ```groovy
-debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
+maven { url 'https://jitpack.io' }
+```
+
+If you are using `settings.gradle.kts`, add the following:
+```kotlin
+maven { setUrl("https://jitpack.io") }
+```
+
+Add this in your `build.gradle`
+```groovy
+debugImplementation 'com.github.amitshekhariitbhu.Android-Debug-Database:debug-db:1.0.7'
+```
+
+If you are using `build.gradle.kts`, add the following:
+```kotlin
+debugImplementation("com.github.amitshekhariitbhu.Android-Debug-Database:debug-db:1.0.7")
 ```
 
 Using the Android Debug Database with encrypted database
 
+Add this in your `build.gradle`
 ```groovy
-debugImplementation 'com.amitshekhar.android:debug-db-encrypt:1.0.6'
+debugImplementation 'com.github.amitshekhariitbhu.Android-Debug-Database:debug-db-encrypt:1.0.7'
 ```
+
+If you are using `build.gradle.kts`, add the following:
+```kotlin
+debugImplementation("com.github.amitshekhariitbhu.Android-Debug-Database:debug-db-encrypt:1.0.7")
+```
+
 And to provide the password for the DB, you should add this in the Gradle:
 DB_PASSWORD_{VARIABLE}, if for example, PERSON is the database name: DB_PASSWORD_PERSON
 ```groovy
