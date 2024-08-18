@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply from: '../maven.gradle'
 
 android {
     compileSdk rootProject.ext.compileSdk
@@ -24,5 +23,3 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
-
-//apply from: 'debug-db-upload.gradle'
