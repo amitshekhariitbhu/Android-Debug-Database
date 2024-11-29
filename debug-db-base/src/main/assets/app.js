@@ -79,6 +79,10 @@ function getDBList() {
    $.ajax({url: "getDbList", success: function(result){
 
            result = JSON.parse(result);
+           if (!result.supportEncryptedDb) {
+                $('#password').hide();
+                $('#password-label').hide();
+           }
            var dbList = result.rows;
            $('#db-list').empty();
            var isSelectionDone = false;
@@ -130,8 +134,8 @@ function openDatabaseAndGetTableList(db, isDownloadable) {
         isDatabaseSelected = true;
     }
 
-
-   $.ajax({url: "getTableList?database="+db, success: function(result){
+    var password = $('#password').val();
+    $.ajax({url: "getTableList?database="+db+"&password="+password, success: function(result){
 
            result = JSON.parse(result);
            var tableList = result.rows;

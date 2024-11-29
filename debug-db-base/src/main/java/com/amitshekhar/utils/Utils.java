@@ -21,16 +21,15 @@ package com.amitshekhar.utils;
 
 import android.content.res.AssetManager;
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.Pair;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by amitshekhar on 06/02/17.
@@ -83,30 +82,24 @@ public class Utils {
         }
     }
 
-    public static byte[] getDatabase(String selectedDatabase, HashMap<String, Pair<File, String>> databaseFiles) {
+    public static byte[] getDatabase(String selectedDatabase, Map<String, File> databaseFiles) {
         if (TextUtils.isEmpty(selectedDatabase) || !databaseFiles.containsKey(selectedDatabase)) {
             return null;
         }
 
         byte[] byteArray = new byte[0];
-        try {
-            File file = databaseFiles.get(selectedDatabase).first;
+        File file = databaseFiles.get(selectedDatabase);
 
-            byteArray = null;
-            try {
-                InputStream inputStream = new FileInputStream(file);
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                byte[] b = new byte[(int) file.length()];
-                int bytesRead;
+        try (InputStream is = new FileInputStream(file);
+             ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            byte[] b = new byte[(int) file.length()];
+            int bytesRead;
 
-                while ((bytesRead = inputStream.read(b)) != -1) {
-                    bos.write(b, 0, bytesRead);
-                }
-
-                byteArray = bos.toByteArray();
-            } catch (IOException e) {
-                Log.e(TAG, "getDatabase: ", e);
+            while ((bytesRead = is.read(b)) != -1) {
+                bos.write(b, 0, bytesRead);
             }
+
+            byteArray = bos.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,4 +107,19 @@ public class Utils {
         return byteArray;
     }
 
+    public static boolean isDbEncrypted(String database, Map<String, File> databaseFiles) {
+        if (TextUtils.isEmpty(database) || !databaseFiles.containsKey(database)) {
+            return false;
+        }
+        File file = databaseFiles.get(database);
+        try (DataInputStream is = new DataInputStream(new FileInputStream(file))) {
+            byte[] b = new byte[16];
+            is.readFully(b);
+            String string = new String(b);
+            return !"SQLite format 3\000".equals(string);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -70,14 +70,6 @@ If you are using `build.gradle.kts`, add the following:
 debugImplementation("com.github.amitshekhariitbhu.Android-Debug-Database:debug-db-encrypt:1.0.7")
 ```
 
-And to provide the password for the DB, you should add this in the Gradle:
-DB_PASSWORD_{VARIABLE}, if for example, PERSON is the database name: DB_PASSWORD_PERSON
-```groovy
-debug {
-    resValue("string", "DB_PASSWORD_PERSON", "password")
-}
-```
-
 Use `debugImplementation` so that it will only compile in your debug build and not in your release build.
 
 That’s all, just start the application, you will see in the logcat an entry like follows :
@@ -147,11 +139,11 @@ public static void setCustomDatabaseFiles(Context context) {
             Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
             Class[] argTypes = new Class[]{HashMap.class};
             Method setCustomDatabaseFiles = debugDB.getMethod("setCustomDatabaseFiles", argTypes);
-            HashMap<String, Pair<File, String>> customDatabaseFiles = new HashMap<>();
+            HashMap<String, File> customDatabaseFiles = new HashMap<>();
             // set your custom database files
             customDatabaseFiles.put(ExtTestDBHelper.DATABASE_NAME,
-                    new Pair<>(new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
-                                                    "/" + ExtTestDBHelper.DATABASE_NAME), ""));
+                    new File(context.getFilesDir() + "/" + ExtTestDBHelper.DIR_NAME +
+                                                    "/" + ExtTestDBHelper.DATABASE_NAME));
             setCustomDatabaseFiles.invoke(null, customDatabaseFiles);
         } catch (Exception ignore) {
 

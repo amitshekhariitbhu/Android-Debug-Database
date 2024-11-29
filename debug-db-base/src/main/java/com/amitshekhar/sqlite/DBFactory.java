@@ -6,4 +6,6 @@ public interface DBFactory {
 
     SQLiteDB create(Context context, String path, String password);
 
+    boolean supportEncryptedDb();
+
 }

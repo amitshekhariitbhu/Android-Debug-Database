@@ -13,4 +13,8 @@ public class DebugDBFactory implements DBFactory {
         return new DebugSQLiteDB(SQLiteDatabase.openOrCreateDatabase(path, null));
     }
 
+    @Override
+    public boolean supportEncryptedDb() {
+        return false;
+    }
 }

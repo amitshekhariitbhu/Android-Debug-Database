@@ -15,4 +15,8 @@ public class DebugDBEncryptFactory implements DBFactory {
         return new DebugEncryptSQLiteDB(SQLiteDatabase.openOrCreateDatabase(path, password, null));
     }
 
+    @Override
+    public boolean supportEncryptedDb() {
+        return true;
+    }
 }

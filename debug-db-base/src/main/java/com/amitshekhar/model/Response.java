@@ -33,6 +33,7 @@ public class Response {
     public boolean isSuccessful;
     public String error;
     public int dbVersion;
+    public boolean supportEncryptedDb;
 
     public Response() {
 
