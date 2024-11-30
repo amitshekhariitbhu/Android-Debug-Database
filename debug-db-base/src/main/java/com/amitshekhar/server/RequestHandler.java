@@ -304,8 +304,15 @@ public class RequestHandler {
             closeDatabase();
             mSelectedDatabase = Constants.APP_SHARED_PREFERENCES;
         } else {
-            openDatabase(database);
-            response = DatabaseHelper.getAllTableName(sqLiteDB);
+            try {
+                openDatabase(database);
+                response = DatabaseHelper.getAllTableName(sqLiteDB);
+            } catch (Exception e) {
+                response = new Response();
+                response.isSuccessful = false;
+                response.dbVersion = 0;
+                response.error = e.toString();
+            }
             mSelectedDatabase = database;
         }
         return mGson.toJson(response);
