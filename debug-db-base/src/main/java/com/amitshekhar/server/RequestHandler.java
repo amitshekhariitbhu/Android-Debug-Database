@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -306,7 +305,11 @@ public class RequestHandler {
             mSelectedDatabase = Constants.APP_SHARED_PREFERENCES;
         } else {
             try {
-                openDatabase(database, password);
+                if (Utils.isDbEncrypted(database, mDatabaseFiles)) {
+                    openDatabase(database, password);
+                } else {
+                    openDatabase(database, null);
+                }
                 response = DatabaseHelper.getAllTableName(sqLiteDB);
             } catch (Exception e) {
                 response = new Response();
