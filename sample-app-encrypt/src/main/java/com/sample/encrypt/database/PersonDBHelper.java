@@ -19,13 +19,14 @@
 
 package com.sample.encrypt.database;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-import net.sqlcipher.DatabaseUtils;
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteOpenHelper;
+import net.zetetic.database.DatabaseUtils;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
@@ -39,10 +40,12 @@ public class PersonDBHelper extends SQLiteOpenHelper {
     public static final String PERSON_COLUMN_ADDRESS = "address";
     private static final String DB_PASSWORD = "a_password";
 
-    public PersonDBHelper(Context context) {
+    static {
+        System.loadLibrary("sqlcipher");
+    }
 
-        super(context, DATABASE_NAME, null, 1);
-        SQLiteDatabase.loadLibs(context);
+    public PersonDBHelper(Context context) {
+        super(context, DATABASE_NAME, DB_PASSWORD, null, 1, 0, null, null, false);
     }
 
     @Override
@@ -60,7 +63,7 @@ public class PersonDBHelper extends SQLiteOpenHelper {
     }
 
     public boolean insertPerson(String firstName, String lastName, String address) {
-        SQLiteDatabase db = this.getWritableDatabase(DB_PASSWORD);
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("first_name", firstName);
         contentValues.put("last_name", lastName);
@@ -71,19 +74,19 @@ public class PersonDBHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getData(int id) {
-        SQLiteDatabase db = this.getReadableDatabase(DB_PASSWORD);
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from person where id=" + id + "", null);
         return res;
     }
 
     public int numberOfRows() {
-        SQLiteDatabase db = this.getReadableDatabase(DB_PASSWORD);
+        SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, PERSON_TABLE_NAME);
         return numRows;
     }
 
     public boolean updatePerson(Integer id, String firstName, String lastName, String address, float mileage) {
-        SQLiteDatabase db = this.getWritableDatabase(DB_PASSWORD);
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("first_name", firstName);
         contentValues.put("last_name", lastName);
@@ -94,16 +97,17 @@ public class PersonDBHelper extends SQLiteOpenHelper {
     }
 
     public Integer deletePerson(Integer id) {
-        SQLiteDatabase db = this.getWritableDatabase(DB_PASSWORD);
+        SQLiteDatabase db = this.getWritableDatabase();
         return db.delete("person",
                 "id = ? ",
                 new String[]{Integer.toString(id)});
     }
 
+    @SuppressLint("Range")
     public ArrayList<String> getAllPerson() {
         ArrayList<String> arrayList = new ArrayList<>();
 
-        SQLiteDatabase db = this.getReadableDatabase(DB_PASSWORD);
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from person", null);
         res.moveToFirst();
 
@@ -119,7 +123,7 @@ public class PersonDBHelper extends SQLiteOpenHelper {
     }
 
     public int count() {
-        SQLiteDatabase db = getReadableDatabase(DB_PASSWORD);
+        SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from person", null);
         try {
             if (cursor != null && cursor.getCount() > 0) {
