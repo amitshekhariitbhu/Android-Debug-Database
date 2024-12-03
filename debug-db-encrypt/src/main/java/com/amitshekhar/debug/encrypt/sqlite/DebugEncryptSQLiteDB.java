@@ -5,8 +5,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 
 import com.amitshekhar.sqlite.SQLiteDB;
-
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 /**
  * Created by anandgaurav on 12/02/18.

@@ -14,7 +14,6 @@ android {
     buildTypes {
         debug {
             resValue("string", "PORT_NUMBER", "8080")
-            resValue("string", "DB_PASSWORD_PERSON", "a_password")
         }
         release {
             minifyEnabled false
@@ -25,8 +24,9 @@ android {
 
 dependencies {
     debugImplementation project(':debug-db-encrypt')
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
     implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'net.zetetic:android-database-sqlcipher:3.5.9'
+    implementation 'net.zetetic:sqlcipher-android:4.6.1'
     implementation "androidx.room:room-runtime:2.5.0"
     annotationProcessor "androidx.room:room-compiler:2.5.0"
     testImplementation 'junit:junit:4.13.2'

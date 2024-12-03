@@ -76,7 +76,7 @@ public class DebugDB {
         }
     }
 
-    public static void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles) {
+    public static void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles) {
         if (clientServer != null) {
             clientServer.setCustomDatabaseFiles(customDatabaseFiles);
         }

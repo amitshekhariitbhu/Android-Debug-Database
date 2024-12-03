@@ -19,7 +19,8 @@ android {
 
 dependencies {
     api project(':debug-db-base')
-    implementation 'net.zetetic:android-database-sqlcipher:3.5.9'
+    implementation 'androidx.sqlite:sqlite:2.4.0'
+    implementation 'net.zetetic:sqlcipher-android:4.6.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

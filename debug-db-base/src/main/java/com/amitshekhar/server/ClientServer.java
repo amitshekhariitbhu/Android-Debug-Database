@@ -87,7 +87,7 @@ public class ClientServer implements Runnable {
         }
     }
 
-    public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles) {
+    public void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles) {
         mRequestHandler.setCustomDatabaseFiles(customDatabaseFiles);
     }
 

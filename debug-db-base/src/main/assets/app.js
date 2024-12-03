@@ -79,6 +79,10 @@ function getDBList() {
    $.ajax({url: "getDbList", success: function(result){
 
            result = JSON.parse(result);
+           if (!result.supportEncryptedDb) {
+                $('#password').hide();
+                $('#password-label').hide();
+           }
            var dbList = result.rows;
            $('#db-list').empty();
            var isSelectionDone = false;
@@ -130,14 +134,18 @@ function openDatabaseAndGetTableList(db, isDownloadable) {
         isDatabaseSelected = true;
     }
 
-
-   $.ajax({url: "getTableList?database="+db, success: function(result){
+    var password = $('#password').val();
+    $.ajax({url: "getTableList?database="+db+"&password="+password, success: function(result){
 
            result = JSON.parse(result);
            var tableList = result.rows;
            var dbVersion = result.dbVersion;
+           var error = result.error;
            if("APP_SHARED_PREFERENCES" != db) {
+                if (error == null)
                 $("#selected-db-info").text("Selected Database : "+db +" Version : "+dbVersion);
+                else
+                $("#selected-db-info").text(error);
            }
            $('#table-list').empty()
            for(var count = 0; count < tableList.length; count++){

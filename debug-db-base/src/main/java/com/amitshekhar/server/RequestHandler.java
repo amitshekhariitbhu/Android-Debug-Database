@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -65,8 +64,8 @@ public class RequestHandler {
     private final DBFactory mDbFactory;
     private boolean isDbOpened;
     private SQLiteDB sqLiteDB;
-    private HashMap<String, Pair<File, String>> mDatabaseFiles;
-    private HashMap<String, Pair<File, String>> mCustomDatabaseFiles;
+    private HashMap<String, File> mDatabaseFiles;
+    private HashMap<String, File> mCustomDatabaseFiles;
     private String mSelectedDatabase = null;
     private HashMap<String, SupportSQLiteDatabase> mRoomInMemoryDatabases = new HashMap<>();
 
@@ -165,7 +164,7 @@ public class RequestHandler {
         }
     }
 
-    public void setCustomDatabaseFiles(HashMap<String, Pair<File, String>> customDatabaseFiles) {
+    public void setCustomDatabaseFiles(HashMap<String, File> customDatabaseFiles) {
         mCustomDatabaseFiles = customDatabaseFiles;
     }
 
@@ -178,13 +177,12 @@ public class RequestHandler {
         output.flush();
     }
 
-    private void openDatabase(String database) {
+    private void openDatabase(String database, String password) {
         closeDatabase();
         if (mRoomInMemoryDatabases.containsKey(database)) {
             sqLiteDB = new InMemoryDebugSQLiteDB(mRoomInMemoryDatabases.get(database));
         } else {
-            File databaseFile = mDatabaseFiles.get(database).first;
-            String password = mDatabaseFiles.get(database).second;
+            File databaseFile = mDatabaseFiles.get(database);
             sqLiteDB = mDbFactory.create(mContext, databaseFile.getAbsolutePath(), password);
         }
         isDbOpened = true;
@@ -205,8 +203,10 @@ public class RequestHandler {
         }
         Response response = new Response();
         if (mDatabaseFiles != null) {
-            for (HashMap.Entry<String, Pair<File, String>> entry : mDatabaseFiles.entrySet()) {
-                String[] dbEntry = {entry.getKey(), !entry.getValue().second.equals("") ? "true" : "false", "true"};
+            for (HashMap.Entry<String, File> entry : mDatabaseFiles.entrySet()) {
+                String[] dbEntry = { entry.getKey(),
+                        Utils.isDbEncrypted(entry.getKey(), mDatabaseFiles) ? "true" : "false",
+                        "true" };
                 response.rows.add(dbEntry);
             }
         }
@@ -218,6 +218,7 @@ public class RequestHandler {
         }
         response.rows.add(new String[]{Constants.APP_SHARED_PREFERENCES, "false", "false"});
         response.isSuccessful = true;
+        response.supportEncryptedDb = mDbFactory.supportEncryptedDb();
         return mGson.toJson(response);
     }
 
@@ -292,10 +293,9 @@ public class RequestHandler {
     }
 
     private String getTableListResponse(String route) {
-        String database = null;
-        if (route.contains("?database=")) {
-            database = route.substring(route.indexOf("=") + 1, route.length());
-        }
+        Uri uri = Uri.parse(route);
+        String database = uri.getQueryParameter("database");
+        String password = uri.getQueryParameter("password");
 
         Response response;
 
@@ -304,8 +304,19 @@ public class RequestHandler {
             closeDatabase();
             mSelectedDatabase = Constants.APP_SHARED_PREFERENCES;
         } else {
-            openDatabase(database);
-            response = DatabaseHelper.getAllTableName(sqLiteDB);
+            try {
+                if (Utils.isDbEncrypted(database, mDatabaseFiles)) {
+                    openDatabase(database, password);
+                } else {
+                    openDatabase(database, null);
+                }
+                response = DatabaseHelper.getAllTableName(sqLiteDB);
+            } catch (Exception e) {
+                response = new Response();
+                response.isSuccessful = false;
+                response.dbVersion = 0;
+                response.error = e.toString();
+            }
             mSelectedDatabase = database;
         }
         return mGson.toJson(response);
@@ -390,7 +401,7 @@ public class RequestHandler {
         try {
             closeDatabase();
 
-            File dbFile = mDatabaseFiles.get(mSelectedDatabase).first;
+            File dbFile = mDatabaseFiles.get(mSelectedDatabase);
             response.isSuccessful = dbFile.delete();
 
             if (response.isSuccessful) {
