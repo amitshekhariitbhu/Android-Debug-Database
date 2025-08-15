@@ -74,6 +74,23 @@ function deleteDb() {
     }
 }
 
+function fillQuery(id){
+    switch(id){
+        case "select_query":
+                    $('#query').val("Select * from <table_name>");
+                    $('#query').focus();
+                    break;
+        case "update_query":
+                    $('#query').val("Update <table_name> set <column_name> = <value> where <condition>");
+                    $('#query').focus();
+                    break;
+        case "delete_query":
+                    $('#query').val("Delete from <table_name> where <condition>");
+                    $('#query').focus();
+                    break;
+    }
+}
+
 function getDBList() {
 
    $.ajax({url: "getDbList", success: function(result){
@@ -142,13 +159,13 @@ function openDatabaseAndGetTableList(db, isDownloadable) {
            $('#table-list').empty()
            for(var count = 0; count < tableList.length; count++){
                 var tableName = tableList[count];
-				$("#table-list").append("<a href='#table=" + tableName + "' data-db-name='" + db + "' data-table-name='" + tableName
-					+ "' class='list-group-item' onClick='getData(\"" + tableName + "\");'>" + tableName + "</a>");
-			}
+        $("#table-list").append("<a href='#table=" + tableName + "' data-db-name='" + db + "' data-table-name='" + tableName
+          + "' class='list-group-item' onClick='getData(\"" + tableName + "\");'>" + tableName + "</a>");
+      }
 
-			if (lastTableName !== null) {
-				$('a[data-table-name=' + lastTableName + ']').trigger('click');
-			}
+      if (lastTableName !== null) {
+        $('a[data-table-name=' + lastTableName + ']').trigger('click');
+      }
    }});
 
 }
@@ -426,6 +443,6 @@ function showErrorInfo(message){
 }
 
 function getHashValue(key) {
-	var matches = location.hash.match(new RegExp(key + '=([^&]*)'));
-	return matches ? matches[1] : null;
+  var matches = location.hash.match(new RegExp(key + '=([^&]*)'));
+  return matches ? matches[1] : null;
 }
