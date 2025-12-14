@@ -28,8 +28,11 @@
   var currentSettings = null;
   var currentDataTable = null;
   var currentDataTableDrawHandler = null;
+  var currentDataTableContainer = null;
   var pendingDataTableRender = false;
-  var jsonCleanupNeeded = false;
+  var pendingColumnsAdjust = false;
+
+  var JSON_INDENT_PX = 16;
 
   function safeParseJson(json) {
     try {
@@ -178,31 +181,168 @@
     return startsOk && endsOk;
   }
 
-  function cleanupJsonClassesForCurrentPage(dataTableApi) {
-    if (!dataTableApi) return;
+  function formatJsonPrimitive(value) {
+    if (value === null) return "null";
+    var t = typeof value;
+    if (t === "string" || t === "number" || t === "boolean") return JSON.stringify(value);
+    try {
+      return JSON.stringify(value);
+    } catch (e) {
+      return String(value);
+    }
+  }
 
-    var rows = dataTableApi.rows({ page: "current" }).nodes();
-    for (var rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-      var cells = rows[rowIndex].cells;
-      for (var cellIndex = 0; cellIndex < cells.length; cellIndex++) {
-        var td = cells[cellIndex];
-        td.classList.remove("addb-json-cell");
+  function createJsonLine(tagName, depth, extraClassName) {
+    var el = document.createElement(tagName || "div");
+    el.className = "addb-json-line" + (extraClassName ? " " + extraClassName : "");
+    el.style.paddingLeft = depth * JSON_INDENT_PX + "px";
+
+    var gutter = document.createElement("span");
+    gutter.className = "addb-json-gutter";
+    el.appendChild(gutter);
+
+    return { el: el, gutter: gutter };
+  }
+
+  function createJsonDetails(depth, openByDefault) {
+    var details = document.createElement("details");
+    details.className = "addb-json-node";
+    if (openByDefault) details.open = true;
+
+    var summaryLine = createJsonLine("summary", depth, "addb-json-summary");
+
+    var closedSpan = document.createElement("span");
+    closedSpan.className = "addb-json-summary-closed";
+
+    var openSpan = document.createElement("span");
+    openSpan.className = "addb-json-summary-open";
+
+    summaryLine.el.appendChild(closedSpan);
+    summaryLine.el.appendChild(openSpan);
+
+    var children = document.createElement("div");
+    children.className = "addb-json-children";
+
+    details.appendChild(summaryLine.el);
+    details.appendChild(children);
+
+    return {
+      details: details,
+      closedSpan: closedSpan,
+      openSpan: openSpan,
+      children: children
+    };
+  }
+
+  function jsonContainerInfo(value) {
+    if (Array.isArray(value)) {
+      return { kind: "array", open: "[", close: "]", count: value.length };
+    }
+    var keys = Object.keys(value);
+    return { kind: "object", open: "{", close: "}", count: keys.length, keys: keys };
+  }
+
+  function appendJsonValue(parent, value, depth, isLast, keyPrefix) {
+    var comma = isLast ? "" : ",";
+    var prefix = keyPrefix || "";
+
+    var isContainer = value !== null && typeof value === "object";
+    if (!isContainer) {
+      var primitiveLine = createJsonLine("div", depth);
+      primitiveLine.el.appendChild(document.createTextNode(prefix + formatJsonPrimitive(value) + comma));
+      parent.appendChild(primitiveLine.el);
+      return;
+    }
+
+    var info = jsonContainerInfo(value);
+    var isEmpty = info.count === 0;
+    if (isEmpty) {
+      var emptyLine = createJsonLine("div", depth);
+      emptyLine.el.appendChild(document.createTextNode(prefix + info.open + info.close + comma));
+      parent.appendChild(emptyLine.el);
+      return;
+    }
+
+    // Collapse all 2nd-level (depth=1) container values by default.
+    var openByDefault = depth !== 1;
+    var node = createJsonDetails(depth, openByDefault);
+
+    var collapsedPreview = info.kind === "array" ? "[\u2026] (" + info.count + ")" : "{\u2026} (" + info.count + ")";
+    node.closedSpan.textContent = prefix + collapsedPreview + comma;
+    node.openSpan.textContent = prefix + info.open;
+
+    if (info.kind === "array") {
+      for (var index = 0; index < value.length; index++) {
+        appendJsonValue(node.children, value[index], depth + 1, index === value.length - 1, "");
+      }
+    } else {
+      var keys = info.keys;
+      for (var keyIndex = 0; keyIndex < keys.length; keyIndex++) {
+        var key = keys[keyIndex];
+        var childPrefix = JSON.stringify(key) + ": ";
+        appendJsonValue(node.children, value[key], depth + 1, keyIndex === keys.length - 1, childPrefix);
       }
     }
+
+    var closingLine = createJsonLine("div", depth);
+    closingLine.el.appendChild(document.createTextNode(info.close + comma));
+    node.children.appendChild(closingLine.el);
+
+    parent.appendChild(node.details);
+  }
+
+  function buildJsonTree(parsedJson) {
+    var root = document.createElement("div");
+    root.className = "addb-json-tree";
+
+    var info = jsonContainerInfo(parsedJson);
+
+    var openLine = createJsonLine("div", 0);
+    openLine.el.appendChild(document.createTextNode(info.open));
+    root.appendChild(openLine.el);
+
+    if (info.kind === "array") {
+      for (var index = 0; index < parsedJson.length; index++) {
+        appendJsonValue(root, parsedJson[index], 1, index === parsedJson.length - 1, "");
+      }
+    } else {
+      var keys = info.keys;
+      for (var keyIndex = 0; keyIndex < keys.length; keyIndex++) {
+        var key = keys[keyIndex];
+        var childPrefix = JSON.stringify(key) + ": ";
+        appendJsonValue(root, parsedJson[key], 1, keyIndex === keys.length - 1, childPrefix);
+      }
+    }
+
+    var closeLine = createJsonLine("div", 0);
+    closeLine.el.appendChild(document.createTextNode(info.close));
+    root.appendChild(closeLine.el);
+
+    return root;
+  }
+
+  function scheduleColumnsAdjust(dataTableApi) {
+    if (!dataTableApi) return;
+    if (pendingColumnsAdjust) return;
+    pendingColumnsAdjust = true;
+
+    global.setTimeout(function () {
+      pendingColumnsAdjust = false;
+      try {
+        var tableNode = $(dataTableApi.table().node());
+        if (!tableNode.is(":visible")) return;
+        dataTableApi.columns.adjust();
+      } catch (e) {
+        // Best-effort only.
+      }
+    }, 0);
   }
 
   function applyJsonFormattingToCurrentPage(dataTableApi, settings) {
     if (!dataTableApi) return;
 
-    if (settings.jsonMode === "raw") {
-      if (jsonCleanupNeeded) {
-        cleanupJsonClassesForCurrentPage(dataTableApi);
-        jsonCleanupNeeded = false;
-      }
-      return;
-    }
-
-    jsonCleanupNeeded = false;
+    var mode = settings.jsonMode;
+    var didMutateDom = false;
 
     var rows = dataTableApi.rows({ page: "current" }).nodes();
     for (var rowIndex = 0; rowIndex < rows.length; rowIndex++) {
@@ -214,15 +354,38 @@
         var cellData = dataTableApi.cell(td).data();
         if (!looksLikeJson(cellData)) continue;
 
+        if (mode === "raw") {
+          // Restore raw JSON text (undo tree view, if present).
+          if (td.textContent !== cellData || td.childNodes.length !== 1 || td.firstChild.nodeType !== 3) {
+            td.textContent = cellData;
+            didMutateDom = true;
+          }
+          continue;
+        }
+
         var parsed = safeParseJson(cellData);
         if (parsed === null) continue;
 
         td.classList.add("addb-json-cell");
 
-        if (settings.jsonMode === "pretty") {
-          td.textContent = JSON.stringify(parsed, null, 2);
+        if (mode === "wrapped") {
+          // Keep raw JSON text, but apply JSON cell styling.
+          if (td.textContent !== cellData || td.childNodes.length !== 1 || td.firstChild.nodeType !== 3) {
+            td.textContent = cellData;
+            didMutateDom = true;
+          }
+          continue;
         }
+
+        // Pretty mode: render a collapsible JSON tree with 2nd-level containers collapsed.
+        td.textContent = "";
+        td.appendChild(buildJsonTree(parsed));
+        didMutateDom = true;
       }
+    }
+
+    if (didMutateDom) {
+      scheduleColumnsAdjust(dataTableApi);
     }
   }
 
@@ -263,14 +426,8 @@
     applyBodyClasses(currentSettings);
     applyMaxColumnWidth(currentSettings);
 
-    if (previousSettings.jsonMode !== currentSettings.jsonMode && currentSettings.jsonMode === "raw") {
-      jsonCleanupNeeded = true;
-    }
-
     var dataTableReason = reason;
-    if (previousSettings.jsonMode === "pretty" && currentSettings.jsonMode !== "pretty") {
-      dataTableReason = "jsonMode";
-    }
+    if (previousSettings.jsonMode !== currentSettings.jsonMode) dataTableReason = "jsonMode";
 
     applyDataTableSettings(currentDataTable, currentSettings, dataTableReason);
   }
@@ -279,6 +436,10 @@
     var previousTableNode = currentDataTable ? $(currentDataTable.table().node()) : null;
     if (previousTableNode && currentDataTableDrawHandler) {
       previousTableNode.off("draw.dt", currentDataTableDrawHandler);
+    }
+    if (currentDataTableContainer) {
+      currentDataTableContainer.off("click.addb-json");
+      currentDataTableContainer = null;
     }
 
     currentDataTable = dataTableApi || null;
@@ -289,6 +450,11 @@
       applyJsonFormattingToCurrentPage(currentDataTable, currentSettings || DEFAULT_SETTINGS);
     };
     tableNode.on("draw.dt", currentDataTableDrawHandler);
+
+    currentDataTableContainer = $(currentDataTable.table().container());
+    currentDataTableContainer.on("click.addb-json", "details.addb-json-node > summary", function () {
+      scheduleColumnsAdjust(currentDataTable);
+    });
 
     applyDataTableSettings(currentDataTable, currentSettings || DEFAULT_SETTINGS, "init");
   }
