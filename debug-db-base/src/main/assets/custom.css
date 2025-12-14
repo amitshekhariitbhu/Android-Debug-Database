@@ -106,15 +106,75 @@ body.addb-max-col-width #parent-data-div table.dataTable td {
 
 body.addb-json-mode-wrapped #parent-data-div table.dataTable td.addb-json-cell {
     white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    overflow-wrap: break-word;
+    word-break: normal;
+    vertical-align: top;
 }
 
 body.addb-json-mode-pretty #parent-data-div table.dataTable td.addb-json-cell {
-    white-space: pre-wrap;
+    white-space: pre;
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    overflow-wrap: normal;
+    word-break: normal;
+    vertical-align: top;
+}
+
+body.addb-max-col-width.addb-json-mode-pretty #parent-data-div table.dataTable td.addb-json-cell {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+body.addb-json-mode-pretty #parent-data-div table.dataTable td.addb-json-cell .addb-json-tree {
+    display: inline-block;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell .addb-json-line {
+    display: block;
+    margin: 0;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell .addb-json-gutter {
+    display: inline-block;
+    width: 14px;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node {
+    margin: 0;
+    padding: 0;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary::-webkit-details-marker {
+    display: none;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary::marker {
+    content: "";
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary .addb-json-gutter::before {
+    content: "▸";
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node[open] > summary .addb-json-gutter::before {
+    content: "▾";
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary .addb-json-summary-open {
+    display: none;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node[open] > summary .addb-json-summary-open {
+    display: inline;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node[open] > summary .addb-json-summary-closed {
+    display: none;
 }
 
 #snackbar {
