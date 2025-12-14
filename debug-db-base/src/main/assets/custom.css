@@ -28,6 +28,17 @@
     margin-right: 8px;
 }
 
+@font-face {
+    font-family: "AddbGlyphicons";
+    src: url("fonts/glyphicons-halflings-regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.glyphicon {
+    font-family: "AddbGlyphicons";
+}
+
 .addb-customize-heading .btn-link {
     padding-top: 0;
     padding-bottom: 0;
