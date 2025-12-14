@@ -20,6 +20,92 @@
     font-weight: bold;
 }
 
+#addb-customize-categories .list-group-item {
+    word-break: normal;
+}
+
+.addb-customize-link {
+    margin-right: 8px;
+}
+
+.addb-customize-heading .btn-link {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.addb-customize-summary {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.addb-max-width-input {
+    max-width: 240px;
+}
+
+#app-container.addb-container-fluid-max {
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+:root {
+    --addb-max-col-width: 480px;
+    --addb-sticky-header-top: 50px;
+}
+
+body.addb-sticky-header #parent-data-div .dataTables_scrollHead {
+    position: sticky;
+    top: var(--addb-sticky-header-top);
+    z-index: 20;
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+body.addb-density-compact #parent-data-div table.dataTable thead th,
+body.addb-density-compact #parent-data-div table.dataTable thead td,
+body.addb-density-compact #parent-data-div table.dataTable tbody th,
+body.addb-density-compact #parent-data-div table.dataTable tbody td {
+    padding: 4px 8px;
+    line-height: 1.2;
+}
+
+body.addb-density-comfortable #parent-data-div table.dataTable thead th,
+body.addb-density-comfortable #parent-data-div table.dataTable thead td,
+body.addb-density-comfortable #parent-data-div table.dataTable tbody th,
+body.addb-density-comfortable #parent-data-div table.dataTable tbody td {
+    padding: 12px 14px;
+    line-height: 1.4;
+}
+
+body.addb-wrap-long-text #parent-data-div table.dataTable th,
+body.addb-wrap-long-text #parent-data-div table.dataTable td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+body.addb-max-col-width #parent-data-div table.dataTable {
+    table-layout: fixed;
+}
+
+body.addb-max-col-width #parent-data-div table.dataTable th,
+body.addb-max-col-width #parent-data-div table.dataTable td {
+    max-width: var(--addb-max-col-width);
+}
+
+body.addb-json-mode-wrapped #parent-data-div table.dataTable td.addb-json-cell {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+body.addb-json-mode-pretty #parent-data-div table.dataTable td.addb-json-cell {
+    white-space: pre-wrap;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
 #snackbar {
     visibility: hidden;
     min-width: 250px;
