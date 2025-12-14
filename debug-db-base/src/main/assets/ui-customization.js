@@ -12,6 +12,7 @@
 
   var DEFAULT_SETTINGS = {
     tableWidth: "fixed", // fixed | full | fluid
+    sidebarWidth: "standard", // standard | compact
     rowDensity: "normal", // compact | normal | comfortable
     wrapLongText: false,
     maxColumnWidthPx: null, // number | null
@@ -21,6 +22,7 @@
   };
 
   var allowedTableWidths = { fixed: true, full: true, fluid: true };
+  var allowedSidebarWidths = { standard: true, compact: true };
   var allowedRowDensities = { compact: true, normal: true, comfortable: true };
   var allowedJsonModes = { raw: true, wrapped: true, pretty: true };
   var allowedPageLengths = { 10: true, 25: true, 50: true, 100: true };
@@ -90,6 +92,7 @@
     if (!raw || typeof raw !== "object") return settings;
 
     if (allowedTableWidths[raw.tableWidth]) settings.tableWidth = raw.tableWidth;
+    if (allowedSidebarWidths[raw.sidebarWidth]) settings.sidebarWidth = raw.sidebarWidth;
     if (allowedRowDensities[raw.rowDensity]) settings.rowDensity = raw.rowDensity;
     if (allowedJsonModes[raw.jsonMode]) settings.jsonMode = raw.jsonMode;
 
@@ -142,6 +145,35 @@
     }
   }
 
+  function setBootstrapSmColumn(el, span) {
+    if (!el || !el.length) return;
+    if (typeof span !== "number") return;
+    if (span < 1) span = 1;
+    if (span > 12) span = 12;
+
+    var className = el.attr("class") || "";
+    var classes = className.split(/\s+/).filter(Boolean);
+    var updated = [];
+    for (var i = 0; i < classes.length; i++) {
+      if (/^col-sm-\d+$/.test(classes[i])) continue;
+      updated.push(classes[i]);
+    }
+    updated.push("col-sm-" + span);
+    el.attr("class", updated.join(" "));
+  }
+
+  function applySidebarWidth(settings) {
+    var dbCol = $("#addb-db-column");
+    var tableCol = $("#addb-table-column");
+    var dataCol = $("#parent-data-div");
+    if (!dbCol.length || !tableCol.length || !dataCol.length) return;
+
+    var isCompact = settings.sidebarWidth === "compact";
+    setBootstrapSmColumn(dbCol, isCompact ? 1 : 2);
+    setBootstrapSmColumn(tableCol, isCompact ? 1 : 2);
+    setBootstrapSmColumn(dataCol, isCompact ? 10 : 8);
+  }
+
   function applyBodyClasses(settings) {
     var body = $("body");
 
@@ -154,6 +186,8 @@
     body.addClass("addb-json-mode-" + settings.jsonMode);
 
     body.toggleClass("addb-sticky-header", !!settings.stickyHeader);
+
+    body.toggleClass("addb-sidebar-compact", settings.sidebarWidth === "compact");
   }
 
   function applyMaxColumnWidth(settings) {
@@ -423,6 +457,7 @@
     currentSettings = normalizeSettings(settings);
 
     applyContainerWidth(currentSettings);
+    applySidebarWidth(currentSettings);
     applyBodyClasses(currentSettings);
     applyMaxColumnWidth(currentSettings);
 
@@ -550,6 +585,7 @@
     var maxWidthRaw = $("#addb-max-column-width").val();
     var settings = {
       tableWidth: $("input[name='addb-table-width']:checked").val(),
+      sidebarWidth: $("input[name='addb-sidebar-width']:checked").val(),
       rowDensity: $("input[name='addb-row-density']:checked").val(),
       wrapLongText: $("#addb-wrap-long-text").is(":checked"),
       maxColumnWidthPx: maxWidthRaw === "" ? null : maxWidthRaw,
@@ -562,6 +598,7 @@
 
   function writeFormFromSettings(settings) {
     $("input[name='addb-table-width'][value='" + settings.tableWidth + "']").prop("checked", true);
+    $("input[name='addb-sidebar-width'][value='" + settings.sidebarWidth + "']").prop("checked", true);
     $("input[name='addb-row-density'][value='" + settings.rowDensity + "']").prop("checked", true);
     $("#addb-wrap-long-text").prop("checked", !!settings.wrapLongText);
     $("#addb-max-column-width").val(settings.maxColumnWidthPx === null ? "" : settings.maxColumnWidthPx);
