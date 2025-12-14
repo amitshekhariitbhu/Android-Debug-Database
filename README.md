@@ -88,6 +88,8 @@ That’s all, just start the application, you will see in the logcat an entry li
 
 Now open the provided link in your browser.
 
+Tip: Use the "Customize UI" link next to "Run Query" to adjust table layout (stored only in your browser).
+
 Important:
 
 * Your Android phone and laptop should be connected to the same Network (Wifi or LAN).

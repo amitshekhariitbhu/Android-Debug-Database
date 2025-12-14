@@ -1,4 +1,7 @@
 $( document ).ready(function() {
+    if (window.AddbUiCustomization && typeof window.AddbUiCustomization.init === "function") {
+        window.AddbUiCustomization.init();
+    }
     getDBList();
     $("#query").keypress(function(e){
         if(e.which == 13) {
@@ -206,6 +209,11 @@ function inflateData(result){
             availableButtons = [];
        }
 
+       var displayLength = 10;
+       if (window.AddbUiCustomization && typeof window.AddbUiCustomization.getSettings === "function") {
+            displayLength = window.AddbUiCustomization.getSettings().pageLength;
+       }
+
        $(tableId).dataTable({
            "data": columnData,
            "columnDefs": columnHeader,
@@ -215,12 +223,16 @@ function inflateData(result){
            'bInfo': true,
            "bSort" : true,
            "scrollX": true,
-           "iDisplayLength": 10,
+           "iDisplayLength": displayLength,
            "dom": "Bfrtip",
             select: 'single',
             altEditor: true,     // Enable altEditor
             buttons: availableButtons
        })
+
+       if (window.AddbUiCustomization && typeof window.AddbUiCustomization.onDataTableCreated === "function") {
+            window.AddbUiCustomization.onDataTableCreated($(tableId).DataTable());
+       }
 
        //attach row-updated listener
        $(tableId).on('update-row.dt', function (e, updatedRowData, callback) {
