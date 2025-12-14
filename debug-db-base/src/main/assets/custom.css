@@ -24,6 +24,22 @@
     word-break: normal;
 }
 
+body.addb-sidebar-compact #addb-db-column .panel-heading,
+body.addb-sidebar-compact #addb-table-column .panel-heading {
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+body.addb-sidebar-compact #db-list .list-group-item,
+body.addb-sidebar-compact #table-list .list-group-item {
+    padding: 6px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: normal;
+}
+
 .addb-customize-link {
     margin-right: 8px;
 }
