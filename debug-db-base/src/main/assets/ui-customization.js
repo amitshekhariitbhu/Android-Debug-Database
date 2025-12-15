@@ -17,6 +17,7 @@
     wrapLongText: false,
     maxColumnWidthPx: null, // number | null
     jsonMode: "raw", // raw | wrapped | pretty
+    jsonMaxLines: 10, // number (limits cell height when JSON is shown)
     stickyHeader: false,
     pageLength: 10 // 10 | 25 | 50 | 100
   };
@@ -112,6 +113,16 @@
       }
     }
 
+    var jsonMaxLinesRaw = raw.jsonMaxLines;
+    if (jsonMaxLinesRaw === "" || jsonMaxLinesRaw === null || typeof jsonMaxLinesRaw === "undefined") {
+      settings.jsonMaxLines = DEFAULT_SETTINGS.jsonMaxLines;
+    } else {
+      var parsedJsonMaxLines = parseInt(jsonMaxLinesRaw, 10);
+      if (!isNaN(parsedJsonMaxLines)) {
+        settings.jsonMaxLines = clampInt(parsedJsonMaxLines, 1, 200);
+      }
+    }
+
     return settings;
   }
 
@@ -204,6 +215,15 @@
       document.documentElement.style.removeProperty("--addb-max-col-width");
       body.removeClass("addb-max-col-width");
     }
+  }
+
+  function applyJsonMaxLines(settings) {
+    var jsonMaxLines =
+      typeof settings.jsonMaxLines === "number" && settings.jsonMaxLines > 0
+        ? settings.jsonMaxLines
+        : DEFAULT_SETTINGS.jsonMaxLines;
+
+    document.documentElement.style.setProperty("--addb-json-max-lines", String(jsonMaxLines));
   }
 
   function looksLikeJson(value) {
@@ -372,6 +392,26 @@
     }, 0);
   }
 
+  function renderWrappedJsonCell(td, jsonText) {
+    if (
+      td.childNodes.length === 1 &&
+      td.firstChild &&
+      td.firstChild.nodeType === 1 &&
+      td.firstChild.classList &&
+      td.firstChild.classList.contains("addb-json-text") &&
+      td.firstChild.textContent === jsonText
+    ) {
+      return false;
+    }
+
+    td.textContent = "";
+    var wrapper = document.createElement("div");
+    wrapper.className = "addb-json-text";
+    wrapper.textContent = jsonText;
+    td.appendChild(wrapper);
+    return true;
+  }
+
   function applyJsonFormattingToCurrentPage(dataTableApi, settings) {
     if (!dataTableApi) return;
 
@@ -404,10 +444,7 @@
 
         if (mode === "wrapped") {
           // Keep raw JSON text, but apply JSON cell styling.
-          if (td.textContent !== cellData || td.childNodes.length !== 1 || td.firstChild.nodeType !== 3) {
-            td.textContent = cellData;
-            didMutateDom = true;
-          }
+          if (renderWrappedJsonCell(td, cellData)) didMutateDom = true;
           continue;
         }
 
@@ -460,6 +497,7 @@
     applySidebarWidth(currentSettings);
     applyBodyClasses(currentSettings);
     applyMaxColumnWidth(currentSettings);
+    applyJsonMaxLines(currentSettings);
 
     var dataTableReason = reason;
     if (previousSettings.jsonMode !== currentSettings.jsonMode) dataTableReason = "jsonMode";
@@ -583,6 +621,7 @@
 
   function readDraftFromForm() {
     var maxWidthRaw = $("#addb-max-column-width").val();
+    var jsonMaxLinesRaw = $("#addb-json-max-lines").val();
     var settings = {
       tableWidth: $("input[name='addb-table-width']:checked").val(),
       sidebarWidth: $("input[name='addb-sidebar-width']:checked").val(),
@@ -590,6 +629,7 @@
       wrapLongText: $("#addb-wrap-long-text").is(":checked"),
       maxColumnWidthPx: maxWidthRaw === "" ? null : maxWidthRaw,
       jsonMode: $("#addb-json-mode").val(),
+      jsonMaxLines: jsonMaxLinesRaw,
       stickyHeader: $("#addb-sticky-header").is(":checked"),
       pageLength: $("#addb-page-length").val()
     };
@@ -603,6 +643,7 @@
     $("#addb-wrap-long-text").prop("checked", !!settings.wrapLongText);
     $("#addb-max-column-width").val(settings.maxColumnWidthPx === null ? "" : settings.maxColumnWidthPx);
     $("#addb-json-mode").val(settings.jsonMode);
+    $("#addb-json-max-lines").val(String(settings.jsonMaxLines));
     $("#addb-sticky-header").prop("checked", !!settings.stickyHeader);
     $("#addb-page-length").val(String(settings.pageLength));
   }

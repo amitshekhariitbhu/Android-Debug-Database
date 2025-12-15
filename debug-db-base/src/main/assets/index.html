@@ -260,6 +260,15 @@
                                             </select>
                                             <p class="help-block">Applies to cells that contain valid JSON objects/arrays.</p>
                                         </div>
+
+                                        <div class="form-group">
+                                            <label for="addb-json-max-lines">Max JSON lines (before scrolling)</label>
+                                            <div class="input-group addb-max-width-input">
+                                                <input type="number" class="form-control" id="addb-json-max-lines" placeholder="e.g. 10" min="1" max="200" step="1">
+                                                <span class="input-group-addon">lines</span>
+                                            </div>
+                                            <p class="help-block">Limits row height when JSON is wrapped or pretty-printed.</p>
+                                        </div>
                                     </div>
 
                                     <div class="addb-customize-category display-none" data-category="paging">
