@@ -78,6 +78,7 @@ body.addb-sidebar-compact #table-list .list-group-item {
 :root {
     --addb-max-col-width: 480px;
     --addb-sticky-header-top: 50px;
+    --addb-json-max-lines: 10;
 }
 
 body.addb-sticky-header #parent-data-div .dataTables_scrollHead {
@@ -128,6 +129,14 @@ body.addb-json-mode-wrapped #parent-data-div table.dataTable td.addb-json-cell {
     vertical-align: top;
 }
 
+body.addb-json-mode-wrapped #parent-data-div table.dataTable td.addb-json-cell .addb-json-text {
+    display: block;
+    line-height: 1.25;
+    max-height: calc(var(--addb-json-max-lines) * 1.25em);
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
 body.addb-json-mode-pretty #parent-data-div table.dataTable td.addb-json-cell {
     white-space: pre;
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -143,6 +152,11 @@ body.addb-max-col-width.addb-json-mode-pretty #parent-data-div table.dataTable t
 
 body.addb-json-mode-pretty #parent-data-div table.dataTable td.addb-json-cell .addb-json-tree {
     display: inline-block;
+    line-height: 1.25;
+    max-height: calc(var(--addb-json-max-lines) * 1.25em);
+    overflow-y: auto;
+    overflow-x: visible;
+    padding-right: 6px;
 }
 
 #parent-data-div table.dataTable td.addb-json-cell .addb-json-line {
