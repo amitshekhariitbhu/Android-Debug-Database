@@ -375,6 +375,7 @@ function inflateData(result){
            'bFilter': true,
            'bInfo': true,
            "bSort" : true,
+           "order": [],
            "scrollX": true,
            "iDisplayLength": displayLength,
            "dom": "Bfrtip",
