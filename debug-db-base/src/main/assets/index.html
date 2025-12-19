@@ -109,7 +109,21 @@
     <div class="row padding-twenty">
         <div class="col-sm-12">
             <div class="form-group">
-                <label for="query">Query</label>
+                <label for="query">
+                    Query
+                    <span class="dropdown addb-query-history">
+                        <button id="addb-query-history-toggle"
+                                type="button"
+                                class="btn btn-link btn-xs dropdown-toggle addb-query-history-toggle"
+                                data-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                title="Recent queries">
+                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                        </button>
+                        <ul class="dropdown-menu" id="addb-query-history-menu" aria-labelledby="addb-query-history-toggle"></ul>
+                    </span>
+                </label>
                 <input class="form-control" id="query">
             </div>
             <button id="selected-db-download" type="button" onclick="downloadDb()"

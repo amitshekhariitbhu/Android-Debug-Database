@@ -28,11 +28,87 @@ $( document ).ready(function() {
         $(this).addClass('selected');
     });
 
+    $( document ).on( "click", "#addb-query-history-toggle", function() {
+        renderQueryHistoryMenu();
+    });
+
+    $( document ).on( "click", ".addb-query-history-item", function(e) {
+        e.preventDefault();
+        var query = $(this).data("query");
+        if (query != null) {
+            $("#query").val(query).focus();
+        }
+    });
 
 });
 
 var isDatabaseSelected = true;
 var isDemoModeEnabled = false;
+
+var QUERY_HISTORY_STORAGE_KEY = "addb.queryHistory.v1";
+var QUERY_HISTORY_MAX_ITEMS = 10;
+
+function loadQueryHistory() {
+    try {
+        if (!window.localStorage) return [];
+        var raw = window.localStorage.getItem(QUERY_HISTORY_STORAGE_KEY);
+        if (!raw) return [];
+        var parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter(function (item) { return typeof item === "string" && item.trim().length > 0; });
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveQueryHistory(history) {
+    try {
+        if (!window.localStorage) return;
+        window.localStorage.setItem(QUERY_HISTORY_STORAGE_KEY, JSON.stringify(history));
+    } catch (e) {
+        // ignore (e.g. storage disabled)
+    }
+}
+
+function addQueryToHistory(query) {
+    var normalizedQuery = (query == null ? "" : String(query)).trim();
+    if (!normalizedQuery) return;
+
+    var history = loadQueryHistory();
+
+    for (var i = history.length - 1; i >= 0; i--) {
+        if (history[i] === normalizedQuery) {
+            history.splice(i, 1);
+        }
+    }
+
+    history.unshift(normalizedQuery);
+    if (history.length > QUERY_HISTORY_MAX_ITEMS) {
+        history = history.slice(0, QUERY_HISTORY_MAX_ITEMS);
+    }
+    saveQueryHistory(history);
+}
+
+function renderQueryHistoryMenu() {
+    var menu = $("#addb-query-history-menu");
+    if (!menu.length) return;
+
+    menu.empty();
+
+    var history = loadQueryHistory();
+    if (!history.length) {
+        menu.append($("<li>", { "class": "disabled" }).append($("<a>", { href: "#", tabindex: -1 }).text("No recent queries")));
+        return;
+    }
+
+    for (var i = 0; i < history.length; i++) {
+        menu.append(
+            $("<li>").append(
+                $("<a>", { href: "#", "class": "addb-query-history-item" }).text(history[i]).data("query", history[i])
+            )
+        );
+    }
+}
 
 function shouldUseDemoData() {
     try {
@@ -196,6 +272,8 @@ function queryFunction() {
        showErrorInfo("Demo mode: database queries are not available (UI only)");
        return;
    }
+
+   addQueryToHistory(query);
 
    $.ajax({url: "query?query="+escape(query), success: function(result){
 

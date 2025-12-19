@@ -44,6 +44,33 @@ body.addb-sidebar-compact #table-list .list-group-item {
     margin-right: 8px;
 }
 
+.addb-query-history {
+    display: inline-block;
+    margin-left: 6px;
+}
+
+.addb-query-history-toggle {
+    padding: 0 4px;
+    color: #777;
+}
+
+.addb-query-history-toggle:hover,
+.addb-query-history-toggle:focus {
+    color: #333;
+    text-decoration: none;
+}
+
+#addb-query-history-menu {
+    max-width: 720px;
+}
+
+#addb-query-history-menu > li > a {
+    white-space: normal;
+    word-break: break-word;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12px;
+}
+
 @font-face {
     font-family: "AddbGlyphicons";
     src: url("fonts/glyphicons-halflings-regular.ttf") format("truetype");
