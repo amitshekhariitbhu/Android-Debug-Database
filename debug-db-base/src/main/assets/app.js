@@ -104,7 +104,7 @@ function renderQueryHistoryMenu() {
     for (var i = 0; i < history.length; i++) {
         menu.append(
             $("<li>").append(
-                $("<a>", { href: "#", "class": "addb-query-history-item" }).text(history[i]).data("query", history[i])
+                $("<a>", { href: "#", "class": "addb-query-history-item", title: history[i] }).text(history[i]).data("query", history[i])
             )
         );
     }

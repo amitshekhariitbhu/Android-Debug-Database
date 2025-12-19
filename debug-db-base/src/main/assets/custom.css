@@ -61,14 +61,25 @@ body.addb-sidebar-compact #table-list .list-group-item {
 }
 
 #addb-query-history-menu {
-    max-width: 720px;
+    min-width: 30vw;
+    width: 40vw;
+    max-width: 70vw;
+    max-height: 160px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
 }
 
 #addb-query-history-menu > li > a {
-    white-space: normal;
-    word-break: break-word;
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
     font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+    height: 32px;
+    line-height: 20px;
+    padding: 6px 12px;
 }
 
 @font-face {
