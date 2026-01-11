@@ -20,6 +20,231 @@
     font-weight: bold;
 }
 
+#addb-customize-categories .list-group-item {
+    word-break: normal;
+}
+
+body.addb-sidebar-compact #addb-db-column .panel-heading,
+body.addb-sidebar-compact #addb-table-column .panel-heading {
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+body.addb-sidebar-compact #db-list .list-group-item,
+body.addb-sidebar-compact #table-list .list-group-item {
+    padding: 6px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: normal;
+}
+
+.addb-customize-link {
+    margin-right: 8px;
+}
+
+.addb-query-history {
+    display: inline-block;
+    margin-left: 6px;
+}
+
+.addb-query-history-toggle {
+    padding: 0 4px;
+    color: #777;
+}
+
+.addb-query-history-toggle:hover,
+.addb-query-history-toggle:focus {
+    color: #333;
+    text-decoration: none;
+}
+
+#addb-query-history-menu {
+    min-width: 30vw;
+    width: 40vw;
+    max-width: 70vw;
+    max-height: 160px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+}
+
+#addb-query-history-menu > li > a {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+    height: 32px;
+    line-height: 20px;
+    padding: 6px 12px;
+}
+
+@font-face {
+    font-family: "AddbGlyphicons";
+    src: url("fonts/glyphicons-halflings-regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.glyphicon {
+    font-family: "AddbGlyphicons";
+}
+
+.addb-customize-heading .btn-link {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.addb-customize-summary {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.addb-max-width-input {
+    max-width: 240px;
+}
+
+#app-container.addb-container-fluid-max {
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+:root {
+    --addb-max-col-width: 480px;
+    --addb-sticky-header-top: 50px;
+    --addb-json-max-lines: 10;
+}
+
+body.addb-sticky-header #parent-data-div .dataTables_scrollHead {
+    position: sticky;
+    top: var(--addb-sticky-header-top);
+    z-index: 20;
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+body.addb-density-compact #parent-data-div table.dataTable thead th,
+body.addb-density-compact #parent-data-div table.dataTable thead td,
+body.addb-density-compact #parent-data-div table.dataTable tbody th,
+body.addb-density-compact #parent-data-div table.dataTable tbody td {
+    padding: 4px 8px;
+    line-height: 1.2;
+}
+
+body.addb-density-comfortable #parent-data-div table.dataTable thead th,
+body.addb-density-comfortable #parent-data-div table.dataTable thead td,
+body.addb-density-comfortable #parent-data-div table.dataTable tbody th,
+body.addb-density-comfortable #parent-data-div table.dataTable tbody td {
+    padding: 12px 14px;
+    line-height: 1.4;
+}
+
+body.addb-wrap-long-text #parent-data-div table.dataTable th,
+body.addb-wrap-long-text #parent-data-div table.dataTable td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+body.addb-max-col-width #parent-data-div table.dataTable {
+    table-layout: fixed;
+}
+
+body.addb-max-col-width #parent-data-div table.dataTable th,
+body.addb-max-col-width #parent-data-div table.dataTable td {
+    max-width: var(--addb-max-col-width);
+}
+
+body.addb-json-mode-wrapped #parent-data-div table.dataTable td.addb-json-cell {
+    white-space: normal;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    overflow-wrap: break-word;
+    word-break: normal;
+    vertical-align: top;
+}
+
+body.addb-json-mode-wrapped #parent-data-div table.dataTable td.addb-json-cell .addb-json-text {
+    display: block;
+    line-height: 1.25;
+    max-height: calc(var(--addb-json-max-lines) * 1.25em);
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+body.addb-json-mode-pretty #parent-data-div table.dataTable td.addb-json-cell {
+    white-space: pre;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    overflow-wrap: normal;
+    word-break: normal;
+    vertical-align: top;
+}
+
+body.addb-max-col-width.addb-json-mode-pretty #parent-data-div table.dataTable td.addb-json-cell {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+body.addb-json-mode-pretty #parent-data-div table.dataTable td.addb-json-cell .addb-json-tree {
+    display: inline-block;
+    line-height: 1.25;
+    max-height: calc(var(--addb-json-max-lines) * 1.25em);
+    overflow-y: auto;
+    overflow-x: visible;
+    padding-right: 6px;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell .addb-json-line {
+    display: block;
+    margin: 0;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell .addb-json-gutter {
+    display: inline-block;
+    width: 14px;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node {
+    margin: 0;
+    padding: 0;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary::-webkit-details-marker {
+    display: none;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary::marker {
+    content: "";
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary .addb-json-gutter::before {
+    content: "▸";
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node[open] > summary .addb-json-gutter::before {
+    content: "▾";
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node > summary .addb-json-summary-open {
+    display: none;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node[open] > summary .addb-json-summary-open {
+    display: inline;
+}
+
+#parent-data-div table.dataTable td.addb-json-cell details.addb-json-node[open] > summary .addb-json-summary-closed {
+    display: none;
+}
+
 #snackbar {
     visibility: hidden;
     min-width: 250px;

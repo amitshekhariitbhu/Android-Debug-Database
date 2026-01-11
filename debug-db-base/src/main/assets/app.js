@@ -1,5 +1,12 @@
 $( document ).ready(function() {
-    getDBList();
+    if (window.AddbUiCustomization && typeof window.AddbUiCustomization.init === "function") {
+        window.AddbUiCustomization.init();
+    }
+    if (shouldUseDemoData()) {
+        initDemoMode();
+    } else {
+        getDBList();
+    }
     $("#query").keypress(function(e){
         if(e.which == 13) {
             queryFunction();
@@ -21,10 +28,230 @@ $( document ).ready(function() {
         $(this).addClass('selected');
     });
 
+    $( document ).on( "click", "#addb-query-history-toggle", function() {
+        renderQueryHistoryMenu();
+    });
+
+    $( document ).on( "click", ".addb-query-history-item", function(e) {
+        e.preventDefault();
+        var query = $(this).data("query");
+        if (query != null) {
+            $("#query").val(query).focus();
+        }
+    });
 
 });
 
 var isDatabaseSelected = true;
+var isDemoModeEnabled = false;
+
+var QUERY_HISTORY_STORAGE_KEY = "addb.queryHistory.v1";
+var QUERY_HISTORY_MAX_ITEMS = 10;
+
+function loadQueryHistory() {
+    try {
+        if (!window.localStorage) return [];
+        var raw = window.localStorage.getItem(QUERY_HISTORY_STORAGE_KEY);
+        if (!raw) return [];
+        var parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter(function (item) { return typeof item === "string" && item.trim().length > 0; });
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveQueryHistory(history) {
+    try {
+        if (!window.localStorage) return;
+        window.localStorage.setItem(QUERY_HISTORY_STORAGE_KEY, JSON.stringify(history));
+    } catch (e) {
+        // ignore (e.g. storage disabled)
+    }
+}
+
+function addQueryToHistory(query) {
+    var normalizedQuery = (query == null ? "" : String(query)).trim();
+    if (!normalizedQuery) return;
+
+    var history = loadQueryHistory();
+
+    for (var i = history.length - 1; i >= 0; i--) {
+        if (history[i] === normalizedQuery) {
+            history.splice(i, 1);
+        }
+    }
+
+    history.unshift(normalizedQuery);
+    if (history.length > QUERY_HISTORY_MAX_ITEMS) {
+        history = history.slice(0, QUERY_HISTORY_MAX_ITEMS);
+    }
+    saveQueryHistory(history);
+}
+
+function renderQueryHistoryMenu() {
+    var menu = $("#addb-query-history-menu");
+    if (!menu.length) return;
+
+    menu.empty();
+
+    var history = loadQueryHistory();
+    if (!history.length) {
+        menu.append($("<li>", { "class": "disabled" }).append($("<a>", { href: "#", tabindex: -1 }).text("No recent queries")));
+        return;
+    }
+
+    for (var i = 0; i < history.length; i++) {
+        menu.append(
+            $("<li>").append(
+                $("<a>", { href: "#", "class": "addb-query-history-item", title: history[i] }).text(history[i]).data("query", history[i])
+            )
+        );
+    }
+}
+
+function shouldUseDemoData() {
+    try {
+        var search = window.location.search || "";
+        if (/(^|[?&])demo=1(&|$)/.test(search)) return true;
+        return window.location.protocol === "file:";
+    } catch (e) {
+        return false;
+    }
+}
+
+function demoRepeat(str, count) {
+    var out = "";
+    for (var i = 0; i < count; i++) out += str;
+    return out;
+}
+
+function demoCell(value, dataType) {
+    return { value: value, dataType: dataType };
+}
+
+function buildDemoResult() {
+    var longToken = "tok_" + demoRepeat("A", 72) + "." + demoRepeat("B", 72) + "." + demoRepeat("C", 72);
+    var veryLongUrl =
+        "https://example.com/" +
+        demoRepeat("path/", 8) +
+        "resource?query=" +
+        demoRepeat("x", 48) +
+        "&more=" +
+        demoRepeat("y", 48);
+
+    var json1 = JSON.stringify({
+        user: {
+            id: 42,
+            name: "Ada Lovelace",
+            flags: { isAdmin: false, isTester: true, beta: true }
+        },
+        session: {
+            token: longToken,
+            expiresAt: "2025-12-14T12:34:56Z"
+        },
+        features: ["ui_customization", "json_tree", "sticky_header"]
+    });
+
+    var json2 = JSON.stringify({
+        request: {
+            method: "POST",
+            url: veryLongUrl,
+            headers: {
+                "content-type": "application/json",
+                "x-request-id": "req_" + demoRepeat("7", 24)
+            }
+        },
+        timingsMs: { dns: 12, tcp: 34, tls: 56, ttfb: 78, total: 234 },
+        tags: ["android", "debug-db", "datatable"]
+    });
+
+    var json3 = JSON.stringify([
+        { type: "event", ts: 1734150000, data: { name: "launch", coldStart: true } },
+        { type: "event", ts: 1734150030, data: { name: "tap", target: "settings_button" } },
+        { type: "event", ts: 1734150055, data: { name: "network", status: 200, bytes: 2048 } }
+    ]);
+
+    var json4 = JSON.stringify({
+        emptyObject: {},
+        emptyArray: [],
+        nested: {
+            level2: {
+                level3: {
+                    message: "Expand/collapse should keep 2nd-level collapsed by default.",
+                    numbers: [1, 2, 3, 4, 5]
+                }
+            }
+        }
+    });
+
+    return {
+        isSuccessful: true,
+        isSelectQuery: true,
+        isEditable: false,
+        tableInfos: [
+            { title: "id", isPrimary: true },
+            { title: "name", isPrimary: false },
+            { title: "is_active", isPrimary: false },
+            { title: "json_payload", isPrimary: false },
+            { title: "notes", isPrimary: false }
+        ],
+        rows: [
+            [
+                demoCell(1, "number"),
+                demoCell("Alpha", "string"),
+                demoCell(true, "boolean"),
+                demoCell(json1, "string"),
+                demoCell("Try JSON mode: Pretty-printed", "string")
+            ],
+            [
+                demoCell(2, "number"),
+                demoCell("Beta", "string"),
+                demoCell(false, "boolean"),
+                demoCell(json2, "string"),
+                demoCell("Includes a very long URL + token", "string")
+            ],
+            [
+                demoCell(3, "number"),
+                demoCell("Gamma", "string"),
+                demoCell(true, "boolean"),
+                demoCell(json3, "string"),
+                demoCell("Root JSON array (children collapsed at level 2)", "string")
+            ],
+            [
+                demoCell(4, "number"),
+                demoCell("Delta", "string"),
+                demoCell(true, "boolean"),
+                demoCell(json4, "string"),
+                demoCell("Has empty containers + deep nesting", "string")
+            ]
+        ]
+    };
+}
+
+function loadDemoData() {
+    var result = buildDemoResult();
+    inflateData(result);
+}
+
+function initDemoMode() {
+    isDemoModeEnabled = true;
+    isDatabaseSelected = false;
+
+    $("#selected-db-info").text("Demo mode (local file) — showing sample data for UI testing");
+
+    $("#run-query").removeClass("active").addClass("disabled").prop("disabled", true);
+    $("#selected-db-download").removeClass("active").addClass("disabled").prop("disabled", true);
+    $("#selected-db-delete").removeClass("active").addClass("disabled").prop("disabled", true);
+
+    $("#db-list").empty().append("<a href='#' class='list-group-item selected'>DEMO_DB</a>");
+    $("#table-list")
+        .empty()
+        .append("<a href='#table=demo_table' class='list-group-item selected' onClick='loadDemoData();'>demo_table</a>");
+
+    loadDemoData();
+    showSuccessInfo("Loaded demo data (open Customize UI → Text & JSON to try Pretty-printed)");
+}
 
 function getData(tableName) {
 
@@ -40,6 +267,13 @@ function getData(tableName) {
 function queryFunction() {
 
    var query = $('#query').val();
+
+   if (isDemoModeEnabled) {
+       showErrorInfo("Demo mode: database queries are not available (UI only)");
+       return;
+   }
+
+   addQueryToHistory(query);
 
    $.ajax({url: "query?query="+escape(query), success: function(result){
 
@@ -206,6 +440,11 @@ function inflateData(result){
             availableButtons = [];
        }
 
+       var displayLength = 10;
+       if (window.AddbUiCustomization && typeof window.AddbUiCustomization.getSettings === "function") {
+            displayLength = window.AddbUiCustomization.getSettings().pageLength;
+       }
+
        $(tableId).dataTable({
            "data": columnData,
            "columnDefs": columnHeader,
@@ -214,13 +453,18 @@ function inflateData(result){
            'bFilter': true,
            'bInfo': true,
            "bSort" : true,
+           "order": [],
            "scrollX": true,
-           "iDisplayLength": 10,
+           "iDisplayLength": displayLength,
            "dom": "Bfrtip",
             select: 'single',
             altEditor: true,     // Enable altEditor
             buttons: availableButtons
        })
+
+       if (window.AddbUiCustomization && typeof window.AddbUiCustomization.onDataTableCreated === "function") {
+            window.AddbUiCustomization.onDataTableCreated($(tableId).DataTable());
+       }
 
        //attach row-updated listener
        $(tableId).on('update-row.dt', function (e, updatedRowData, callback) {

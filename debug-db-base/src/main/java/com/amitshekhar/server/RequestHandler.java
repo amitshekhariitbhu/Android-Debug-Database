@@ -102,36 +102,47 @@ public class RequestHandler {
                 route = "index.html";
             }
 
+            // Strip query params for static asset lookups and MIME type detection.
+            // (API routes still receive the full route, including query params.)
+            String routePath = route;
+            final int queryIndex = route.indexOf('?');
+            if (queryIndex >= 0) {
+                routePath = route.substring(0, queryIndex);
+                if (routePath.isEmpty()) {
+                    routePath = "index.html";
+                }
+            }
+
             byte[] bytes;
 
-            if (route.startsWith("getDbList")) {
+            if (routePath.startsWith("getDbList")) {
                 final String response = getDBListResponse();
                 bytes = response.getBytes();
-            } else if (route.startsWith("getAllDataFromTheTable")) {
+            } else if (routePath.startsWith("getAllDataFromTheTable")) {
                 final String response = getAllDataFromTheTableResponse(route);
                 bytes = response.getBytes();
-            } else if (route.startsWith("getTableList")) {
+            } else if (routePath.startsWith("getTableList")) {
                 final String response = getTableListResponse(route);
                 bytes = response.getBytes();
-            } else if (route.startsWith("addTableData")) {
+            } else if (routePath.startsWith("addTableData")) {
                 final String response = addTableDataAndGetResponse(route);
                 bytes = response.getBytes();
-            } else if (route.startsWith("updateTableData")) {
+            } else if (routePath.startsWith("updateTableData")) {
                 final String response = updateTableDataAndGetResponse(route);
                 bytes = response.getBytes();
-            } else if (route.startsWith("deleteTableData")) {
+            } else if (routePath.startsWith("deleteTableData")) {
                 final String response = deleteTableDataAndGetResponse(route);
                 bytes = response.getBytes();
-            } else if (route.startsWith("query")) {
+            } else if (routePath.startsWith("query")) {
                 final String response = executeQueryAndGetResponse(route);
                 bytes = response.getBytes();
-            } else if (route.startsWith("deleteDb")) {
+            } else if (routePath.startsWith("deleteDb")) {
                 final String response = deleteSelectedDatabaseAndGetResponse();
                 bytes = response.getBytes();
-            } else if (route.startsWith("downloadDb")) {
+            } else if (routePath.startsWith("downloadDb")) {
                 bytes = Utils.getDatabase(mSelectedDatabase, mDatabaseFiles);
             } else {
-                bytes = Utils.loadContent(route, mAssets);
+                bytes = Utils.loadContent(routePath, mAssets);
             }
 
             if (null == bytes) {
@@ -141,9 +152,9 @@ public class RequestHandler {
 
             // Send out the content.
             output.println("HTTP/1.0 200 OK");
-            output.println("Content-Type: " + Utils.detectMimeType(route));
+            output.println("Content-Type: " + Utils.detectMimeType(routePath));
 
-            if (route.startsWith("downloadDb")) {
+            if (routePath.startsWith("downloadDb")) {
                 output.println("Content-Disposition: attachment; filename=" + mSelectedDatabase);
             } else {
                 output.println("Content-Length: " + bytes.length);

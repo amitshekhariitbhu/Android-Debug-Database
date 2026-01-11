@@ -102,12 +102,28 @@
 </nav>
 
 
-<div class="container padding-fifty">
+<div id="app-container" class="container padding-fifty">
+
+    <div id="addb-main-view">
 
     <div class="row padding-twenty">
         <div class="col-sm-12">
             <div class="form-group">
-                <label for="query">Query</label>
+                <label for="query">
+                    Query
+                    <span class="dropdown addb-query-history">
+                        <button id="addb-query-history-toggle"
+                                type="button"
+                                class="btn btn-link btn-xs dropdown-toggle addb-query-history-toggle"
+                                data-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                title="Recent queries">
+                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                        </button>
+                        <ul class="dropdown-menu" id="addb-query-history-menu" aria-labelledby="addb-query-history-toggle"></ul>
+                    </span>
+                </label>
                 <input class="form-control" id="query">
             </div>
             <button id="selected-db-download" type="button" onclick="downloadDb()"
@@ -122,13 +138,17 @@
                     class="btn btn-primary pull-right disabled">Run
                 Query
             </button>
+            <a id="open-ui-customization" href="?view=customize" class="btn btn-default btn-sm pull-right addb-customize-link">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                Customize UI
+            </a>
         </div>
     </div>
 
 
     <div class="row padding-twenty">
 
-        <div class="col-sm-2">
+        <div id="addb-db-column" class="col-sm-2">
             <div class="panel panel-info">
                 <div class="panel-heading">Databases</div>
             </div>
@@ -136,7 +156,7 @@
             </div>
         </div>
 
-        <div class="col-sm-2">
+        <div id="addb-table-column" class="col-sm-2">
             <div class="panel panel-info">
                 <div class="panel-heading">Tables</div>
             </div>
@@ -151,10 +171,151 @@
         </div>
     </div>
 
+    </div>
+
+    <div id="addb-customize-view" class="display-none">
+        <div class="row padding-twenty">
+            <div class="col-sm-12">
+                <div class="panel panel-info">
+                    <div class="panel-heading addb-customize-heading">
+                        <span>UI Customization</span>
+                        <a id="addb-customize-back" href="index.html" class="btn btn-link pull-right addb-customize-back">
+                            Back to Data
+                        </a>
+                    </div>
+                    <div class="panel-body">
+                        <p class="addb-customize-summary">
+                            These settings only affect how data is displayed in your browser. Clearing browser storage resets to defaults.
+                        </p>
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div id="addb-customize-categories" class="list-group">
+                                    <a href="#" class="list-group-item active" data-category="layout">Layout</a>
+                                    <a href="#" class="list-group-item" data-category="text">Text &amp; JSON</a>
+                                    <a href="#" class="list-group-item" data-category="paging">Paging</a>
+                                </div>
+                            </div>
+                            <div class="col-sm-9">
+                                <form id="addb-customize-form">
+                                    <div class="addb-customize-category" data-category="layout">
+                                        <div class="form-group">
+                                            <label>Table width</label>
+                                            <div class="radio">
+                                                <label><input type="radio" name="addb-table-width" value="fixed"> Fixed (default)</label>
+                                            </div>
+                                            <div class="radio">
+                                                <label><input type="radio" name="addb-table-width" value="full"> Full width</label>
+                                            </div>
+                                            <div class="radio">
+                                                <label><input type="radio" name="addb-table-width" value="fluid"> Fluid (max width)</label>
+                                            </div>
+                                            <p class="help-block">Controls how much horizontal space the UI uses.</p>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Sidebar width</label>
+                                            <div class="radio">
+                                                <label><input type="radio" name="addb-sidebar-width" value="standard"> Standard (default)</label>
+                                            </div>
+                                            <div class="radio">
+                                                <label><input type="radio" name="addb-sidebar-width" value="compact"> Compact</label>
+                                            </div>
+                                            <p class="help-block">Controls how much space the database/table lists use (compact gives more room to the data table).</p>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Row density</label>
+                                            <div class="radio">
+                                                <label><input type="radio" name="addb-row-density" value="compact"> Compact</label>
+                                            </div>
+                                            <div class="radio">
+                                                <label><input type="radio" name="addb-row-density" value="normal"> Normal (default)</label>
+                                            </div>
+                                            <div class="radio">
+                                                <label><input type="radio" name="addb-row-density" value="comfortable"> Comfortable</label>
+                                            </div>
+                                            <p class="help-block">Adjusts row height and padding to fit more (or fewer) rows on screen.</p>
+                                        </div>
+
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" id="addb-sticky-header">
+                                                Sticky header
+                                            </label>
+                                            <p class="help-block">Keep the table header visible while scrolling.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="addb-customize-category display-none" data-category="text">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" id="addb-wrap-long-text">
+                                                Wrap long text
+                                            </label>
+                                            <p class="help-block">Wraps cell contents instead of forcing horizontal scrolling.</p>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="addb-max-column-width">Max column width (px)</label>
+                                            <div class="input-group addb-max-width-input">
+                                                <input type="number" class="form-control" id="addb-max-column-width" placeholder="e.g. 480" min="120" max="2000" step="10">
+                                                <span class="input-group-addon">px</span>
+                                            </div>
+                                            <p class="help-block">Applies when wrapping (or JSON formatting) is enabled. Helps keep wide columns manageable.</p>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="addb-json-mode">JSON display mode</label>
+                                            <select id="addb-json-mode" class="form-control">
+                                                <option value="raw">Raw (default)</option>
+                                                <option value="wrapped">Wrapped</option>
+                                                <option value="pretty">Pretty-printed</option>
+                                            </select>
+                                            <p class="help-block">Applies to cells that contain valid JSON objects/arrays.</p>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="addb-json-max-lines">Max JSON lines (before scrolling)</label>
+                                            <div class="input-group addb-max-width-input">
+                                                <input type="number" class="form-control" id="addb-json-max-lines" placeholder="e.g. 10" min="1" max="200" step="1">
+                                                <span class="input-group-addon">lines</span>
+                                            </div>
+                                            <p class="help-block">Limits row height when JSON is wrapped or pretty-printed.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="addb-customize-category display-none" data-category="paging">
+                                        <div class="form-group">
+                                            <label for="addb-page-length">Rows per page</label>
+                                            <select id="addb-page-length" class="form-control">
+                                                <option value="10">10</option>
+                                                <option value="25">25</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>
+                                            <p class="help-block">Controls how many rows are shown per page in the data table.</p>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+
+                                    <button type="button" id="addb-ui-apply" class="btn btn-primary">Apply</button>
+                                    <button type="button" id="addb-ui-reset" class="btn btn-default">Reset to defaults</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="snackbar">Data Updated Successfully</div>
 
 </div>
 
+<script src="ui-customization.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
